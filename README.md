@@ -12,4 +12,4 @@ Vuetify, tailwindCSS
 Pinia, dotenv
 ESLint, Husky
 
-test
+test2
