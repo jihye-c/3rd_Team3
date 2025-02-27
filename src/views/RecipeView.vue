@@ -43,6 +43,18 @@
       image: '/recipe/recipe_ingredient_fruit.jpg',
     },
   ];
+  const todaysRecipe = {
+    title: '소고기 들깨 알토란탕',
+    subtitle: '오늘의 추천 레시피',
+    description:
+      '소고기 들깨 알토란탕은 고소한 들깨가루와 부드러운 소고기, 그리고 특유의 식감이 일품인 알토란을 주재료로 한 영양가 높은 한식 탕입니다. 알토란의 아삭한 식감과 들깨의 고소함이 어우러져 깊은 맛을 내며, 소고기의 감칠맛이 국물에 배어 풍미를 더합니다.',
+    image: '/recipe/recipe_todays.jpg',
+    INFO_NA: 675.68,
+    INFO_WGT: 297,
+    INFO_PRO: 7.57,
+    INFO_FAT: 5.17,
+    INFO_CAR: 17.4,
+  };
 </script>
 
 <template>
@@ -85,6 +97,31 @@
         <template v-for="item in recipeCategoryData" :key="item.category">
           <RecipeSquareCard :title="item.category" :image="item.image" />
         </template>
+      </div>
+    </div>
+    <!-- 오늘의 레시피 -->
+    <div class="tw:flex tw:flex-col tw:gap-[28px]">
+      <div class="ft-point tw:text-[48px] tw:text-mono-700">오늘의 레시피</div>
+      <div class="tw:flex tw:justify-between">
+        <RecipeSquareCard
+          :title="todaysRecipe.title"
+          :subtitle="todaysRecipe.subtitle"
+          :image="todaysRecipe.image"
+          large
+        />
+        <div class="tw:flex tw:flex-col tw:w-[1040px] tw:justify-between tw:text-mono-700">
+          <div class="tw:flex tw:flex-col tw:gap-4">
+            <div class="tw:text-[32px] tw:font-bold">레시피 설명</div>
+            <p class="tw:text-[20px] tw:leading-[24px]">{{ todaysRecipe.description }}</p>
+          </div>
+          <div class="tw:flex tw:flex-col tw:gap-2">
+            <div class="tw:text-[32px] tw:font-bold">영양정보</div>
+            <p class="tw:text-[20px] tw:leading-[24px] tw:text-mono-400">
+              1일 영양성분 기준치에 대한 비율 (%)
+            </p>
+            <div class="tw:bg-main-50 tw:h-[200px]"></div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- 냉장고 속 재료별 레시피 -->
