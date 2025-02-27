@@ -10,3 +10,5 @@ TypeScript, Vue3, vue-router
 Vuetify, tailwindCSS
 Pinia, dotenv
 ESLint, Husky
+
+test
