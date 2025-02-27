@@ -1,9 +1,34 @@
 <script setup lang="ts">
+  import RecipeSquareCard from '@/components/RecipeSquareCard.vue';
+
   const handleSearch = () => alert('click!');
+
+  const recipeCategoryData = [
+    {
+      category: '밥',
+      image: '/recipe/recipe_category_rice.png',
+    },
+    {
+      category: '반찬',
+      image: '/recipe/recipe_category_side.jpg',
+    },
+    {
+      category: '국',
+      image: '/recipe/recipe_category_soup.jpg',
+    },
+    {
+      category: '일품',
+      image: '/recipe/recipe_category_one_dish.jpg',
+    },
+    {
+      category: '후식',
+      image: '/recipe/recipe_category_dessert.jpg',
+    },
+  ];
 </script>
 
 <template>
-  <div>
+  <div class="tw:flex tw:flex-col tw:gap-[100px]">
     <!-- 배너 -->
     <div class="tw:w-full tw:h-[562px] tw:overflow-hidden">
       <div
@@ -35,7 +60,17 @@
         </div>
       </div>
     </div>
+    <!-- 카테고리별 레시피 -->
+    <div class="container tw:flex tw:flex-col tw:gap-[28px]">
+      <div class="ft-point tw:text-[48px] tw:text-mono-700">카테고리별 레시피</div>
+      <div class="tw:flex tw:justify-between">
+        <template v-for="item in recipeCategoryData" :key="item.category">
+          <RecipeSquareCard :title="item.category" :image="item.image" />
+        </template>
+      </div>
+    </div>
   </div>
+  <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 </template>
 
 <style scoped></style>
