@@ -56,26 +56,29 @@ MDI Vuetify Intellisense
 
 Husky 적용해서 위 태그 안 적거나 종류에 없는 것 쓰면 commit 거부됩니다.
 
-# Git branch 파고 PR넣는 방법
+# Git 명령어 모음
 
-### Issue / 원격에서 새 브랜치 생성 했을 시
+### Issue / 원격에서 새 브랜치 생성후 작업하기
 
 git fetch origin
-git checkout 브랜치명
-git pull origin dev <!-- dev branch의 최신 커밋 반영 -->
-
-<!-- 커밋 생성 후 -->
-
+git checkout <브랜치 이름>
+git pull origin dev 
+<!-- 작업 후 커밋 생성 -->
 git push origin 브랜치명
 
 ### 로컬에서 바로 브랜치 생성하고 원격에 branch를 넣는 방법
 
 git pull origin dev
 git checkout -b 브랜치명
-git pull origin dev <!-- dev branch의 최신 커밋 반영 -->
-
-<!-- 커밋 생성 후 -->
-
+git pull origin dev
+<!-- 작업 후 커밋 생성 -->
 git push origin 브랜치명
 
-rebase테스트
+### Push 이후
+<!-- 로컬 브랜치 삭제 -->
+git checkout dev
+git branch -d <로컬 브랜치 이름> 
+
+### 아직 push하지 않은 로컬 commit log 합치기 
+<!-- N은 HEAD로부터 합칠 커밋 개수 입력 -->
+git rebase -i HEAD~N
