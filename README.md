@@ -12,4 +12,7 @@ Vuetify, tailwindCSS
 Pinia, dotenv
 ESLint, Husky
 
+---
+
 test2
+git test용 문장입니다.
