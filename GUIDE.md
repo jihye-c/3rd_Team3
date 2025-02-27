@@ -62,22 +62,23 @@ Husky 적용해서 위 태그 안 적거나 종류에 없는 것 쓰면 commit �
 
 git fetch origin
 git checkout <브랜치 이름>
-git pull origin dev 
+git pull origin main 
 <!-- 작업 후 커밋 생성 -->
 git push origin 브랜치명
 
 ### 로컬에서 바로 브랜치 생성하고 원격에 branch를 넣는 방법
 
-git pull origin dev
+git pull origin main
 git checkout -b 브랜치명
-git pull origin dev
+git pull origin main
 <!-- 작업 후 커밋 생성 -->
 git push origin 브랜치명
 
 ### Push 이후
 <!-- 로컬 브랜치 삭제 -->
-git checkout dev
-git branch -d <로컬 브랜치 이름> 
+git checkout main
+git branch -d <로컬 브랜치 이름>
+git branch -D <로컬 브랜치 이름> <!-- 강제삭제 (원격 머지 후엔 하셔도 됩니다!) -->
 
 ### 아직 push하지 않은 로컬 commit log 합치기 
 <!-- N은 HEAD로부터 합칠 커밋 개수 입력 -->
