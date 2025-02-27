@@ -1,4 +1,4 @@
-import {tailwindcss} from '@tailwindcss/vite';
+// import {tailwindcss} from '@tailwindcss/vite';
 import type {Config} from 'tailwindcss';
 
 const config: Config = {
