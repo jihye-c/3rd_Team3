@@ -10,3 +10,7 @@ TypeScript, Vue3, vue-router
 Styleing : Vuetify, tailwindCSS
 Pinia, dotenv
 ESLint, Husky
+
+---
+
+git test용 문장입니다.
