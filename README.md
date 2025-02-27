@@ -9,4 +9,4 @@
 TypeScript, Vue3, vue-router
 Styleing : Vuetify, tailwindCSS
 Pinia, dotenv
-ESLint
+ESLint, Husky
