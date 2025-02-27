@@ -15,4 +15,4 @@ ESLint, Husky
 ---
 
 test2
-git test용 문장입니다.
+git test용 문장입니다!!!!
