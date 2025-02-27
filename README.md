@@ -7,7 +7,7 @@
 # Stack
 
 TypeScript, Vue3, vue-router
-Styleing : Vuetify, tailwindCSS
+Vuetify, tailwindCSS
 Pinia, dotenv
 ESLint, Husky
 
