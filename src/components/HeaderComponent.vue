@@ -87,7 +87,6 @@
             <v-speed-dial
               scrim="true"
               location="bottom center"
-              theme=""
               transition="fade-transition"
             >
               <template v-slot:activator="{props: activatorProps}">
@@ -111,24 +110,16 @@
 </template>
 
 <style scoped >
-
-::v-deep .v-field--variant-filled .v-field__overlay {
+  header :deep(.v-field__outline) {display:none;}
+  header :deep(.v-field--variant-filled .v-field__overlay) {
     background-color: transparent;
     border: none;
   }
-  ::v-deep .v-field--variant-filled .v-field__outline::before,
-  .v-field--variant-underlined .v-field__outline::before {
-    display: none;
-  }
-  ::v-deep .v-field--variant-filled .v-field__outline::after,
-  .v-field--variant-underlined .v-field__outline::after {
-    display: none;
-  }
-  ::v-deep .v-select .v-select__selection-text {
+  header :deep(.v-select .v-select__selection-text) {
     font-weight: bold;
   }
-  ::v-deep .v-field__input {
-    padding-left: 0;
+  header :deep(.v-field__input) {
+    padding-left: 4px;
   }
 
 </style>
