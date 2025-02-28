@@ -61,9 +61,9 @@
     },
   };
   const popularRecipeData = [
-    {title: '코코넛워터 토마토카레', image: '/recipe/recipe_popular1.webp'},
-    {title: '저염된장 삼치구이', image: '/recipe/recipe_popular2.webp'},
-    {title: '참나물 소보로덮밥', image: '/recipe/recipe_popular3.webp'},
+    {title: '코코넛워터 토마토카레', image: '/recipe/recipe_popular3.webp'},
+    {title: '저염된장 삼치구이', image: '/recipe/recipe_popular1.webp'},
+    {title: '참나물 소보로덮밥', image: '/recipe/recipe_popular2.webp'},
   ];
   const recipeCommunityData = [
     {
@@ -92,11 +92,6 @@
       image: '/recipe/recipe_category_one_dish.webp',
     },
   ];
-  console.log(Object.keys(todaysRecipeData.nutrition.INFO_CAR));
-  console.log(Object.keys(todaysRecipeData.nutrition));
-  const n = Object.keys(todaysRecipeData.nutrition);
-  console.log(n);
-  console.log(n[0]);
 </script>
 
 <template>
