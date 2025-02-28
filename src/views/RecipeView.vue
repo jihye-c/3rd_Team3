@@ -133,6 +133,19 @@
         </template>
       </div>
     </div>
+    <!-- 커뮤니티 이동 배너 -->
+    <div
+      class="container h-[230px] w-full bg-main-50 rounded-[12px] p-[72px] flex items-center justify-between"
+    >
+      <div class="w-[200px] h-[160px] bg-[url(/recipe/recipe_illustration.svg)]"></div>
+      <div class="flex flex-col items-end">
+        <div class="text-main-500 text-[48px] font-bold">나만의 레시피를 함께 공유해보세요!</div>
+        <div class="flex gap-[12px] items-center">
+          <p class="text-main-500 text-[28px]">자취 레시피 커뮤니티 바로가기</p>
+          <v-icon size="28px" color="#e7620a">mdi-arrow-right-circle</v-icon>
+        </div>
+      </div>
+    </div>
   </div>
   <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 </template>
