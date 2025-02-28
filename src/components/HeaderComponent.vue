@@ -3,9 +3,9 @@
 </script>
 
 <template>
-  <header class="tw:w-full tw:bg-main-400">
+  <header class="w-full bg-main-400 p-4">
     <div class="container">
-      <nav class="tw:flex tw:gap-5">
+      <nav class="flex gap-5">
         <RouterLink to="/" class="ft-point">자수성가</RouterLink>
         <RouterLink to="/subscription">청약</RouterLink>
         <RouterLink to="/recipe">자취 레시피</RouterLink>
