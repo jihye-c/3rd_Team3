@@ -1,11 +1,12 @@
 <template>
-  <div class="w-full h-screen flex items-center justify-center">
-  <div class="h-4/5 w-4/5  shadow-lg relative overflow-hidden rounded-lg">
-    <div class=" absolute bottom-0  right-16 z-[10000] "><img class="h-62" src="../../../public/login_side.svg" alt=""></div>
+  <div class="w-full  h-screen flex items-center justify-center">
+    <div class=" absolute bottom-0 w-full h-full -z-20  "><img  src="/public/images/Login/login_background.svg" alt=""></div>
+  <div class="h-4/5 w-4/5 bg-white bg-mono-050 shadow-lg relative overflow-hidden rounded-lg">
+    <div class=" absolute bottom-0  right-1/3 z-[10000] "><img class="h-62" src="../../../public/images/Login/login_side.svg" alt=""></div>
     <div
       id="signin"
       :class="[
-        'bg-white absolute top-0 right-0 h-full w-1/2 flex justify-center items-center transition-all duration-700 ease-in-out z-20',
+        ' absolute top-0 right-0 h-full w-1/2 flex  justify-center items-center transition-all duration-700 ease-in-out z-20',
         isAnimated ? '-translate-x-full opacity-0' : ''
       ]"
     >
@@ -15,7 +16,7 @@
     <div
       id="signup"
       :class="[
-        'absolute top-0 right-0 h-full w-1/2 flex justify-center items-center transition-all duration-700 ease-in-out',
+        'absolute  top-0 right-0 h-full w-1/2 flex justify-center items-center transition-all duration-700 ease-in-out',
         isAnimated
           ? '-translate-x-full opacity-100 z-50 animate-show'
           : 'opacity-0 z-10'
@@ -44,7 +45,7 @@
         <div
           id="overlay-left"
           :class="[
-            'w-1/2 h-full absolute flex justify-center items-center top-0 transform -translate-x-[20%]  transition-transform duration-700 ease-in-out',
+            'w-1/2 h-full absolute  flex justify-center items-center top-0 transform -translate-x-[20%]  transition-transform duration-700 ease-in-out',
             isAnimated ? 'translate-x-0' : 'translate-x-[20%]'
           ]"
         >
@@ -56,7 +57,7 @@
         <div
           id="overlay-right"
           :class="[
-            'w-1/2 h-full absolute flex justify-center items-center top-0 right-0 transform  transition-transform duration-700 ease-in-out',
+            'w-1/2 h-full absolute flex  justify-center items-center top-0 right-0 transform  transition-transform duration-700 ease-in-out',
             isAnimated ? '-translate-x-[20%]' : 'translate-x-0'
           ]"
         >
@@ -83,5 +84,6 @@ const toggleAnimation = () => {
 </script>
 
 <style scoped>
+
 /* Add custom styles if needed */
 </style>

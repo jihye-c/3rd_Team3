@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full ">
     <div class="flex !px-16 justify-center items-center">
       <div class="!p-8 flex-1">
         <div class="mx-auto ">
@@ -11,6 +11,7 @@
               <v-form @submit.prevent>
               <v-responsive class="mx-auto" max-width="420">
                 <v-text-field
+                autofocus
                 bg-color="var(--color-main-50)"
                 color="var(--color-main-400)"
                 base-color="var(--color-main-400)"
@@ -22,12 +23,12 @@
                 bg-color="var(--color-main-50)"
                 base-color="var(--color-main-400)"
                 color="var(--color-main-400)"
-                autofocus
+
                   class="my-btn"
                   label="패스워드"
                   type="input"
                 ></v-text-field>
-                <v-btn class="mt-2" size="x-large" variant="tonal" rounded="lg" color="var(--color-main-400)" type="submit" block>로그인</v-btn>
+                <v-btn class="mt-2 text-mono-050"  size="x-large" text="로그인" bg-color="var(--color-main-50)" base-color="var(--color-main-300)" rounded="lg" color="var(--color-main-400)" type="submit" block></v-btn>
               </v-responsive>
             </v-form>
             </form>
@@ -41,7 +42,11 @@
   </div>
 </template>
 <style scoped>
-.my-btn::v-deep {
+.text-field-affix-color {
   background-color: none;
+
+}
+.v-btn__content{
+  color:var(--color-main-50)
 }
 </style>
