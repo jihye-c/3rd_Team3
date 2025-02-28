@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import RecipeRectangleCard from '@/components/RecipeRectangleCard.vue';
   import RecipeSquareCard from '@/components/RecipeSquareCard.vue';
 
   const handleSearch = () => alert('click!');
@@ -55,6 +56,11 @@
     INFO_FAT: 5.17,
     INFO_CAR: 17.4,
   };
+  const popularRecipe = [
+    {title: '코코넛워터 토마토카레', image: '/recipe/recipe_popular1.jpg'},
+    {title: '저염된장 삼치구이', image: '/recipe/recipe_popular2.jpg'},
+    {title: '참나물 소보로덮밥', image: '/recipe/recipe_popular3.jpg'},
+  ];
 </script>
 
 <template>
@@ -96,6 +102,15 @@
       <div class="flex justify-between">
         <template v-for="item in recipeCategoryData" :key="item.category">
           <RecipeSquareCard :title="item.category" :image="item.image" />
+        </template>
+      </div>
+    </div>
+    <!-- 인기 레시피 레시피 -->
+    <div class="flex flex-col gap-[28px]">
+      <div class="ft-point text-[48px] text-mono-700">인기 레시피</div>
+      <div class="flex justify-between">
+        <template v-for="item in popularRecipe" :key="item.title">
+          <RecipeRectangleCard :image="item.image" :title="item.title" />
         </template>
       </div>
     </div>
