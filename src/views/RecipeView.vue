@@ -9,41 +9,41 @@
   const recipeCategoryData = [
     {
       category: '밥',
-      image: '/recipe/recipe_category_rice.png',
+      image: '/recipe/recipe_category_rice.webp',
     },
     {
       category: '반찬',
-      image: '/recipe/recipe_category_side.jpg',
+      image: '/recipe/recipe_category_side.webp',
     },
     {
       category: '국',
-      image: '/recipe/recipe_category_soup.jpg',
+      image: '/recipe/recipe_category_soup.webp',
     },
     {
       category: '일품',
-      image: '/recipe/recipe_category_one_dish.jpg',
+      image: '/recipe/recipe_category_one_dish.webp',
     },
     {
       category: '후식',
-      image: '/recipe/recipe_category_dessert.jpg',
+      image: '/recipe/recipe_category_dessert.webp',
     },
   ];
   const recipeIngredientData = [
     {
       category: '육류',
-      image: '/recipe/recipe_ingredient_meat.jpg',
+      image: '/recipe/recipe_ingredient_meat.webp',
     },
     {
       category: '채소',
-      image: '/recipe/recipe_ingredient_vegetable.jpg',
+      image: '/recipe/recipe_ingredient_vegetable.webp',
     },
     {
       category: '해산물',
-      image: '/recipe/recipe_ingredient_seafood.jpg',
+      image: '/recipe/recipe_ingredient_seafood.webp',
     },
     {
       category: '과일',
-      image: '/recipe/recipe_ingredient_fruit.jpg',
+      image: '/recipe/recipe_ingredient_fruit.webp',
     },
   ];
   const todaysRecipeData = {
@@ -51,7 +51,7 @@
     subtitle: '오늘의 추천 레시피',
     description:
       '소고기 들깨 알토란탕은 고소한 들깨가루와 부드러운 소고기, 그리고 특유의 식감이 일품인 알토란을 주재료로 한 영양가 높은 한식 탕입니다. 알토란의 아삭한 식감과 들깨의 고소함이 어우러져 깊은 맛을 내며, 소고기의 감칠맛이 국물에 배어 풍미를 더합니다.',
-    image: '/recipe/recipe_todays.jpg',
+    image: '/recipe/recipe_todays.webp',
     nutrition: {
       INFO_ENG: 146.42,
       INFO_NA: 675.68,
@@ -61,9 +61,9 @@
     },
   };
   const popularRecipeData = [
-    {title: '코코넛워터 토마토카레', image: '/recipe/recipe_popular1.jpg'},
-    {title: '저염된장 삼치구이', image: '/recipe/recipe_popular2.jpg'},
-    {title: '참나물 소보로덮밥', image: '/recipe/recipe_popular3.jpg'},
+    {title: '코코넛워터 토마토카레', image: '/recipe/recipe_popular1.webp'},
+    {title: '저염된장 삼치구이', image: '/recipe/recipe_popular2.webp'},
+    {title: '참나물 소보로덮밥', image: '/recipe/recipe_popular3.webp'},
   ];
   const recipeCommunityData = [
     {
@@ -71,25 +71,25 @@
       title: '5분 완성! 참치마요 덮밥',
       content:
         '따뜻한 밥 위에 기름 뺀 참치와 마요네즈를 섞어 올리면 완성! 한 끼 식사가 부담스러울 때 5분이면 뚝딱 만들 수 있어요. 기호에 따라 김가루나 쪽파를 뿌리면 풍미가 더해지고, 매콤한 맛을 원한다면 고추장이나 sriracha 소스를 살짝 넣어도 좋아요.',
-      image: '/recipe/recipe_category_one_dish.jpg',
+      image: '/recipe/recipe_category_one_dish.webp',
     },
     {
       author: '방구석셰프',
       title: '5분 완성! 참치마요 덮밥',
       content: '자취생 필수템, 참치캔과 마요네즈로 만드는 초간단 덮밥!',
-      image: '/recipe/recipe_category_one_dish.jpg',
+      image: '/recipe/recipe_category_one_dish.webp',
     },
     {
       author: '방구석셰프',
       title: '5분 완성! 참치마요 덮밥',
       content: '자취생 필수템, 참치캔과 마요네즈로 만드는 초간단 덮밥!',
-      image: '/recipe/recipe_category_one_dish.jpg',
+      image: '/recipe/recipe_category_one_dish.webp',
     },
     {
       author: '방구석셰프',
       title: '5분 완성! 참치마요 덮밥',
       content: '자취생 필수템, 참치캔과 마요네즈로 만드는 초간단 덮밥!',
-      image: '/recipe/recipe_category_one_dish.jpg',
+      image: '/recipe/recipe_category_one_dish.webp',
     },
   ];
   console.log(Object.keys(todaysRecipeData.nutrition.INFO_CAR));
@@ -102,9 +102,7 @@
 <template>
   <!-- 배너 -->
   <div class="w-full h-[562px] overflow-hidden">
-    <div
-      class="bg-[url(https://images.unsplash.com/photo-1497888329096-51c27beff665?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)] w-full h-full bg-cover bg-center"
-    >
+    <div class="bg-[url(/recipe/recipe_main_banner.webp)] w-full h-full bg-cover bg-center">
       <div class="w-full h-full bg-mono-900/30 flex place-content-center">
         <div class="flex flex-col gap-10 justify-center">
           <!-- 타이틀 -->
