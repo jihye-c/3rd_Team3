@@ -1,7 +1,7 @@
 <template>
   <div class="w-full  h-screen flex items-center justify-center">
     <div class=" absolute bottom-0 w-full h-full -z-20  "><img  src="/public/images/Login/login_background.svg" alt=""></div>
-  <div class="h-4/5 w-4/5 bg-white bg-mono-050 shadow-lg relative overflow-hidden rounded-lg">
+  <div class="h-4/5 w-4/5 !bg-[#fff]  shadow-lg relative overflow-hidden rounded-lg">
     <div class=" absolute bottom-0  right-1/3 z-[10000] "><img class="h-62" src="../../../public/images/Login/login_side.svg" alt=""></div>
     <div
       id="signin"

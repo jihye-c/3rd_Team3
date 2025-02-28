@@ -49,4 +49,10 @@
 .v-btn__content{
   color:var(--color-main-50)
 }
+.v-field--variant-filled.v-field--focused .v-field__overlay{
+  opacity: 0 !important;
+}
+.v-field--variant-filled .v-field__overlay{
+  background-color: var(--color-main-50) !important;
+}
 </style>
