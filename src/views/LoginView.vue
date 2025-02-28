@@ -1,8 +1,8 @@
 <template>
   <div class="w-full  h-screen flex pt-12 items-center justify-center">
-    <div class=" absolute bottom-0 w-full h-full -z-20  "><img  src="/public/images/Login/login_background.svg" alt=""></div>
+    <div class=" absolute bottom-0 w-full h-full -z-40  "><img  src="/public/images/Login/login_background.svg" alt=""></div>
   <div class="h-4/5 w-4/5 !bg-[#fff]  shadow-lg relative overflow-hidden rounded-lg">
-    <div class=" absolute bottom-0  right-1/3 z-[10000] "><img class="h-62" src="../../../public/images/Login/login_side.svg" alt=""></div>
+    <div class=" absolute bottom-0  right-1/3 z-[50] "><img class="h-62" src="../../../public/images/Login/login_side.svg" alt=""></div>
     <div
       id="signin"
       :class="[
@@ -18,7 +18,7 @@
       :class="[
         'absolute  top-0 right-0 h-full w-1/2 flex justify-center items-center transition-all duration-700 ease-in-out',
         isAnimated
-          ? '-translate-x-full opacity-100 z-50 animate-show'
+          ? '-translate-x-full opacity-100 z-40 animate-show'
           : 'opacity-0 z-10'
       ]"
     >
@@ -30,7 +30,7 @@
     <div
       id="overlay-container"
       :class="[
-        'absolute top-0 right-1/2 w-1/2 h-full overflow-hidden  transition-transform duration-700 ease-in-out z-100',
+        'absolute top-0 right-1/2 w-1/2 h-full overflow-hidden  transition-transform duration-700 ease-in-out z-30',
         isAnimated ? 'translate-x-full' : ''
       ]"
     >

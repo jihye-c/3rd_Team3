@@ -28,7 +28,7 @@
 <template>
   <Motion
     as="div"
-    class="w-full fixed z-[10000]"
+    class="w-full fixed z-[50]"
     :style="{
       background: props.backgroundOpacity ? background : '#fff',
       height,
@@ -97,9 +97,6 @@
                 eager
                 focused
                 hide-selected
-                color="#00d"
-                item-color="bg-main-50"
-                base-color="#0f0"
               >
               </v-select>
             </div>

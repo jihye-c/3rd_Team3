@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full">
+  <div class="signup w-full">
     <div class="flex !px-16 justify-center items-center">
       <div class="!p-8 flex-1">
         <div class="mx-auto">
@@ -48,7 +48,17 @@
                     label="닉네임"
                     type="input"
                   ></v-text-field>
-                  <v-btn class="mt-2 text-mono-050"  size="x-large" text="로그인" bg-color="var(--color-main-50)" base-color="var(--color-main-300)" rounded="lg" color="var(--color-main-400)" type="submit" block></v-btn>
+                  <v-btn
+                    class="mt-2 text-mono-050"
+                    size="x-large"
+                    text="회원가입"
+                    bg-color="var(--color-main-50)"
+                    base-color="var(--color-main-300)"
+                    rounded="lg"
+                    color="var(--color-main-400)"
+                    type="submit"
+                    block
+                  ></v-btn>
                 </v-responsive>
               </v-form>
             </form>
@@ -61,31 +71,27 @@
 
 <script setup lang="ts"></script>
 <style scoped>
-::v-deep .text-field-affix-color {
-  background-color: none;
-
-}
-::v-deep .v-btn__content{
-  color:var(--color-main-50)
-}
-::v-deep .v-field--variant-filled.v-field--focused .v-field__overlay{
-  opacity: 0 !important;
-}
-::v-deep .v-field--variant-filled .v-field__overlay{
-  background-color: var(--color-main-50) !important;
-}
-::v-deep .v-btn__content{
-  color:var(--color-main-50)
-}
-::v-deep .v-btn--elevated:hover, .v-btn--elevated:focus{
-  /* background-color: #fff !important; */
-}
-::v-deep .v-btn:hover > .v-btn__overlay{
-  background-color: var(--color-main-500) !important;
-  opacity: 0.2;
-}
-::v-deep .v-ripple__container{
-  background-color: var(--color-main-500) !important;
-  opacity: 0.2;
-}
+  form :deep(.text-field-affix-color) {
+    background-color: none !important;
+  }
+  form :deep(.v-btn__content) {
+    color: var(--color-main-50) !important;
+  }
+  form :deep(.v-field--variant-filled.v-field--focused .v-field__overlay) {
+    opacity: 0 !important;
+  }
+  form :deep(.v-field--variant-filled .v-field__overlay) {
+    background-color: var(--color-main-50) !important;
+  }
+  form :deep(.v-btn__content) {
+    color: var(--color-main-50) !important;
+  }
+  form :deep(.v-btn:hover > .v-btn__overlay) {
+    background-color: var(--color-main-500) !important;
+    opacity: 0.2;
+  }
+  form :deep(.v-ripple__container) {
+    background-color: var(--color-main-500) !important;
+    opacity: 0.2;
+  }
 </style>
