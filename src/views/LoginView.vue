@@ -18,7 +18,7 @@
       :class="[
         'absolute  top-0 right-0 h-full w-1/2 flex justify-center items-center transition-all duration-700 ease-in-out',
         isAnimated
-          ? '-translate-x-full opacity-100 z-40 animate-show'
+          ? '-translate-x-full opacity-100 z-20 animate-show'
           : 'opacity-0 z-10'
       ]"
     >
