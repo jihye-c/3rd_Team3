@@ -1,5 +1,5 @@
 <script setup lang="ts"></script>
 
 <template>
-  <main>home view</main>
+  <main class="h-[4000px]">home view</main>
 </template>
