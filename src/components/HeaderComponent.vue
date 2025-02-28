@@ -104,51 +104,43 @@
               </v-select>
             </div>
 
-            <!-- <RouterLink class="tw:flex tw:items-center" to="/mypage"> </RouterLink> -->
-            <v-badge content="5" color="var(--color-main-400)">
-              <v-speed-dial
-                scrim="true"
-                location="bottom center"
-                theme=""
-                transition="fade-transition"
-              >
-                <template v-slot:activator="{props: activatorProps}">
-                  <v-avatar
-                    v-bind="activatorProps"
-                    image="https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201608/04/htm_2016080484837486184.jpg"
-                  ></v-avatar>
-                </template>
+          <!-- <RouterLink class="tw:flex tw:items-center" to="/mypage"> </RouterLink> -->
+          <v-badge content="5" color="var(--color-main-400)">
+            <v-speed-dial
+              scrim="true"
+              location="bottom center"
+              transition="fade-transition"
+            >
+              <template v-slot:activator="{props: activatorProps}">
+                <v-avatar
+                  v-bind="activatorProps"
+                  image="https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201608/04/htm_2016080484837486184.jpg"
+                ></v-avatar>
+              </template>
 
-                <v-btn key="1" class="!shadow-none" icon="$success"></v-btn>
-                <v-btn key="2" class="!shadow-none" icon="$info"></v-btn>
-                <v-btn key="3" class="!shadow-none" icon="$warning"></v-btn>
-                <v-btn key="4" class="!shadow-none" icon="$error"></v-btn>
-              </v-speed-dial>
-            </v-badge>
-          </div>
-        </nav>
-      </div>
-    </header>
-  </Motion>
+              <v-btn key="1" class="!shadow-none" icon="$success"></v-btn>
+              <v-btn key="2" class="!shadow-none" icon="$info"></v-btn>
+              <v-btn key="3" class="!shadow-none" icon="$warning"></v-btn>
+              <v-btn key="4" class="!shadow-none" icon="$error"></v-btn>
+            </v-speed-dial>
+          </v-badge>
+        </div>
+      </nav>
+    </div>
+  </header>
+</Motion>
 </template>
 
-<style scoped>
-  ::v-deep .v-field--variant-filled .v-field__overlay {
+<style scoped >
+  header :deep(.v-field__outline) {display:none;}
+  header :deep(.v-field--variant-filled .v-field__overlay) {
     background-color: transparent;
     border: none;
   }
-  ::v-deep .v-field--variant-filled .v-field__outline::before,
-  .v-field--variant-underlined .v-field__outline::before {
-    display: none;
-  }
-  ::v-deep .v-field--variant-filled .v-field__outline::after,
-  .v-field--variant-underlined .v-field__outline::after {
-    display: none;
-  }
-  ::v-deep .v-select .v-select__selection-text {
+  header :deep(.v-select .v-select__selection-text) {
     font-weight: bold;
   }
-  ::v-deep .v-field__input {
-    padding-left: 0;
+  header :deep(.v-field__input) {
+    padding-left: 4px;
   }
 </style>
