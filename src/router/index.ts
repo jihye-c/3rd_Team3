@@ -28,6 +28,11 @@ const router = createRouter({
       component: RecipeView,
     },
     {
+      path: '/recipe/search',
+      name: 'recipe-search',
+      component: () => import('@/views/RecipeSearchView.vue'),
+    },
+    {
       path: '/hospital',
       name: 'hospital',
       component: HospitalView,
