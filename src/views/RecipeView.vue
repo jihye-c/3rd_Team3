@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import DoughnutChart from '@/components/DoughnutChart.vue';
   import RecipePostList from '@/components/RecipePostList.vue';
   import RecipeRectangleCard from '@/components/RecipeRectangleCard.vue';
   import RecipeSquareCard from '@/components/RecipeSquareCard.vue';
@@ -51,11 +52,13 @@
     description:
       '소고기 들깨 알토란탕은 고소한 들깨가루와 부드러운 소고기, 그리고 특유의 식감이 일품인 알토란을 주재료로 한 영양가 높은 한식 탕입니다. 알토란의 아삭한 식감과 들깨의 고소함이 어우러져 깊은 맛을 내며, 소고기의 감칠맛이 국물에 배어 풍미를 더합니다.',
     image: '/recipe/recipe_todays.jpg',
-    INFO_NA: 675.68,
-    INFO_WGT: 297,
-    INFO_PRO: 7.57,
-    INFO_FAT: 5.17,
-    INFO_CAR: 17.4,
+    nutrition: {
+      INFO_ENG: 146.42,
+      INFO_NA: 675.68,
+      INFO_PRO: 7.57,
+      INFO_FAT: 5.17,
+      INFO_CAR: 17.4,
+    },
   };
   const popularRecipeData = [
     {title: '코코넛워터 토마토카레', image: '/recipe/recipe_popular1.jpg'},
@@ -89,6 +92,11 @@
       image: '/recipe/recipe_category_one_dish.jpg',
     },
   ];
+  console.log(Object.keys(todaysRecipeData.nutrition.INFO_CAR));
+  console.log(Object.keys(todaysRecipeData.nutrition));
+  const n = Object.keys(todaysRecipeData.nutrition);
+  console.log(n);
+  console.log(n[0]);
 </script>
 
 <template>
@@ -123,7 +131,7 @@
       </div>
     </div>
   </div>
-  <div class="container flex flex-col gap-[100px] pt-[100px]">
+  <div class="container flex flex-col gap-[100px] py-[100px]">
     <!-- 카테고리별 레시피 -->
     <div class="flex flex-col gap-[28px]">
       <div class="ft-point text-[48px] text-mono-700">카테고리별 레시피</div>
@@ -162,7 +170,15 @@
             <p class="text-[20px] leading-[24px] text-mono-400">
               1일 영양성분 기준치에 대한 비율 (%)
             </p>
-            <div class="bg-main-50 h-[200px]"></div>
+            <div class="h-[200px] w-[1040px]">
+              <div class="flex justify-between mt-[20px]">
+                <template v-for="(value, key) in todaysRecipeData.nutrition">
+                  <div class="w-[180px] h-[180px]">
+                    <DoughnutChart :nutrition-info="key" :input-data="value" />
+                  </div>
+                </template>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -204,7 +220,6 @@
       </div>
     </div>
   </div>
-  <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 </template>
 
 <style scoped></style>
