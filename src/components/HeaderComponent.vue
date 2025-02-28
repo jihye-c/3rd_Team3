@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import {reactive} from 'vue';
-  import {RouterLink} from 'vue-router';
-  import 'vuetify/styles';
+  import {RouterLink} from 'vue-router'
+  import { Motion, useScroll, useTransform } from 'motion-v'
   const select = reactive({state: '강남구 신사동', abbr: 'FL'});
   const items = reactive([
     {state: '강남구 신사동', abbr: 'FL'},
@@ -10,22 +10,52 @@
     {state: '강남구 신사동', abbr: 'CA'},
     {state: '강남구 신사동', abbr: 'NY'},
   ]);
+  const { scrollY } = useScroll();
+  const background = useTransform(
+    scrollY,
+    [0, 100],
+    ["#fff", "rgba(0,0,0,0.2)"]
+  );
+  const height = useTransform(scrollY, [0, 100], [100, 90]);
+  const border = useTransform(scrollY, [0, 100], ['none', '1px solid #eee']);
+
+
+
 </script>
 
 <template>
-  <header class="w-full !p-5">
-    <div class="container">
+    <Motion
+    as="div"
+    class=" w-full fixed "
+    :style="{
+      background,
+        height,
+        border
+    }"
+  >
+  <header  class="{w-full !p-5 }">
+
+    <div ref="headerStyle" class="container">
       <nav class="flex items-center justify-between gap-7">
         <div class="flex gap-16">
           <h1 class="flex items-center flex-col justify-center">
             <RouterLink to="/" class="ft-point pb-2 text-2xl box-border">자수성가</RouterLink>
           </h1>
-          <div class="text-xl font-semibold bg flex items-center gap-7">
-            <RouterLink to="/subscription">청약</RouterLink>
-            <RouterLink class="" to="/recipe">자취 레시피</RouterLink>
-            <RouterLink to="/hospital">인근 병원</RouterLink>
-            <RouterLink to="/culture">문화 생활</RouterLink>
-            <RouterLink to="/community">커뮤니티</RouterLink>
+          <div class="text-xl font-semibold bg flex items-center">
+            <RouterLink class="px-4" to="/subscription">청약</RouterLink>
+            <RouterLink class="px-4" to="/recipe">자취 레시피</RouterLink>
+            <RouterLink class="px-4" to="/hospital">인근 병원</RouterLink>
+            <RouterLink class="px-4" to="/culture">문화 생활</RouterLink>
+            <RouterLink class="group/item relative px-6 transition-all duration-300   " to="/community">커뮤니티
+            <div class="absolute  w-full pt-6 left-0 top-7 ">
+              <ul class="group/edit hidden  w-full group-hover/item:flex flex-col items-center  justify-center gap-3 text-sm bg-white shadow-sm  hover:flex  ">
+              <li class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300  hover:text-main-50">질문 게시판</li>
+              <li class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300  hover:text-main-50">동네리뷰</li>
+              <li class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300  hover:text-main-50">중고거래</li>
+              <li class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300  hover:text-main-50">나만의 레시피</li>
+              </ul>
+            </div>
+            </RouterLink>
           </div>
         </div>
         <div class="flex items-center">
@@ -69,6 +99,7 @@
       </nav>
     </div>
   </header>
+</Motion>
 </template>
 
 <style >
