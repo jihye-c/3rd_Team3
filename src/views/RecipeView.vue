@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import RecipePostList from '@/components/RecipePostList.vue';
   import RecipeRectangleCard from '@/components/RecipeRectangleCard.vue';
   import RecipeSquareCard from '@/components/RecipeSquareCard.vue';
 
@@ -44,7 +45,7 @@
       image: '/recipe/recipe_ingredient_fruit.jpg',
     },
   ];
-  const todaysRecipe = {
+  const todaysRecipeData = {
     title: '소고기 들깨 알토란탕',
     subtitle: '오늘의 추천 레시피',
     description:
@@ -56,10 +57,37 @@
     INFO_FAT: 5.17,
     INFO_CAR: 17.4,
   };
-  const popularRecipe = [
+  const popularRecipeData = [
     {title: '코코넛워터 토마토카레', image: '/recipe/recipe_popular1.jpg'},
     {title: '저염된장 삼치구이', image: '/recipe/recipe_popular2.jpg'},
     {title: '참나물 소보로덮밥', image: '/recipe/recipe_popular3.jpg'},
+  ];
+  const recipeCommunityData = [
+    {
+      author: '방구석셰프',
+      title: '5분 완성! 참치마요 덮밥',
+      content:
+        '따뜻한 밥 위에 기름 뺀 참치와 마요네즈를 섞어 올리면 완성! 한 끼 식사가 부담스러울 때 5분이면 뚝딱 만들 수 있어요. 기호에 따라 김가루나 쪽파를 뿌리면 풍미가 더해지고, 매콤한 맛을 원한다면 고추장이나 sriracha 소스를 살짝 넣어도 좋아요.',
+      image: '/recipe/recipe_category_one_dish.jpg',
+    },
+    {
+      author: '방구석셰프',
+      title: '5분 완성! 참치마요 덮밥',
+      content: '자취생 필수템, 참치캔과 마요네즈로 만드는 초간단 덮밥!',
+      image: '/recipe/recipe_category_one_dish.jpg',
+    },
+    {
+      author: '방구석셰프',
+      title: '5분 완성! 참치마요 덮밥',
+      content: '자취생 필수템, 참치캔과 마요네즈로 만드는 초간단 덮밥!',
+      image: '/recipe/recipe_category_one_dish.jpg',
+    },
+    {
+      author: '방구석셰프',
+      title: '5분 완성! 참치마요 덮밥',
+      content: '자취생 필수템, 참치캔과 마요네즈로 만드는 초간단 덮밥!',
+      image: '/recipe/recipe_category_one_dish.jpg',
+    },
   ];
 </script>
 
@@ -109,7 +137,7 @@
     <div class="flex flex-col gap-[28px]">
       <div class="ft-point text-[48px] text-mono-700">인기 레시피</div>
       <div class="flex justify-between">
-        <template v-for="item in popularRecipe" :key="item.title">
+        <template v-for="item in popularRecipeData" :key="item.title">
           <RecipeRectangleCard :image="item.image" :title="item.title" />
         </template>
       </div>
@@ -119,15 +147,15 @@
       <div class="ft-point text-[48px] text-mono-700">오늘의 레시피</div>
       <div class="flex justify-between">
         <RecipeSquareCard
-          :title="todaysRecipe.title"
-          :subtitle="todaysRecipe.subtitle"
-          :image="todaysRecipe.image"
+          :title="todaysRecipeData.title"
+          :subtitle="todaysRecipeData.subtitle"
+          :image="todaysRecipeData.image"
           large
         />
         <div class="flex flex-col w-[1040px] justify-between text-mono-700">
           <div class="flex flex-col gap-4">
             <div class="text-[32px] font-bold">레시피 설명</div>
-            <p class="text-[20px] leading-[24px]">{{ todaysRecipe.description }}</p>
+            <p class="text-[20px] leading-[24px]">{{ todaysRecipeData.description }}</p>
           </div>
           <div class="flex flex-col gap-2">
             <div class="text-[32px] font-bold">영양정보</div>
@@ -145,6 +173,20 @@
       <div class="flex justify-between">
         <template v-for="item in recipeIngredientData" :key="item.category">
           <RecipeSquareCard :title="item.category" :image="item.image" medium />
+        </template>
+      </div>
+    </div>
+    <!-- 리얼 자취생 레시피 -->
+    <div class="flex flex-col gap-[28px]">
+      <div class="ft-point text-[48px] text-mono-700">리얼 자취생 레시피</div>
+      <div class="grid grid-cols-2 gap-[24px] justify-between">
+        <template v-for="item in recipeCommunityData" :key="item.title">
+          <RecipePostList
+            :author="item.author"
+            :title="item.title"
+            :content="item.content"
+            :image="item.image"
+          />
         </template>
       </div>
     </div>
