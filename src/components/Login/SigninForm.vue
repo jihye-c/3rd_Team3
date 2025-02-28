@@ -42,17 +42,31 @@
   </div>
 </template>
 <style scoped>
-.text-field-affix-color {
+::v-deep .text-field-affix-color {
   background-color: none;
 
 }
-.v-btn__content{
+::v-deep .v-btn__content{
   color:var(--color-main-50)
 }
-.v-field--variant-filled.v-field--focused .v-field__overlay{
+::v-deep .v-field--variant-filled.v-field--focused .v-field__overlay{
   opacity: 0 !important;
 }
-.v-field--variant-filled .v-field__overlay{
+::v-deep .v-field--variant-filled .v-field__overlay{
   background-color: var(--color-main-50) !important;
+}
+::v-deep .v-btn__content{
+  color:var(--color-main-50)
+}
+::v-deep .v-btn--elevated:hover, .v-btn--elevated:focus{
+  /* background-color: #fff !important; */
+}
+::v-deep .v-btn:hover > .v-btn__overlay{
+  background-color: var(--color-main-500) !important;
+  opacity: 0.2;
+}
+::v-deep .v-ripple__container{
+  background-color: var(--color-main-500) !important;
+  opacity: 0.2;
 }
 </style>
