@@ -4,6 +4,23 @@
   import SearchBarRounded from '@/components/recipe/SearchBarRounded.vue';
   import {reactive} from 'vue';
 
+  const breadcrumb = [
+    {
+      title: '홈',
+      disabled: false,
+      href: '/',
+    },
+    {
+      title: '레시피',
+      disabled: false,
+      href: '/recipe',
+    },
+    {
+      title: '레시피 검색',
+      disabled: true,
+      href: '/recipe/search',
+    },
+  ];
   const categoryList = [
     {id: 'rice', label: '밥', image: '/recipe/recipe_icon_rice.svg'},
     {id: 'side', label: '반찬', image: '/recipe/recipe_icon_side.svg'},
@@ -67,13 +84,7 @@
           <div>
             <div class="text-[24px] text-mono-050 leading-10">간편하게 따라하는 오늘의 한 끼</div>
             <div class="text-[52px] font-bold text-mono-050 leading-16">레시피 검색</div>
-            <!-- 🔥 브래드크럼 속성 적용하기 -->
-            <v-breadcrumbs
-              :items="['홈', '레시피', '레시피 검색']"
-              color="#fafaf9"
-              active-color="#fafaf9"
-              class="px-0"
-            ></v-breadcrumbs>
+            <v-breadcrumbs :items="breadcrumb"></v-breadcrumbs>
           </div>
         </div>
       </div>
@@ -146,5 +157,18 @@
     font-weight: 600;
     padding-left: 14px;
     padding-right: 14px;
+  }
+
+  :deep(.v-breadcrumbs) {
+    color: var(--color-mono-050);
+    font: 16px;
+    font-weight: 200;
+    padding-left: 0;
+  }
+
+  :deep(.v-breadcrumbs-item--disabled) {
+    color: var(--color-mono-050);
+    font-weight: bold;
+    opacity: 1;
   }
 </style>
