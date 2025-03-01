@@ -3,36 +3,40 @@
     image: string;
     title: string;
     subtitle?: string;
-    large?: boolean;
-    medium?: boolean;
+    size: number; // 한 변의 길이 (px)
   }
 
-  const props = defineProps<Props>();
+  defineProps<Props>();
 </script>
 
 <template>
-  <div
-    :class="large ? 'h-[460px] w-[460px]' : medium ? 'h-[380px] w-[380px]' : 'h-[300px] w-[300px]'"
-    class="overflow-hidden rounded-[20px]"
-  >
-    <div :style="{backgroundImage: `url(${props.image})`}" class="w-full h-full bg-cover bg-center">
+  <div :style="{width: size + 'px', height: size + 'px'}" class="overflow-hidden rounded-[20px]">
+    <div :style="{backgroundImage: `url(${image})`}" class="w-full h-full bg-cover bg-center">
       <div
         :class="
-          large
+          size > 460
             ? 'bg-linear-to-t from-mono-900/50 to-mono-900/0 to-[50%] px-[40px] py-[32px]'
-            : 'bg-linear-to-t from-mono-900/40 to-mono-900/0 to-[42%] px-[24px] py-[16px]'
+            : size > 300
+              ? 'bg-linear-to-t from-mono-900/40 to-mono-900/0 to-[42%] px-[24px] py-[16px]'
+              : 'bg-linear-to-t from-mono-900/40 to-mono-900/0 to-[42%] px-[16px] py-[12px]'
         "
         class="w-full h-full text-mono-050 flex items-end"
       >
         <div class="flex flex-col gap-1">
-          <div v-if="props.subtitle" class="text-[20px] leading-[24px] font-medium">
-            {{ props.subtitle }}
+          <div v-if="subtitle" class="text-[20px] leading-[24px] font-regular">
+            {{ subtitle }}
           </div>
           <div
-            :class="large ? 'text-[32px] leading-[38px]' : 'text-[36px] leading-[42px]'"
+            :class="
+              size > 460
+                ? 'text-[32px] leading-[38px]'
+                : size >= 300
+                  ? 'text-[36px] leading-[42px]'
+                  : 'text-[24px] leading-[28px]'
+            "
             class="font-bold"
           >
-            {{ props.title }}
+            {{ title }}
           </div>
         </div>
       </div>

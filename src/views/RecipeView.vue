@@ -120,7 +120,7 @@
       <div class="ft-point text-[48px] text-mono-700">카테고리별 레시피</div>
       <div class="flex justify-between">
         <template v-for="item in recipeCategoryData" :key="item.category">
-          <RecipeSquareCard :title="item.category" :image="item.image" />
+          <RecipeSquareCard :title="item.category" :image="item.image" :size="300" />
         </template>
       </div>
     </div>
@@ -141,7 +141,7 @@
           :title="todaysRecipeData.title"
           :subtitle="todaysRecipeData.subtitle"
           :image="todaysRecipeData.image"
-          large
+          :size="460"
         />
         <div class="flex flex-col w-[1040px] justify-between text-mono-700">
           <div class="flex flex-col gap-4">
@@ -171,7 +171,7 @@
       <div class="ft-point text-[48px] text-mono-700">냉장고 속 재료별 레시피</div>
       <div class="flex justify-between">
         <template v-for="item in recipeIngredientData" :key="item.category">
-          <RecipeSquareCard :title="item.category" :image="item.image" medium />
+          <RecipeSquareCard :title="item.category" :image="item.image" :size="380" />
         </template>
       </div>
     </div>
