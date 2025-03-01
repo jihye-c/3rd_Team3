@@ -99,7 +99,7 @@
   <div class="container flex justify-between pt-[28px] pb-[100px]">
     <!-- 검색 필터 -->
     <div
-      class="flex flex-col w-[400px] p-[32px] border-2 border-mono-200 rounded-[12px] justify-center self-start sticky top-4"
+      class="flex flex-col w-[400px] p-[32px] border-2 border-mono-200 rounded-[12px] justify-center self-start sticky top-28"
     >
       <!-- 초기화 버튼 -->
       <div class="flex justify-end">
