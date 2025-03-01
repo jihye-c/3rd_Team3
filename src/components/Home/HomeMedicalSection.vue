@@ -33,7 +33,7 @@ import MedicalItem from '../ui/MedicalItem.vue';
 </script>
 
 <template>
-  <div class="py-20">
+  <div class="">
     <div class="w-full flex h-[376px] rounded-tr-[100px] rounded-bl-[100px] overflow-hidden">
       <div class="bg-main-400 w-[517px] px-2 grow-0 flex items-center justify-center h-full p-4">
         <div class="flex flex-col justify-start items-start">
@@ -54,7 +54,7 @@ import MedicalItem from '../ui/MedicalItem.vue';
           </div>
         </div>
       </div>
-      <div class="bg-main-50 h-full p-4 px-10 w-full">
+      <div class="bg-main-50 relative h-full p-4 px-10 w-full">
         <div class="py-4">
           <p class="py-2 pb-6 text-2xl font-semibold">어디가 아프신가요?</p>
           <ul class="flex gap-4">
@@ -73,6 +73,7 @@ import MedicalItem from '../ui/MedicalItem.vue';
             </ul>
           </div>
         </div>
+        <div class="absolute right-0 bottom-0"><img src="/public//home/main_medical_hero.webp" alt=""></div>
       </div>
     </div>
   </div>
