@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import DoughnutChart from '@/components/DoughnutChart.vue';
-  import RecipePostList from '@/components/RecipePostList.vue';
-  import RecipeRectangleCard from '@/components/RecipeRectangleCard.vue';
-  import RecipeSquareCard from '@/components/RecipeSquareCard.vue';
-  import SearchBarRounded from '@/components/SearchBarRounded.vue';
+  import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
+  import RecipePostList from '@/components/recipe/RecipePostList.vue';
+  import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
+  import RecipeSquareCard from '@/components/recipe/RecipeSquareCard.vue';
+  import SearchBarRounded from '@/components/recipe/SearchBarRounded.vue';
 
   const handleSearch = (searchText: string) => alert(`검색어: ${searchText}`);
 
