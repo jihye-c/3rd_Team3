@@ -1,9 +1,8 @@
 <script setup lang="ts">
   import CategoryFilterButton from '@/components/recipe/CategoryFilterButton.vue';
+  import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
   import SearchBarRounded from '@/components/recipe/SearchBarRounded.vue';
   import {reactive} from 'vue';
-
-  const handleSearch = (searchText: string) => alert(`검색어: ${searchText}`);
 
   const categoryList = [
     {id: 'rice', label: '밥', image: '/recipe/recipe_icon_rice.svg'},
@@ -13,9 +12,49 @@
     {id: 'dessert', label: '후식', image: '/recipe/recipe_icon_dessert.svg'},
     {id: 'all', label: '전체', image: '/recipe/recipe_icon_all.svg'},
   ];
+  const recipeList = [
+    {
+      name: '저염된장 삼치구이',
+      image: '/recipe/recipe_popular1.webp',
+    },
+    {
+      name: '참나물 소보로 덮밥',
+      image: '/recipe/recipe_popular2.webp',
+    },
+    {
+      name: '코코넛워터 토마토카레',
+      image: '/recipe/recipe_popular3.webp',
+    },
+    {
+      name: '저염된장 삼치구이',
+      image: '/recipe/recipe_popular1.webp',
+    },
+    {
+      name: '참나물 소보로 덮밥',
+      image: '/recipe/recipe_popular2.webp',
+    },
+    {
+      name: '코코넛워터 토마토카레',
+      image: '/recipe/recipe_popular3.webp',
+    },
+    {
+      name: '저염된장 삼치구이',
+      image: '/recipe/recipe_popular1.webp',
+    },
+    {
+      name: '참나물 소보로 덮밥',
+      image: '/recipe/recipe_popular2.webp',
+    },
+    {
+      name: '코코넛워터 토마토카레',
+      image: '/recipe/recipe_popular3.webp',
+    },
+  ];
 
   const activeFilterList = reactive(['rice']);
   const ingredientList = reactive(['소고기', '당근']);
+
+  const handleSearch = (searchText: string) => alert(`검색어: ${searchText}`);
 </script>
 
 <template>
@@ -40,10 +79,16 @@
       </div>
     </div>
   </div>
-  <div class="container flex justify-between py-[100px]">
+
+  <!-- 데이터 개수 -->
+  <div class="container w-full pt-[60px] text-[20px] text-mono-600 font-medium text-right">
+    전체 : NNN개 레시피
+  </div>
+
+  <div class="container flex justify-between pt-[28px] pb-[100px]">
     <!-- 검색 필터 -->
     <div
-      class="flex flex-col w-[400px] p-[32px] border-2 border-mono-200 rounded-[12px] justify-center"
+      class="flex flex-col w-[400px] p-[32px] border-2 border-mono-200 rounded-[12px] justify-center self-start sticky top-4"
     >
       <!-- 초기화 버튼 -->
       <div class="flex justify-end">
@@ -86,7 +131,11 @@
       </div>
     </div>
     <!-- 리스트 -->
-    <div></div>
+    <div class="grid grid-cols-2 gap-x-[48px] gap-y-[28px]">
+      <template v-for="item in recipeList">
+        <RecipeRectangleCard :title="item.name" :image="item.image" />
+      </template>
+    </div>
   </div>
 </template>
 
