@@ -142,10 +142,13 @@
       </div>
     </div>
     <!-- 리스트 -->
-    <div class="grid grid-cols-2 gap-x-[48px] gap-y-[28px]">
-      <template v-for="item in recipeList">
-        <RecipeRectangleCard :title="item.name" :image="item.image" />
-      </template>
+    <div>
+      <div class="grid grid-cols-2 gap-x-[48px] gap-y-[28px] pb-[100px]">
+        <template v-for="item in recipeList">
+          <RecipeRectangleCard :title="item.name" :image="item.image" />
+        </template>
+      </div>
+      <v-pagination length="4"></v-pagination>
     </div>
   </div>
 </template>
