@@ -1,26 +1,10 @@
 <script setup lang="ts">
+  import BannerComponent from '@/components/BannerComponent.vue';
   import CategoryFilterButton from '@/components/recipe/CategoryFilterButton.vue';
   import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
   import SearchBarRounded from '@/components/recipe/SearchBarRounded.vue';
   import {reactive} from 'vue';
 
-  const breadcrumb = [
-    {
-      title: '홈',
-      disabled: false,
-      href: '/',
-    },
-    {
-      title: '레시피',
-      disabled: false,
-      href: '/recipe',
-    },
-    {
-      title: '레시피 검색',
-      disabled: true,
-      href: '/recipe/search',
-    },
-  ];
   const categoryList = [
     {id: 'rice', label: '밥', image: '/recipe/recipe_icon_rice.svg'},
     {id: 'side', label: '반찬', image: '/recipe/recipe_icon_side.svg'},
@@ -76,20 +60,16 @@
 
 <template>
   <!-- 배너 -->
-  <div class="w-full h-[340px] overflow-hidden">
-    <div class="bg-[url(/recipe/recipe_search_banner.webp)] w-full h-full bg-cover bg-center">
-      <div class="w-full h-full bg-mono-900/30 flex place-content-center pb-[70px]">
-        <div class="container flex flex-col gap-10 justify-end">
-          <!-- 타이틀 -->
-          <div>
-            <div class="text-[24px] text-mono-050 leading-10">간편하게 따라하는 오늘의 한 끼</div>
-            <div class="text-[52px] font-bold text-mono-050 leading-16">레시피 검색</div>
-            <v-breadcrumbs :items="breadcrumb"></v-breadcrumbs>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <BannerComponent
+    background="/recipe/recipe_search_banner.webp"
+    title="레시피 검색"
+    subtitle="간편하게 따라하는 오늘의 한끼"
+    :breadcrumbs="[
+      {title: '홈', href: '/'},
+      {title: '레시피', href: '/recipe'},
+      {title: '레시피 검색'},
+    ]"
+  />
 
   <!-- 데이터 개수 -->
   <div class="container w-full pt-[60px] text-[20px] text-mono-600 font-medium text-right">
@@ -164,18 +144,5 @@
     font-weight: 600;
     padding-left: 14px;
     padding-right: 14px;
-  }
-
-  :deep(.v-breadcrumbs) {
-    color: var(--color-mono-050);
-    font: 16px;
-    font-weight: 200;
-    padding-left: 0;
-  }
-
-  :deep(.v-breadcrumbs-item--disabled) {
-    color: var(--color-mono-050);
-    font-weight: bold;
-    opacity: 1;
   }
 </style>
