@@ -1,6 +1,36 @@
 <script setup lang="ts">
   import {computed} from 'vue';
 
+  /**
+ * 이미지 배경 + 흰글씨 배너
+  <BannerComponent
+    background="/recipe/recipe_search_banner.webp"
+    title="레시피 검색"
+    subtitle="간편하게 따라하는 오늘의 한끼"
+    :breadcrumbs="[
+      {title: '홈', href: '/'},
+      {title: '레시피', href: '/recipe'},
+      {title: '레시피 검색'},
+    ]"
+  />
+
+ * 단색 배경 + 일러스트 + 검은글씨 배너 (dark-text 없으면 흰글씨)
+  <BannerComponent
+    background="#ffdca2"
+    title="레시피 검색"
+    subtitle="간편하게 따라하는 오늘의 한끼"
+    :breadcrumbs="[
+      {title: '홈', href: '/'},
+      {title: '레시피', href: '/recipe'},
+      {title: '레시피 검색'},
+    ]"
+    dark-text
+  >
+    <img src="/recipe/recipe_illustration.svg" alt="illustration" class="h-full" />
+  </BannerComponent>
+
+ */
+
   interface BreadcrumbItem {
     title: string; // breadcrumb 텍스트
     href?: string; // 선택적으로 링크 추가 (현재 페이지는 링크 추가 X)
