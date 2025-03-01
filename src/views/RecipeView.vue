@@ -3,8 +3,9 @@
   import RecipePostList from '@/components/RecipePostList.vue';
   import RecipeRectangleCard from '@/components/RecipeRectangleCard.vue';
   import RecipeSquareCard from '@/components/RecipeSquareCard.vue';
+  import SearchBarRounded from '@/components/SearchBarRounded.vue';
 
-  const handleSearch = () => alert('click!');
+  const handleSearch = (searchText: string) => alert(`검색어: ${searchText}`);
 
   const recipeCategoryData = [
     {
@@ -108,18 +109,7 @@
             </div>
           </div>
           <!-- 검색바 -->
-          <div
-            class="bg-mono-050 w-[1060px] h-[64px] rounded-[100px] flex items-center justify-between px-[30px]"
-          >
-            <input
-              type="text"
-              placeholder="검색어를 입력하세요"
-              class="h-[30px] w-[900px] text placeholder:text-[20px] outline-none text-[20px]"
-            />
-            <button @click="handleSearch">
-              <v-icon color="grey-darken-1" size="36px">mdi-magnify</v-icon>
-            </button>
-          </div>
+          <SearchBarRounded long @search="handleSearch" />
         </div>
       </div>
     </div>
