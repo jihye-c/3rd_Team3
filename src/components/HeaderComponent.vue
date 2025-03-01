@@ -14,7 +14,7 @@
   const background = useTransform(
     scrollY,
     [0, 100],
-    ["rgba(0,0,0,0.2)", "rgba(255,255,255,1)"]
+    ["rgba(0,0,0,0.0)", "rgba(255,255,255,1)"]
   );
   const height = useTransform(scrollY, [0, 100], [0, "100%"]);
   const border = useTransform(scrollY, [0, 100], ['none', '1px solid #eee']);
@@ -26,7 +26,7 @@
 <template>
     <Motion
     as="div"
-    class=" w-full fixed  "
+    class=" w-full fixed z-20 "
     :style="{
       background,
         height,
