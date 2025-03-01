@@ -69,7 +69,7 @@
   ];
 
   const activeFilterList = reactive(['rice']);
-  const ingredientList = reactive(['소고기', '당근']);
+  const ingredientList = reactive(['소고기', '감자']);
 
   const handleSearch = (searchText: string) => alert(`검색어: ${searchText}`);
 </script>
@@ -134,7 +134,7 @@
       <div class="flex flex-col gap-5">
         <div class="text-[28px] font-semibold text-mono-900">재료별 검색</div>
         <SearchBarRounded @search="handleSearch" />
-        <div class="flex flex-wrap gap-3">
+        <div class="flex flex-wrap gap-3 pt-[20px]">
           <template v-for="item in ingredientList" :key="item">
             <v-chip close-icon="mdi-close" closable>{{ item }}</v-chip>
           </template>
@@ -154,6 +154,10 @@
 </template>
 
 <style scoped>
+  :deep(.v-divider) {
+    background-color: var(--color-mono-200);
+    opacity: 1;
+  }
   :deep(.v-chip) {
     color: var(--color-mono-050);
     background: var(--color-main-400);
