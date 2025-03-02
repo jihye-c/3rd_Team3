@@ -1,8 +1,9 @@
 <script setup lang="ts">
   import type RecipeResponse from '@/\btypes/RecipeResponse';
   import BannerComponent from '@/components/BannerComponent.vue';
+  import BookmarkButton from '@/components/BookmarkButton.vue';
   import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
-  import {computed, reactive} from 'vue';
+  import {computed, reactive, ref} from 'vue';
 
   const recipeData: RecipeResponse = reactive({
     RCP_NM: '저염된장 삼치구이',
@@ -63,6 +64,13 @@
       )
       .map(([_, value]) => value),
   );
+
+  // 북마크 상태 관리
+  const isBookmarked = ref(false);
+
+  const toggleBookmark = () => {
+    isBookmarked.value = !isBookmarked.value;
+  };
 </script>
 
 <template>
@@ -81,6 +89,7 @@
     <div class="container flex justify-between">
       <div class="border-mono-200 w-[52px] h-[104px]">
         <!-- 스크랩, 공유 버튼 -->
+        <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
       </div>
       <div class="flex flex-col gap-[80px] border-mono-200 w-[1330px]">
         <!-- 상세 내용 -->
