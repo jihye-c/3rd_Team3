@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import type RecipeResponse from '@/\btypes/RecipeResponse';
+  import BannerComponent from '@/components/BannerComponent.vue';
   import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
 
   const recipeData: RecipeResponse = {
@@ -54,8 +55,17 @@
 
 <template>
   <div class="flex flex-col gap-[100px]">
-    <!-- 코드 Merge 이후에 banner 컴포넌트 가져와서 적용하기 -->
-    <div class="w-full h-[360px] bg-mono-300">배너 영역</div>
+    <!-- 배너 -->
+    <BannerComponent
+      background="/recipe/recipe_search_banner.webp"
+      title="레시피 상세"
+      subtitle="간편하게 따라하는 오늘의 한끼"
+      :breadcrumbs="[
+        {title: '홈', href: '/'},
+        {title: '레시피', href: '/recipe'},
+        {title: '레시피 상세'},
+      ]"
+    />
     <div class="container flex justify-between">
       <div class="border-2 border-mono-200 w-[52px] h-[104px]">
         <!-- 스크랩, 공유 버튼 -->
