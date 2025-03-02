@@ -2,8 +2,9 @@
   import type RecipeResponse from '@/\btypes/RecipeResponse';
   import BannerComponent from '@/components/BannerComponent.vue';
   import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
+  import {computed, reactive} from 'vue';
 
-  const recipeData: RecipeResponse = {
+  const recipeData: RecipeResponse = reactive({
     RCP_NM: '저염된장 삼치구이',
     RCP_PARTS_DTLS:
       '•필수재료 : 삼치(140g), 치커리(35g), 전분가루(10g)\n•구이소스 : 일본된장(5g), 청주(5g)\n•곁들임소스 : 유자청(15g), 다진마늘(5g), 청고추(15g), 홍고추(20g)',
@@ -41,8 +42,9 @@
     MANUAL18: '',
     MANUAL19: '',
     MANUAL20: '',
-  };
+  });
 
+  // 영양 정보 데이터 가공
   const {INFO_ENG, INFO_NA, INFO_PRO, INFO_FAT, INFO_CAR} = recipeData;
   const nutrition = {
     INFO_ENG: parseFloat(INFO_ENG),
@@ -51,6 +53,16 @@
     INFO_PRO: parseFloat(INFO_PRO),
     INFO_FAT: parseFloat(INFO_FAT),
   };
+
+  // 요리 방법 데이터 가공
+  const manuals = computed(() =>
+    Object.entries(recipeData)
+      .filter(
+        ([key, value]) =>
+          key.startsWith('MANUAL') && !key.startsWith('MANUAL_IMG') && value.trim() !== '',
+      )
+      .map(([_, value]) => value),
+  );
 </script>
 
 <template>
@@ -101,7 +113,7 @@
           <p class="text-[20px] leading-[24px] text-mono-400">
             1일 영양성분 기준치에 대한 비율 (%)
           </p>
-          <div class="h-[200px]">
+          <div class="">
             <div class="flex justify-between mt-[40px]">
               <template v-for="(value, key) in nutrition">
                 <div class="w-[210px] h-[210px]">
@@ -109,6 +121,25 @@
                 </div>
               </template>
             </div>
+          </div>
+        </div>
+        <!-- 요리 방법 -->
+        <div class="flex flex-col gap-2">
+          <div class="text-[40px] text-mono-700 font-semibold">요리 방법</div>
+          <div class="flex flex-col">
+            <template v-for="(manual, index) in manuals" :key="index">
+              <div class="flex gap-[32px] items-center py-[24px]">
+                <div
+                  class="w-[52px] h-[52px] rounded-[8px] bg-main-400 text-[32px] text-mono-050 font-bold text-center py-2 leading-9 shrink-0"
+                >
+                  {{ index + 1 }}
+                </div>
+                <div class="text-[24px] text-mono-700">
+                  {{ manual.slice(3) }}
+                </div>
+              </div>
+              <hr v-if="index + 1 < manuals.length" />
+            </template>
           </div>
         </div>
       </div>
