@@ -1,10 +1,11 @@
 <script setup lang="ts">
-  import DoughnutChart from '@/components/DoughnutChart.vue';
-  import RecipePostList from '@/components/RecipePostList.vue';
-  import RecipeRectangleCard from '@/components/RecipeRectangleCard.vue';
-  import RecipeSquareCard from '@/components/RecipeSquareCard.vue';
+  import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
+  import RecipePostList from '@/components/recipe/RecipePostList.vue';
+  import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
+  import RecipeSquareCard from '@/components/recipe/RecipeSquareCard.vue';
+  import SearchBarRounded from '@/components/recipe/SearchBarRounded.vue';
 
-  const handleSearch = () => alert('click!');
+  const handleSearch = (searchText: string) => alert(`검색어: ${searchText}`);
 
   const recipeCategoryData = [
     {
@@ -108,18 +109,7 @@
             </div>
           </div>
           <!-- 검색바 -->
-          <div
-            class="bg-mono-050 w-[1060px] h-[64px] rounded-[100px] flex items-center justify-between px-[30px]"
-          >
-            <input
-              type="text"
-              placeholder="검색어를 입력하세요"
-              class="h-[30px] w-[900px] text placeholder:text-[20px] outline-none text-[20px]"
-            />
-            <button @click="handleSearch">
-              <v-icon color="grey-darken-1" size="36px">mdi-magnify</v-icon>
-            </button>
-          </div>
+          <SearchBarRounded long @search="handleSearch" />
         </div>
       </div>
     </div>
@@ -130,7 +120,7 @@
       <div class="ft-point text-[48px] text-mono-700">카테고리별 레시피</div>
       <div class="flex justify-between">
         <template v-for="item in recipeCategoryData" :key="item.category">
-          <RecipeSquareCard :title="item.category" :image="item.image" />
+          <RecipeSquareCard :title="item.category" :image="item.image" :size="300" />
         </template>
       </div>
     </div>
@@ -151,7 +141,7 @@
           :title="todaysRecipeData.title"
           :subtitle="todaysRecipeData.subtitle"
           :image="todaysRecipeData.image"
-          large
+          :size="460"
         />
         <div class="flex flex-col w-[1040px] justify-between text-mono-700">
           <div class="flex flex-col gap-4">
@@ -181,7 +171,7 @@
       <div class="ft-point text-[48px] text-mono-700">냉장고 속 재료별 레시피</div>
       <div class="flex justify-between">
         <template v-for="item in recipeIngredientData" :key="item.category">
-          <RecipeSquareCard :title="item.category" :image="item.image" medium />
+          <RecipeSquareCard :title="item.category" :image="item.image" :size="380" />
         </template>
       </div>
     </div>

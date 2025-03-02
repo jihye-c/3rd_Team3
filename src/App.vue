@@ -5,7 +5,7 @@
 
 <template>
   <div class="tw:w-full">
-    <HeaderComponent />
+    <HeaderComponent background-opacity/>
     <RouterView />
   </div>
 </template>

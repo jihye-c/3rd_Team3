@@ -7,7 +7,9 @@ import HospitalView from '@/views/HospitalView.vue';
 import RecipeView from '@/views/RecipeView.vue';
 import UserpageView from '@/views/UserpageView.vue';
 import MypageView from '@/views/MypageView.vue';
+import LoginView from '@/views/LoginView.vue';
 import AdminView from '@/views/AdminView.vue';
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +28,11 @@ const router = createRouter({
       path: '/recipe',
       name: 'recipe',
       component: RecipeView,
+    },
+    {
+      path: '/recipe/search',
+      name: 'recipe-search',
+      component: () => import('@/views/RecipeSearchView.vue'),
     },
     {
       path: '/hospital',
@@ -53,6 +60,10 @@ const router = createRouter({
       component: UserpageView,
     },
     {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+    },{
       path: '/admin',
       name: 'admin',
       component: AdminView,
