@@ -66,7 +66,7 @@
 </script>
 
 <template>
-  <div class="flex flex-col gap-[100px]">
+  <div class="flex flex-col gap-[100px] pb-[100px]">
     <!-- 배너 -->
     <BannerComponent
       background="/recipe/recipe_search_banner.webp"
@@ -79,22 +79,22 @@
       ]"
     />
     <div class="container flex justify-between">
-      <div class="border-2 border-mono-200 w-[52px] h-[104px]">
+      <div class="border-mono-200 w-[52px] h-[104px]">
         <!-- 스크랩, 공유 버튼 -->
       </div>
-      <div class="flex flex-col gap-[80px] border-mono-200 w-[1330px] h-[2000px]">
+      <div class="flex flex-col gap-[80px] border-mono-200 w-[1330px]">
         <!-- 상세 내용 -->
         <div class="h-[580px] flex gap-[48px] rounded-[20px] shadow-lg overflow-hidden">
           <div class="w-[677px] overflow-hidden shrink-0">
             <img
-              src="/recipe/recipe_popular1.webp"
+              :src="recipeData.ATT_FILE_NO_MAIN"
               alt="recipe_image"
               class="w-full h-full object-cover object-center"
             />
           </div>
           <div class="flex flex-col gap-[48px] p-[48px]">
             <div class="flex flex-col gap-4">
-              <div class="text-[40px] text-main-400 font-bold">{{ recipeData.RCP_NM }}</div>
+              <div class="text-[40px] text-main-400 font-semibold">{{ recipeData.RCP_NM }}</div>
               <div class="text-[18px] text-mono-600">
                 {{ recipeData.RCP_PAT2 }} | {{ recipeData.RCP_WAY2 }} | #{{ recipeData.HASH_TAG }}
               </div>
@@ -140,6 +140,14 @@
               </div>
               <hr v-if="index + 1 < manuals.length" />
             </template>
+          </div>
+        </div>
+        <!-- 연관 레시피 -->
+        <div class="flex flex-col gap-2">
+          <div class="text-[40px] text-mono-700 font-semibold">연관 레시피</div>
+          <div class="flex gap-[24px]">
+            <div class="bg-mono-200 h-[360px] w-full rounded-2xl"></div>
+            <div class="bg-mono-200 h-[360px] w-full rounded-2xl"></div>
           </div>
         </div>
       </div>
