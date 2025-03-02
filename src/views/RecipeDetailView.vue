@@ -3,6 +3,7 @@
   import BannerComponent from '@/components/BannerComponent.vue';
   import BookmarkButton from '@/components/BookmarkButton.vue';
   import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
+  import ShareButton from '@/components/ShareButton.vue';
   import {computed, reactive, ref} from 'vue';
 
   const recipeData: RecipeResponse = reactive({
@@ -87,9 +88,10 @@
       ]"
     />
     <div class="container flex justify-between">
-      <div class="border-mono-200 w-[52px] h-[104px]">
+      <div class="border-mono-200 w-[52px] h-[104px] flex flex-col gap-[12px]">
         <!-- 스크랩, 공유 버튼 -->
         <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
+        <ShareButton />
       </div>
       <div class="flex flex-col gap-[80px] border-mono-200 w-[1330px]">
         <!-- 상세 내용 -->
