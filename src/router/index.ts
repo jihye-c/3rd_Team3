@@ -10,7 +10,6 @@ import MypageView from '@/views/MypageView.vue';
 import LoginView from '@/views/LoginView.vue';
 import AdminView from '@/views/AdminView.vue';
 
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -33,6 +32,11 @@ const router = createRouter({
       path: '/recipe/search',
       name: 'recipe-search',
       component: () => import('@/views/RecipeSearchView.vue'),
+    },
+    {
+      path: '/recipe/detail/:id',
+      name: 'recipe-detail',
+      component: () => import('@/views/RecipeDetailView.vue'),
     },
     {
       path: '/hospital',
@@ -63,7 +67,8 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
-    },{
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: AdminView,
