@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-screen flex pt-12 items-center justify-center">
+  <div class="w-full h-screen flex pt-12 items-center justify-center" id="authPage">
     <div class="absolute bottom-0 w-full h-full -z-40">
       <img src="/images/Login/login_background.svg" alt="" />
     </div>
@@ -93,5 +93,15 @@ const toggleAnimation = () => {
 </script>
 
 <style scoped>
-/* Add custom styles if needed */
+  #authPage :deep(.v-input__details) {
+    min-height: none;
+    padding-inline: 0px;
+    min-height: 8px;
+  }
+  #authPage :deep(.v-text-field .v-messages) {
+    min-height: 0;
+  }
+  #authPage :deep(.v-text-field .v-messages__message) {
+    padding: 2px 8px 8px 8px;
+  }
 </style>
