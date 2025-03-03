@@ -294,9 +294,14 @@
   // 증상 선택 버튼 가시 여부
   const isSymptomButtonShow = ref(true);
 
-  // 상세페이지 열기 닫기
-  const handleClick = () => {
-    isDetailPageShow.value = !isDetailPageShow.value;
+  // 상세페이지 열기
+  const openDetail = () => {
+    isDetailPageShow.value = true;
+  };
+
+  // 상세페이지 닫기
+  const closeDetail = () => {
+    isDetailPageShow.value = false;
   };
 
   const onDistrictChange = () => {
@@ -387,7 +392,7 @@
                   :type="item.type"
                   :close-time="item.closetime_mon"
                   :addr="item.addr"
-                  @click="handleClick"
+                  @click="openDetail"
                 />
               </template>
             </div>
@@ -397,6 +402,7 @@
         <div>
           <HospitalDetailCard
             v-show="isDetailPageShow"
+            @close="closeDetail"
             :name="selectedHospital.name"
             :type="selectedHospital.type"
             :tel="selectedHospital.tel"

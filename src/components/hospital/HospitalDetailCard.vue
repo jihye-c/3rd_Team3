@@ -17,13 +17,23 @@
   }
 
   defineProps<Props>();
+
+  // 이벤트 정의
+  const emit = defineEmits(['close']);
+
+  const handleClick = () => {
+    emit('close');
+  };
 </script>
 
 <template>
   <div
-    class="w-[400px] px-[28px] py-[40px] h-full shadow-[4px_0_10px_rgba(0,0,0,0.1)] flex flex-col gap-12 overflow-auto"
+    class="w-[400px] px-[28px] pt-[28px] pb-[40px] h-full shadow-[4px_0_10px_rgba(0,0,0,0.1)] flex flex-col gap-12 overflow-auto"
   >
     <div class="flex flex-col gap-2">
+      <div class="flex justify-end">
+        <v-icon class="close" size="20" @click="handleClick">mdi-close</v-icon>
+      </div>
       <div class="text-[24px] font-medium text-mono-700">{{ name }}</div>
       <div class="flex gap-2 text-[16px] text-mono-500">
         <div>소아청소년과</div>
@@ -131,5 +141,8 @@
   }
   :deep(.v-icon) {
     color: var(--color-main-400);
+  }
+  :deep(.v-icon.close) {
+    color: var(--color-mono-400);
   }
 </style>
