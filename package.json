@@ -23,6 +23,7 @@
     "@supabase/supabase-js": "^2.49.1",
     "@tailwindcss/postcss": "^4.0.9",
     "@tailwindcss/vite": "^4.0.9",
+    "axios": "^1.8.1",
     "chart.js": "^4.4.8",
     "chartjs-plugin-annotation": "^3.1.0",
     "class-variance-authority": "^0.7.1",
