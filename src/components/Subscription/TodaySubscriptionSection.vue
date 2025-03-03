@@ -1,0 +1,169 @@
+<script lang="ts" setup>
+  import {ref} from 'vue';
+  import {RouterLink} from 'vue-router';
+
+  interface Subscription {
+    id: number;
+    name: string;
+    location: string;
+    details: string[];
+    scale: string;
+    imgURL: string;
+    specialStartDates: string;
+    specialEndDates: string;
+    applicationStartDates: string;
+    applicationEndDates: string;
+  }
+
+  const subscriptions = ref<Subscription[]>([
+    {
+      id: 1,
+      name: '레미안 원페를라',
+      location: '서울특별시 서초구 방배동 818-14번지 일대',
+      details: ['민영', 'APT', '서초구'],
+      scale: '402 세대',
+      imgURL:
+        'https://i.namu.wiki/i/pPzWnZ9kD_0GpUF8rhzAY7f3jSAy0d3Aj0kN4k2ac7umK-kF_-OQF3Qx-ASaaYW7g7MNd2qXr3oUiVVmZ6jz1w.webp',
+      specialStartDates: '02월 03일',
+      specialEndDates: '02월 03일',
+      applicationStartDates: '02월 03일',
+      applicationEndDates: '02월 06일',
+    },
+    {
+      id: 2,
+      name: '더샵 퍼스트 월드',
+      location: '서울특별시 중랑구 상봉동 83-1번지 일원',
+      details: ['민영', 'APT', '중랑구'],
+      scale: '800 세대',
+      imgURL: 'https://cdn.hankyung.com/photo/202412/AA.38878917.1.jpg',
+      specialStartDates: '02월 20일',
+      specialEndDates: '02월 21일',
+      applicationStartDates: '02월 20일',
+      applicationEndDates: '02월 21일',
+    },
+    {
+      id: 3,
+      name: '창경궁 롯데캐슬 시그니처',
+      location: '서울특별시 성북구 삼선동2가 296번지 일원',
+      details: ['민영', 'APT', '성북구'],
+      scale: '509 세대',
+      imgURL: 'https://cdn.hankyung.com/photo/202411/AA.38716430.1.jpg',
+      specialStartDates: '02월 20일',
+      specialEndDates: '02월 21일',
+      applicationStartDates: '02월 20일',
+      applicationEndDates: '02월 21일',
+    },
+  ]);
+
+  const selectedSubscription = ref<Subscription>(subscriptions.value[0]);
+
+  const selectSubscription = (subscription: Subscription) => {
+    selectedSubscription.value = subscription;
+  };
+</script>
+
+<template>
+  <section class="bg-main-50 h-84 mt-20">
+    <div class="container relative">
+      <div class="ft-point text-7xl pt-10 pb-6">오늘의 청약</div>
+      <div class="text-3xl mt-5">
+        <div
+          v-for="subscription in subscriptions"
+          :key="subscription.id"
+          class="flex items-center mb-3"
+          :class="{
+            'font-bold text-4xl': selectedSubscription.id === subscription.id,
+            'text-3xl': selectedSubscription.id !== subscription.id,
+          }"
+          @click="selectSubscription(subscription)"
+        >
+          <template v-if="selectedSubscription.id === subscription.id">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="25"
+              viewBox="0 0 24 25"
+              fill="none"
+            >
+              <rect y="0.500488" width="24" height="24" rx="12" fill="#FFBE46" fill-opacity="0.5" />
+              <rect x="6" y="7.00049" width="12" height="12" rx="6" fill="#FFFBEF" />
+              <rect
+                x="6"
+                y="7.00049"
+                width="12"
+                height="12"
+                rx="6"
+                stroke="#F89A00"
+                stroke-width="4"
+              />
+            </svg>
+          </template>
+          <template v-else>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <rect x="8" y="8.50049" width="8" height="8" rx="4" fill="#F89A00" />
+              <rect x="8" y="8.50049" width="8" height="8" rx="4" stroke="#F89A00" />
+            </svg>
+          </template>
+          <button
+            :class="{
+              'text-main-400 cursor-pointer ml-3': selectedSubscription.id === subscription.id,
+              'cursor-pointer ml-3': selectedSubscription.id !== subscription.id,
+            }"
+          >
+            {{ subscription.name }}
+          </button>
+        </div>
+      </div>
+      <RouterLink
+        :to="'/subscription/' + selectedSubscription.id"
+        class="absolute w-284 h-88 bg-mono-050 drop-shadow-lg rounded-2xl top-24 right-0"
+      >
+        <div class="px-8 py-7 flex">
+          <div class="size-74 rounded-2xl overflow-hidden">
+            <img :src="selectedSubscription.imgURL" alt="" class="size-74 object-cover" />
+          </div>
+          <div class="ml-8 h-74 w-186">
+            <div class="font-semibold text-4xl">{{ selectedSubscription.name }}</div>
+            <div class="text-mono-500 mt-1">{{ selectedSubscription.location }}</div>
+            <div class="flex mt-3">
+              <div
+                v-for="detail in selectedSubscription.details"
+                :key="detail"
+                class="bg-mono-200 px-2 py-1 mr-2 rounded-sm"
+              >
+                {{ detail }}
+              </div>
+            </div>
+            <div class="flex justify-between mt-21">
+              <div>분양규모</div>
+              <div class="text-xl">{{ selectedSubscription.scale }}</div>
+            </div>
+            <hr class="border-mono-200" />
+            <div class="flex justify-between mt-2">
+              <div>특별청약일</div>
+              <div class="text-xl">
+                {{ selectedSubscription.specialStartDates }} ~
+                {{ selectedSubscription.specialEndDates }}
+              </div>
+            </div>
+            <div class="flex justify-between mt-2">
+              <div>청약 접수일</div>
+              <div class="text-xl">
+                {{ selectedSubscription.applicationStartDates }} ~
+                {{ selectedSubscription.applicationEndDates }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </RouterLink>
+    </div>
+  </section>
+</template>
+
+<style scoped></style>

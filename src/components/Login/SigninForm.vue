@@ -1,5 +1,3 @@
-<script setup lang="ts"></script>
-
 <template>
   <div class="w-full">
     <div class="flex !px-16 justify-center items-center">
@@ -17,6 +15,11 @@
                     base-color="var(--color-main-400)"
                     label="아이디"
                     type="input"
+                    v-model="idInput"
+                    placeholder="이메일을 입력해주세요."
+                    :hint="idHint"
+                    persistent-hint
+                    :rules="[rules.required]"
                   ></v-text-field>
                   <v-text-field
                     bg-color="var(--color-main-50)"
@@ -24,10 +27,12 @@
                     color="var(--color-main-400)"
                     class="my-btn"
                     label="패스워드"
-                    type="input"
+                    v-model="pwInput"
+                    type="password"
+                    :rules="[rules.required]"
                   ></v-text-field>
                   <v-btn
-                    class="mt-2 text-mono-050"
+                    class="mt-8 text-mono-050"
                     size="x-large"
                     text="로그인"
                     bg-color="var(--color-main-50)"
@@ -47,6 +52,23 @@
     </div>
   </div>
 </template>
+<script setup lang="ts">
+  import {computed, ref} from 'vue';
+
+  //필수 입력 정의
+  const rules = {
+    required: (value: string) => !!value || '필수 입력 사항입니다.',
+  };
+
+  const idInput = ref('');
+  const idRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const idHint = computed(() => {
+    return idRegEx.test(idInput.value) || idInput.value === ''
+      ? ''
+      : '올바른 이메일을 입력해주세요.';
+  });
+  const pwInput = ref('');
+</script>
 <style scoped>
   form :v-deep(.text-field-affix-color) {
     background-color: none;
