@@ -10,7 +10,6 @@ import MypageView from '@/views/MypageView.vue';
 import LoginView from '@/views/LoginView.vue';
 import AdminView from '@/views/AdminView.vue';
 
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -23,6 +22,21 @@ const router = createRouter({
       path: '/subscription',
       name: 'subscription',
       component: SubscriptionView,
+    },
+    {
+      path: '/subscription/calendar',
+      name: 'subscription-calendar',
+      component: () => import('@/views/SubscriptionCalendarView.vue'),
+    },
+    {
+      path: '/subscription/:id',
+      name: 'subscription-detail',
+      component: () => import('@/views/SubscriptionDetailView.vue'),
+    },
+    {
+      path: '/subscription/news',
+      name: 'subscription-news',
+      component: () => import('@/views/SubscriptionNewsView.vue'),
     },
     {
       path: '/recipe',
@@ -63,7 +77,8 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
-    },{
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: AdminView,
