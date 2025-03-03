@@ -204,8 +204,95 @@
     type: '상급종합',
   };
 
+  // 증상 데이터
+  const symptoms = [
+    {
+      id: 'abdominal_pain',
+      name: '복통',
+      image: '/images/hospital/abdominal_pain.svg',
+    },
+    {
+      id: 'fever',
+      name: '열/오한',
+      image: '/images/hospital/fever.svg',
+    },
+    {
+      id: 'burn',
+      name: '화상',
+      image: '/images/hospital/burn.svg',
+    },
+    {
+      id: 'tinnitus',
+      name: '이명',
+      image: '/images/hospital/tinnitus.svg',
+    },
+    {
+      id: 'vomiting',
+      name: '구토',
+      image: '/images/hospital/vomiting.svg',
+    },
+    {
+      id: 'cough',
+      name: '기침',
+      image: '/images/hospital/cough.svg',
+    },
+    {
+      id: 'fracture',
+      name: '골절',
+      image: '/images/hospital/fracture.svg',
+    },
+    {
+      id: 'muscle_pain',
+      name: '근육통',
+      image: '/images/hospital/muscle_pain.svg',
+    },
+    {
+      id: 'fatigue',
+      name: '피로감',
+      image: '/images/hospital/fatigue.svg',
+    },
+    {
+      id: 'emergency',
+      name: '응급',
+      image: '/images/hospital/emergency.svg',
+    },
+    {
+      id: 'headache',
+      name: '두통',
+      image: '/images/hospital/headache.svg',
+    },
+    {
+      id: 'toothache',
+      name: '치통',
+      image: '/images/hospital/toothache.svg',
+    },
+    {
+      id: 'urinary',
+      name: '비뇨',
+      image: '/images/hospital/urinary.svg',
+    },
+    {
+      id: 'eye_congestion',
+      name: '충혈',
+      image: '/images/hospital/eye_congestion.svg',
+    },
+    {
+      id: 'menstrual_pain',
+      name: '생리통',
+      image: '/images/hospital/menstrual_pain.svg',
+    },
+    {
+      id: 'depression',
+      name: '우울증',
+      image: '/images/hospital/depression.svg',
+    },
+  ];
+
   // 상세페이지 가시 여부
   const isDetailPageShow = ref(false);
+
+  // 증상 선택 버튼 가시 여부
+  const isSymptomButtonShow = ref(true);
 
   // 상세페이지 열기 닫기
   const handleClick = () => {
@@ -240,7 +327,7 @@
         <div class="flex flex-col w-[380px] shadow-[4px_0_10px_rgba(0,0,0,0.1)] h-full">
           <!-- 검색 -->
           <div class="flex flex-col p-6 border-b-1 border-mono-300">
-            <div class="text-[18px] font-semibold text-mono-700">카테고리 검색</div>
+            <div class="text-[20px] font-semibold text-mono-700">카테고리 검색</div>
             <div class="flex gap-4 pt-4">
               <v-select
                 label="구 선택"
@@ -269,17 +356,41 @@
               </button>
             </div>
           </div>
-          <!-- 리스트 -->
-          <div class="flex flex-col h-full py-[24px] overflow-y-auto">
-            <template v-for="item in hospitalList">
-              <HospitalPostList
-                :name="item.name"
-                :type="item.type"
-                :close-time="item.closetime_mon"
-                :addr="item.addr"
-                @click="handleClick"
-              />
-            </template>
+
+          <div class="h-full overflow-y-auto">
+            <!-- 증상 필터 -->
+            <div class="flex flex-col gap-4 p-6 border-b-1 border-mono-200">
+              <div class="text-[20px] font-semibold text-mono-700">증상 선택</div>
+              <div
+                v-if="isSymptomButtonShow"
+                class="grid grid-cols-3 gap-[20px] justify-center items-center"
+              >
+                <template v-for="(item, index) in symptoms">
+                  <div
+                    class="flex flex-col gap-1.5 justify-center items-center py-[12px] w-[88px] h-[88px] bg-main-50 rounded-[12px] border-1 border-main-400"
+                    :class="index === symptoms.length - 1 ? 'col-start-2' : ''"
+                  >
+                    <img :src="item.image" alt="symptom_icon" class="w-[40px] h-[40px]" />
+                    <div class="text-[16px] text-main-500 font-medium">
+                      {{ item.name }}
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- 리스트 -->
+            <div class="flex flex-col py-[24px]">
+              <template v-for="item in hospitalList">
+                <HospitalPostList
+                  :name="item.name"
+                  :type="item.type"
+                  :close-time="item.closetime_mon"
+                  :addr="item.addr"
+                  @click="handleClick"
+                />
+              </template>
+            </div>
           </div>
         </div>
         <!-- 상세 정보 -->
