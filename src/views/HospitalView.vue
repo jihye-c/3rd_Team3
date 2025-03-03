@@ -12,13 +12,13 @@
 
   // 아이콘 데이터 배열 정의
   const hospitalIcons = [
-    {component: ClinicIcon, name: '동네 병원 (의원)'},
-    {component: TertiaryHospitalIcon, name: '상급종합'},
-    {component: GeneralHospitalIcon, name: '종합병원'},
-    {component: HospitalIcon, name: '병원'},
-    {component: PublicHealthCenterIcon, name: '보건기관'},
-    {component: OrientalMedicineClinicIcon, name: '한의원'},
-    {component: DentalClinicIcon, name: '치과'},
+    {id: 'clinic', name: '동네 병원 (의원)', component: ClinicIcon},
+    {id: 'tertiaryHospital', name: '상급종합', component: TertiaryHospitalIcon},
+    {id: 'generalHospital', name: '종합병원', component: GeneralHospitalIcon},
+    {id: 'hospital', name: '병원', component: HospitalIcon},
+    {id: 'publicHealthCenter', name: '보건기관', component: PublicHealthCenterIcon},
+    {id: 'orientalMedicineClinic', name: '한의원', component: OrientalMedicineClinicIcon},
+    {id: 'dentalClinic', name: '치과', component: DentalClinicIcon},
   ];
 
   // 지역 리스트 (임시, 내용 정확하지 않음)
@@ -288,11 +288,27 @@
     },
   ];
 
-  // 상세페이지 가시 여부
+  // 선택된 병원 종류
+  const selectedHospitalType = ref('clinic'); // default 의원
+
+  // 상세페이지 표시 여부
   const isDetailPageShow = ref(false);
 
-  // 증상 선택 버튼 가시 여부
+  // 증상 선택 버튼 표시 여부
   const isSymptomButtonShow = ref(true);
+
+  // 병원 종류 선택하기
+  const selectHospitalType = (type: string) => {
+    selectedHospitalType.value = type;
+    // 임시로 동네병원일 때만 증상 선택할 수 있게 함
+    if (type === 'clinic') {
+      isSymptomButtonShow.value = true;
+    } else {
+      isSymptomButtonShow.value = false;
+    }
+    // 병원 종류 바뀌면 열려있던 상세 페이지 닫기
+    isDetailPageShow.value = false;
+  };
 
   // 상세페이지 열기
   const openDetail = () => {
@@ -305,7 +321,7 @@
   };
 
   const onDistrictChange = () => {
-    // 구에 따라 동 바꾸는 로직
+    // 구에 따라 동 바꾸는 로직 추가하기
   };
 </script>
 
@@ -316,12 +332,20 @@
         <!-- 병원 분류 버튼-->
         <div class="w-[120px] bg-main-400">
           <div>
-            <template v-for="icon in hospitalIcons" :key="icon.name">
+            <template v-for="icon in hospitalIcons" :key="icon.id">
               <div
                 class="w-full border-b-1 px-[22px] py-[14px] border-main-50 flex flex-col gap-[12px] items-center"
+                :class="selectedHospitalType === icon.id ? 'bg-main-50' : 'bg-main-400'"
+                @click="selectHospitalType(icon.id)"
               >
-                <component :is="icon.component" class="text-main-50" />
-                <p class="text-main-50 text-center text-[18px] font-medium leading-[22px]">
+                <component
+                  :is="icon.component"
+                  :class="selectedHospitalType === icon.id ? 'text-main-400' : 'text-main-50 '"
+                />
+                <p
+                  class="text-center text-[18px] font-medium leading-[22px]"
+                  :class="selectedHospitalType === icon.id ? 'text-main-400' : 'text-main-50 '"
+                >
                   {{ icon.name }}
                 </p>
               </div>
@@ -362,14 +386,14 @@
             </div>
           </div>
 
-          <div class="h-full overflow-y-auto">
+          <div class="h-full pb-[60px] overflow-y-auto">
             <!-- 증상 필터 -->
-            <div class="flex flex-col gap-4 p-6 border-b-1 border-mono-200">
+            <div
+              class="flex flex-col gap-4 p-6 border-b-1 border-mono-200"
+              v-if="isSymptomButtonShow"
+            >
               <div class="text-[20px] font-semibold text-mono-700">증상 선택</div>
-              <div
-                v-if="isSymptomButtonShow"
-                class="grid grid-cols-3 gap-[20px] justify-center items-center"
-              >
+              <div class="grid grid-cols-3 gap-[20px] justify-center items-center">
                 <template v-for="(item, index) in symptoms">
                   <div
                     class="flex flex-col gap-1.5 justify-center items-center py-[12px] w-[88px] h-[88px] bg-main-50 rounded-[12px] border-1 border-main-400"
