@@ -7,6 +7,8 @@
   import OrientalMedicineClinicIcon from '@/assets/icons/orientalMedicineClinic.svg';
   import DentalClinicIcon from '@/assets/icons/dentalClinic.svg';
   import HospitalPostList from '@/components/hospital/HospitalPostList.vue';
+  import HospitalDetailCard from '@/components/hospital/HospitalDetailCard.vue';
+  import {ref} from 'vue';
 
   // 아이콘 데이터 배열 정의
   const hospitalIcons = [
@@ -151,6 +153,65 @@
     },
   ];
 
+  // 선택된 병원 데이터 (상세정보 보여줄 병원)
+  const selectedHospital = {
+    addr: '서울특별시 종로구 대학로 101, (연건동)',
+    closed_holiday: '휴무',
+    closed_sun: '휴무',
+    closetime_fri: '1700',
+    closetime_mon: '1700',
+    closetime_sat: '1300',
+    closetime_sun: null,
+    closetime_thu: '1700',
+    closetime_tue: '1700',
+    closetime_wed: '1700',
+    dong: '연건동',
+    emergency_day: 'Y',
+    emergency_day_call1: '02-2072-3564',
+    emergency_day_call2: '02-2072-2474',
+    emergency_night: 'Y',
+    emergency_night_call1: '02-2072-3564',
+    emergency_night_call2: '02-2072-2474',
+    gu_code: 110016,
+    gu_name: '종로구',
+    homepage: 'http://www.snuh.org',
+    id: 'JDQ4MTg4MSM1MSMkMSMkMCMkODkkMzgxMzUxIzExIyQxIyQzIyQ3OSQzNjE4MzIjODEjJDEjJDYjJDgz',
+    location_direction: '3번출구',
+    location_distance: '100M',
+    location_place: '혜화역',
+    lunchbreak_sat: null,
+    lunchbreak_weekday: '12:00~13:00',
+    mapx: 126.9990168,
+    mapy: 37.5797151,
+    name: '서울대학교병원',
+    open_date: '19810709',
+    opentime_fri: null,
+    opentime_mon: null,
+    opentime_sat: null,
+    opentime_sun: null,
+    opentime_thu: null,
+    opentime_tue: null,
+    opentime_wed: null,
+    parking_capacity: '951',
+    parking_cost: 'Y',
+    parking_etc:
+      '진료예약 및 진료비수납 1시간 무료, 장애인 및 국가유공자 3시간 무료, 진료, 검사 및 입,퇴원 4시간 무료, 당일진료+입원 6시간 무료, 2개과 진료 및 특수검사 8시간 무료',
+    post_num: 3080,
+    reception_sat: null,
+    reception_weekday: null,
+    tel: '1588-5700',
+    traffic: null,
+    type: '상급종합',
+  };
+
+  // 상세페이지 가시 여부
+  const isDetailPageShow = ref(false);
+
+  // 상세페이지 열기 닫기
+  const handleClick = () => {
+    isDetailPageShow.value = !isDetailPageShow.value;
+  };
+
   const onDistrictChange = () => {
     // 구에 따라 동 바꾸는 로직
   };
@@ -204,7 +265,7 @@
                 class="text-[16px] font-normal text-mono-700 placeholder-mono-400 outline-none"
               />
               <button>
-                <v-icon>mdi-magnify</v-icon>
+                <v-icon class="search">mdi-magnify</v-icon>
               </button>
             </div>
           </div>
@@ -216,12 +277,27 @@
                 :type="item.type"
                 :close-time="item.closetime_mon"
                 :addr="item.addr"
+                @click="handleClick"
               />
             </template>
           </div>
         </div>
         <!-- 상세 정보 -->
-        <div></div>
+        <div>
+          <HospitalDetailCard
+            v-show="isDetailPageShow"
+            :name="selectedHospital.name"
+            :type="selectedHospital.type"
+            :tel="selectedHospital.tel"
+            :addr="selectedHospital.addr"
+            :homepage="selectedHospital.homepage"
+            :lunchbreack_weekday="selectedHospital.lunchbreak_weekday"
+            :lunchbreack_sat="selectedHospital.lunchbreak_sat"
+            :reception_weekday="selectedHospital.reception_weekday"
+            :reception_sat="selectedHospital.reception_sat"
+            :parking_etc="selectedHospital.parking_etc"
+          />
+        </div>
         <!-- 지도 -->
         <div></div>
       </div>
@@ -230,7 +306,7 @@
 </template>
 
 <style scoped>
-  :deep(.v-icon) {
+  :deep(.v-icon.search) {
     color: var(--color-mono-500);
   }
 </style>
