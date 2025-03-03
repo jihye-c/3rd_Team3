@@ -6,6 +6,7 @@
   import PublicHealthCenterIcon from '@/assets/icons/publicHealthCenter.svg';
   import OrientalMedicineClinicIcon from '@/assets/icons/orientalMedicineClinic.svg';
   import DentalClinicIcon from '@/assets/icons/dentalClinic.svg';
+  import HospitalPostList from '@/components/hospital/HospitalPostList.vue';
 
   // 아이콘 데이터 배열 정의
   const hospitalIcons = [
@@ -387,15 +388,15 @@
 <template>
   <div class="h-screen overflow-hidden">
     <div class="w-full h-full mt-[96px]">
-      <div class="flex">
+      <div class="flex h-full">
         <!-- 병원 분류 버튼-->
-        <div class="h-[2000px] w-[120px] bg-main-400">
+        <div class="w-[120px] bg-main-400">
           <div>
             <template v-for="icon in hospitalIcons" :key="icon.name">
               <div
                 class="w-full border-b-1 px-[22px] py-[14px] border-main-50 flex flex-col gap-[12px] items-center"
               >
-                <component :is="icon.component" class="size-[32px] text-main-50" />
+                <component :is="icon.component" class="text-main-50" />
                 <p class="text-main-50 text-center text-[18px] font-medium leading-[22px]">
                   {{ icon.name }}
                 </p>
@@ -404,11 +405,49 @@
           </div>
         </div>
         <!-- 검색 & 리스트 -->
-        <div>
+        <div class="flex flex-col w-[380px] shadow-[4px_0_10px_rgba(0,0,0,0.1)] h-full">
           <!-- 검색 -->
-          <div></div>
+          <div class="flex flex-col p-6 border-b-1 border-mono-300">
+            <div class="text-[18px] font-semibold text-mono-700">카테고리 검색</div>
+            <div class="flex gap-4 pt-4">
+              <v-select
+                label="구 선택"
+                :items="districts.map((district) => district.gu)"
+                variant="outlined"
+                rounded="lg"
+                density="compact"
+              ></v-select>
+              <v-select
+                label="동 선택"
+                variant="outlined"
+                rounded="lg"
+                density="compact"
+              ></v-select>
+            </div>
+            <div
+              class="h-[40px] w-full border-1 border-mono-300 rounded-[8px] flex justify-between px-4"
+            >
+              <input
+                type="text"
+                placeholder="병원 이름 검색"
+                class="text-[16px] font-normal text-mono-700 placeholder-mono-400 outline-none"
+              />
+              <button>
+                <v-icon>mdi-magnify</v-icon>
+              </button>
+            </div>
+          </div>
           <!-- 리스트 -->
-          <div></div>
+          <div class="flex flex-col h-full py-[24px] overflow-y-auto">
+            <HospitalPostList />
+            <HospitalPostList />
+            <HospitalPostList />
+            <HospitalPostList />
+            <HospitalPostList />
+            <HospitalPostList />
+            <HospitalPostList />
+            <HospitalPostList />
+          </div>
         </div>
         <!-- 상세 정보 -->
         <div></div>
