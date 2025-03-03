@@ -71,9 +71,10 @@
                 </div>
               </RouterLink>
             </div>
+          </div>
             <div class="flex items-center">
               <AddressSelectBar />
-            </div>
+
             <!-- <RouterLink class="tw:flex tw:items-center" to="/mypage"> </RouterLink> -->
             <v-badge content="5" color="var(--color-main-400)">
               <v-speed-dial scrim="true" location="bottom center" transition="fade-transition">

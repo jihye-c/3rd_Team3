@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full gap-4">
-    <div class="flex flex-col gap-15">
+    <div class="flex flex-col justify-between gap-15">
       <HomeTitle title="이 달의 청약정보" content="놓치지 말아야 할 이 달의 청약정보" />
       <DatePicker
         expanded
@@ -10,11 +10,12 @@
         v-model="date"
       ></DatePicker> <!-- ✅ Self-closing 문제 해결 -->
     </div>
-    <div class="w-full mt-6 px-5 py-5 rounded-lg bg-mono-100">
+    <div class="w-full mt-6 px-5 pl-10 py-10 rounded-lg bg-mono-050">
     <div>
       <swiper
     :direction="'vertical'"
     :slidesPerView="3"
+    :space-between="40"
     :centeredSlides="true"
     :pagination="{
       type: 'progressbar',
@@ -23,11 +24,11 @@
     :modules="[Pagination]"
     class="mySwiper w-full h-[500px]"
   >
-    <swiper-slide>Slide 1</swiper-slide>
-    <swiper-slide>Slide 2</swiper-slide><swiper-slide>Slide 3</swiper-slide>
-    <swiper-slide>Slide 4</swiper-slide><swiper-slide>Slide 5</swiper-slide>
-    <swiper-slide>Slide 6</swiper-slide><swiper-slide>Slide 7</swiper-slide>
-    <swiper-slide>Slide 8</swiper-slide><swiper-slide>Slide 9</swiper-slide>
+    <swiper-slide><SubscriptionSlideCard/></swiper-slide>
+    <swiper-slide><SubscriptionSlideCard/></swiper-slide>
+    <swiper-slide><SubscriptionSlideCard/></swiper-slide>
+    <swiper-slide><SubscriptionSlideCard/></swiper-slide>
+    <swiper-slide><SubscriptionSlideCard/></swiper-slide>
     <div class="swiper-pagination progressbar "></div>
 
   </swiper>
@@ -48,6 +49,7 @@ import HomeTitle from './common/HomeTitle.vue';
 import 'v-calendar/style.css';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import SubscriptionSlideCard from '../SubscriptionSlideCard.vue';
 
 
 const date = ref(new Date());
@@ -81,7 +83,7 @@ const date = ref(new Date());
 :deep(.swiper-pagination-progressbar ) {
     position: absolute;
     /* top: 300px; */
-    left: 880px;
+    left: 850px;
     height: 450px;
     top: 30px;
     z-index: 1000;
