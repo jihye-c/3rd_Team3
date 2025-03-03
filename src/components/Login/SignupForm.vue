@@ -15,6 +15,11 @@
                     class="my-btn"
                     label="아이디"
                     type="input"
+                    placeholder="이메일을 입력해주세요."
+                    v-model="idInput"
+                    :hint="idHint"
+                    persistent-hint
+                    :rules="[rules.required]"
                   ></v-text-field>
                   <v-text-field
                     bg-color="var(--color-main-50)"
@@ -22,7 +27,11 @@
                     color="var(--color-main-400)"
                     class="my-btn"
                     label="비밀번호"
-                    type="input"
+                    type="password"
+                    v-model="pwInput"
+                    :hint="pwHint"
+                    persistent-hint
+                    :rules="[rules.required]"
                   ></v-text-field>
                   <v-text-field
                     bg-color="var(--color-main-50)"
@@ -30,7 +39,11 @@
                     color="var(--color-main-400)"
                     class="my-btn"
                     label="비밀번호 확인"
-                    type="input"
+                    type="password"
+                    v-model="pwReInput"
+                    :hint="pwReHint"
+                    persistent-hint
+                    :rules="[rules.required]"
                   ></v-text-field>
                   <v-text-field
                     bg-color="var(--color-main-50)"
@@ -39,6 +52,10 @@
                     class="my-btn"
                     label="이름"
                     type="input"
+                    v-model="nameInput"
+                    :hint="nameHint"
+                    persistent-hint
+                    :rules="[rules.required]"
                   ></v-text-field>
                   <v-text-field
                     bg-color="var(--color-main-50)"
@@ -69,7 +86,52 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  import {computed, ref} from 'vue';
+  
+  //필수 입력 정의 
+  const rules = {
+    required: (value: string) => !!value || '필수 입력 사항입니다.',
+  };
+
+  //아이디 (이메일) 검증
+  const idInput = ref('');
+  const idRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const idHint = computed(() => {
+    return idRegEx.test(idInput.value) || idInput.value === ''
+      ? ''
+      : '올바른 이메일을 입력해주세요.';
+  });
+
+  //비밀번호 영문+숫자 6자리 이상 검증
+  const pwInput = ref('');
+  const pwRegEx = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
+  const pwHint = computed(() => {
+    return pwRegEx.test(pwInput.value) || pwInput.value === ''
+      ? ''
+      : '영문,숫자를 포함한 6자리 이상의 비밀번호를 입력해주세요.';
+  });
+
+  //비밀번호 재확인
+  const pwReInput = ref('');
+  const pwReHint = computed(() => {
+    return pwReInput.value === pwInput.value || pwReInput.value === ''
+      ? ''
+      : '비밀번호가 동일하지 않습니다.';
+  });
+
+  //이름 영문 or 한글만 (숫자 및 특문 입력 X)
+  const nameInput = ref('');
+  const nameRegEx = /^[a-zA-Z가-힣]+$/;
+
+  const nameHint = computed(() => {
+    return nameRegEx.test(nameInput.value) || nameInput.value === ''
+      ? ''
+      : '이름은 영문 및 국문만 입력 가능합니다.';
+  });
+
+</script>
+
 <style scoped>
   form :deep(.text-field-affix-color) {
     background-color: none !important;

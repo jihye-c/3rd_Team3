@@ -22,7 +22,7 @@ const resetFilters = () => {
 </script>
 
 <template>
-  <div class="w-[400px] h-fit bg-mono-050 shadow p-4 rounded-lg">
+  <div class="w-[400px] h-fit border border-mono-300 shadow p-4 rounded-lg">
     <!-- 초기화 버튼 -->
     <div class="flex justify-end mb-2">
       <button @click="resetFilters" class="text-mono-600 text-sm">초기화</button>

@@ -1,21 +1,28 @@
 <script setup lang="ts">
-  import {ref} from 'vue';
-  import Supabase from '@/apis/supabase';
+import { ref } from "vue";
+import Supabase from "@/apis/supabase";
 
-  const selectItems = ref([
-    {value: 'hospital', label: '전체 병원 리스트'},
-    {value: 'hospital_detail', label: '병원 상세정보'},
-    {value: 'hospital_traffic', label: '병원 교통 정보'},
-  ]);
+const selectItems = ref([
+  { value: "hospital", label: "전체 병원 리스트" },
+  { value: "hospital_detail", label: "병원 상세정보" },
+  { value: "hospital_traffic", label: "병원 교통 정보" },
+]);
 
-  const file = ref<File | null>(null);
-  const csvType = ref<string | null>(null);
-
-  const handleFileUpload = () => {
-    if (file.value && csvType.value) {
-      Supabase.addCSVData(file.value, csvType.value);
-    }
-  };
+const file = ref<File | null>(null);
+const csvType = ref<string | null>(null);
+const handleFileUpload = () => {
+  if (file.value && csvType.value) {
+    Supabase.addCSVData(file.value, csvType.value);
+  }
+};
+const handleListLoad = async () => {
+  const data = await Supabase.getFullHospitalData(1);
+  console.log(data);
+};
+const handleDetailLoad = async (id: string) => {
+  const data = await Supabase.getDetailHospitalData(id);
+  console.log(data);
+};
 </script>
 
 <template>
@@ -43,11 +50,24 @@
       </div>
     </div>
     <hr class="my-12" />
+
+    <div>
+      <v-btn @click="handleListLoad" color="success">전체 병원 데이터 로드</v-btn>
+      <v-btn
+        @click="
+          handleDetailLoad(
+            'JDQ4MTg4MSM1MSMkMSMkMCMkODkkMzgxMzUxIzExIyQxIyQzIyQ3OSQzNjE4MzIjODEjJDEjJDYjJDgz'
+          )
+        "
+        color="success"
+        >병원 디테일 데이터 로드</v-btn
+      >
+    </div>
   </main>
 </template>
 
 <style>
-  .v-list-item:hover {
-    background: orange;
-  }
+.v-list-item:hover {
+  background: orange;
+}
 </style>

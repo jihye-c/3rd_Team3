@@ -24,7 +24,8 @@ const nextMonth = () => {
 </script>
 
 <template>
-  <div class="calendar-container">
+
+  <div class="calendar-container border border-mono-300 shadow-md flex flex-col justify-between">
     <!-- 달력 상단 헤더 -->
     <div class="calendar-header">
       <button class="nav-btn" @click="prevMonth">&lt;</button>
@@ -40,7 +41,7 @@ const nextMonth = () => {
       :disable-past="true"
       hide-view-navigation
       :disable-views="['years', 'year', 'week', 'day']"
-      class="custom-calendar"
+      class="custom-calendar flex-grow"
       :selected-date="currentDate"
       @cell-click="(event) => selectedDate = event"
     />
@@ -50,10 +51,20 @@ const nextMonth = () => {
 <style>
 /* 전체 캘린더 컨테이너 */
 .calendar-container {
-  width: 652px;
-  height: 380px;
+  width: 700px; /* CultureView.vue의 달력 너비와 동일하게 설정 */
+  height: 380px; /* 일정 영역과 동일한 높이 */
   border-radius: 10px;
   padding: 10px;
+  background: white;
+  box-sizing: border-box;
+}
+
+/* 캘린더 UI 크기 조정 */
+.custom-calendar {
+  width: 100%;
+  height: 100%; /* 부모 요소(`calendar-container`) 높이에 맞게 조정 */
+  padding: 5px;
+  box-sizing: border-box;
 }
 
 /* 캘린더 상단 네비게이션 */
@@ -81,12 +92,6 @@ const nextMonth = () => {
 .calendar-title {
   flex: 1;
   text-align: center;
-}
-
-/* 달력 스타일 */
-.custom-calendar {
-  width: 100%;
-  height: 320px;
 }
 
 /* Month 글자 제거 */
@@ -119,7 +124,3 @@ const nextMonth = () => {
   background-color: #ff6699;
 }
 </style>
-
-
-
-
