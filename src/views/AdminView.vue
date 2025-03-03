@@ -6,6 +6,7 @@ const selectItems = ref([
   { value: "hospital", label: "전체 병원 리스트" },
   { value: "hospital_detail", label: "병원 상세정보" },
   { value: "hospital_traffic", label: "병원 교통 정보" },
+  { value: "hospital_treatment", label: "병원 진료 과목 정보" },
 ]);
 
 const file = ref<File | null>(null);
