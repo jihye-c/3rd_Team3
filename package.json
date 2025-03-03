@@ -33,11 +33,8 @@
     "papaparse": "^5.5.2",
     "pinia": "^3.0.1",
     "postcss": "^8.5.3",
-<<<<<<< HEAD
     "swiper": "^11.2.4",
-=======
     "tailwind-merge": "^3.0.2",
->>>>>>> 10f94714b03d7d82a8859bdc05ac4de2b6c7522c
     "tailwindcss": "^4.0.9",
     "tailwindcss-animate": "^1.0.7",
     "vue": "^3.5.13",

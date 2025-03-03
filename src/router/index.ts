@@ -9,7 +9,7 @@ import UserpageView from '@/views/UserpageView.vue';
 import MypageView from '@/views/MypageView.vue';
 import LoginView from '@/views/LoginView.vue';
 import AdminView from '@/views/AdminView.vue';
-
+import CultureViewDetail from '@/views/CultureView_detail.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +43,10 @@ const router = createRouter({
       path: '/culture',
       name: 'culture',
       component: CultureView,
+    },
+    { path: '/culture/:id', 
+      name: 'culture-detail', 
+      component: CultureViewDetail,
     },
     {
       path: '/community',
