@@ -7,7 +7,7 @@ import HospitalView from '@/views/HospitalView.vue';
 import RecipeView from '@/views/RecipeView.vue';
 import UserpageView from '@/views/UserpageView.vue';
 import MypageView from '@/views/MypageView.vue';
-import LoginView from '@/views/LoginView.vue';
+import UserAuthView from '@/views/UserAuthView.vue';
 import AdminView from '@/views/AdminView.vue';
 
 const router = createRouter({
@@ -49,6 +49,11 @@ const router = createRouter({
       component: () => import('@/views/RecipeSearchView.vue'),
     },
     {
+      path: '/recipe/detail/:id',
+      name: 'recipe-detail',
+      component: () => import('@/views/RecipeDetailView.vue'),
+    },
+    {
       path: '/hospital',
       name: 'hospital',
       component: HospitalView,
@@ -74,9 +79,9 @@ const router = createRouter({
       component: UserpageView,
     },
     {
-      path: '/login',
-      name: 'login',
-      component: LoginView,
+      path: '/auth',
+      name: 'auth',
+      component: UserAuthView,
     },
     {
       path: '/admin',
