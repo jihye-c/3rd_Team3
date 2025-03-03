@@ -19,7 +19,7 @@
     {component: DentalClinicIcon, name: '치과'},
   ];
 
-  // 지역 리스트
+  // 지역 리스트 (임시, 내용 정확하지 않음)
   const districts = [
     {
       gu: '강남구',
@@ -96,287 +96,58 @@
         '길동',
       ],
     },
+  ];
+
+  // 병원 리스트 데이터
+  const hospitalList = [
     {
-      gu: '구로구',
-      dong: [
-        '구로동',
-        '신도림동',
-        '고척동',
-        '온수동',
-        '오류동',
-        '개봉동',
-        '궁동',
-        '천왕동',
-        '독산동',
-        '연동',
-      ],
-    },
-    {
-      gu: '금천구',
-      dong: [
-        '가산동',
-        '독산동',
-        '시흥동',
-        '금천로',
-        '안양천',
-        '이마트',
-        '대양',
-        '시흥동',
-        '연주동',
-      ],
-    },
-    {
-      gu: '동대문구',
-      dong: [
-        '청량리동',
-        '회기동',
-        '용두동',
-        '전농동',
-        '이문동',
-        '답십리동',
-        '장안동',
-        '신설동',
-        '묵동',
-        '용답동',
-      ],
-    },
-    {
-      gu: '동작구',
-      dong: [
-        '노량진동',
-        '대방동',
-        '상도동',
-        '흑석동',
-        '사당동',
-        '관악로',
-        '삼성동',
-        '신대방동',
-        '상도2동',
-        '원효로',
-      ],
-    },
-    {
-      gu: '마포구',
-      dong: [
-        '합정동',
-        '상수동',
-        '망원동',
-        '아현동',
-        '대흥동',
-        '용강동',
-        '신수동',
-        '서교동',
-        '창전동',
-        '토정동',
-      ],
-    },
-    {
-      gu: '성동구',
-      dong: [
-        '성수동',
-        '송정동',
-        '금호동',
-        '하왕십리동',
-        '마장동',
-        '왕십리',
-        '답십리동',
-        '옥수동',
-        '청담동',
-        '용답동',
-      ],
-    },
-    {
-      gu: '성북구',
-      dong: [
-        '성북동',
-        '정릉동',
-        '삼선동',
-        '길음동',
-        '하월곡동',
-        '상월곡동',
-        '종암동',
-        '장위동',
-        '석관동',
-        '동선동',
-      ],
-    },
-    {
-      gu: '송파구',
-      dong: [
-        '잠실동',
-        '풍납동',
-        '문정동',
-        '가락동',
-        '방이동',
-        '거여동',
-        '송파동',
-        '오금동',
-        '석촌동',
-        '삼전동',
-      ],
-    },
-    {
-      gu: '양천구',
-      dong: [
-        '신월동',
-        '목동',
-        '오목교동',
-        '염창동',
-        '양천로',
-        '가양동',
-        '신정동',
-        '행복한동',
-        '우정동',
-        '무대동',
-      ],
-    },
-    {
-      gu: '영등포구',
-      dong: [
-        '영등포동',
-        '여의도동',
-        '당산동',
-        '양평동',
-        '문래동',
-        '신길동',
-        '대림동',
-        '대양동',
-        '서대문동',
-      ],
-    },
-    {
-      gu: '용산구',
-      dong: [
-        '한남동',
-        '이태원동',
-        '효창동',
-        '원효로',
-        '용산동',
-        '서빙고동',
-        '보광동',
-        '동빙고동',
-        '남영동',
-        '삼각산로',
-      ],
-    },
-    {
-      gu: '종로구',
-      dong: [
-        '청진동',
-        '인사동',
-        '종로1가',
-        '종로2가',
-        '종로3가',
-        '종로4가',
-        '종로5가',
-        '내수동',
-        '공평동',
-        '세종로',
-      ],
-    },
-    {
-      gu: '중구',
-      dong: [
-        '을지로동',
-        '명동',
-        '회현동',
-        '광희동',
-        '삼각지동',
-        '남대문로',
-        '정동',
-        '장충동',
-        '필동',
-        '청계천로',
-      ],
-    },
-    {
-      gu: '중랑구',
-      dong: [
-        '중화동',
-        '면목동',
-        '상봉동',
-        '묵동',
-        '신내동',
-        '서울동',
-        '동부시장',
-        '용마산로',
-        '양원동',
-        '황당동',
-      ],
-    },
-    {
-      gu: '도봉구',
-      dong: [
-        '도봉동',
-        '방학동',
-        '창동',
-        '쌍문동',
-        '노해동',
-        '구파발로',
-        '방울동',
-        '의정부동',
-        '어울림동',
-        '동북로',
-      ],
-    },
-    {
-      gu: '노원구',
-      dong: [
-        '중계동',
-        '상계동',
-        '하계동',
-        '월계동',
-        '공릉동',
-        '태릉동',
-        '계양동',
-        '소각장',
-        '불암산',
-      ],
-    },
-    {
-      gu: '은평구',
-      dong: [
-        '불광동',
-        '대조동',
-        '갈현동',
-        '응암동',
-        '수색동',
-        '진관동',
-        '구산동',
-        '녹번동',
-        '상암동',
-        '수성동',
-      ],
-    },
-    {
-      gu: '서대문구',
-      dong: [
-        '창천동',
-        '홍제동',
-        '연희동',
-        '신촌동',
-        '남가좌동',
-        '북가좌동',
-        '합동',
-        '성산동',
-        '가좌동',
-        '중림동',
-      ],
-    },
-    {
-      gu: '서초구',
-      dong: [
-        '서초동',
-        '반포동',
-        '방배동',
-        '양재동',
-        '내곡동',
-        '우면동',
-        '청담동',
-        '논현동',
-        '신사동',
-        '잠원동',
-      ],
+      addr: '서울특별시 종로구 대학로 101, (연건동)',
+      closed_holiday: '휴무',
+      closed_sun: '휴무',
+      closetime_fri: '1700',
+      closetime_mon: '1700',
+      closetime_sat: '1300',
+      closetime_sun: null,
+      closetime_thu: '1700',
+      closetime_tue: '1700',
+      closetime_wed: '1700',
+      dong: '연건동',
+      emergency_day: 'Y',
+      emergency_day_call1: '02-2072-3564',
+      emergency_day_call2: '02-2072-2474',
+      emergency_night: 'Y',
+      emergency_night_call1: '02-2072-3564',
+      emergency_night_call2: '02-2072-2474',
+      gu_code: 110016,
+      gu_name: '종로구',
+      homepage: 'http://www.snuh.org',
+      id: 'JDQ4MTg4MSM1MSMkMSMkMCMkODkkMzgxMzUxIzExIyQxIyQzIyQ3OSQzNjE4MzIjODEjJDEjJDYjJDgz',
+      location_direction: '3번출구',
+      location_distance: '100M',
+      location_place: '혜화역',
+      lunchbreak_sat: null,
+      lunchbreak_weekday: '12:00~13:00',
+      mapx: 126.9990168,
+      mapy: 37.5797151,
+      name: '서울대학교병원',
+      open_date: '19810709',
+      opentime_fri: null,
+      opentime_mon: null,
+      opentime_sat: null,
+      opentime_sun: null,
+      opentime_thu: null,
+      opentime_tue: null,
+      opentime_wed: null,
+      parking_capacity: '951',
+      parking_cost: 'Y',
+      parking_etc:
+        '진료예약 및 진료비수납 1시간 무료, 장애인 및 국가유공자 3시간 무료, 진료, 검사 및 입,퇴원 4시간 무료, 당일진료+입원 6시간 무료, 2개과 진료 및 특수검사 8시간 무료',
+      post_num: 3080,
+      reception_sat: null,
+      reception_weekday: null,
+      tel: '1588-5700',
+      traffic: null,
+      type: '상급종합',
     },
   ];
 
@@ -387,7 +158,7 @@
 
 <template>
   <div class="h-screen overflow-hidden">
-    <div class="w-full h-full mt-[96px]">
+    <div class="w-full h-[calc(100vh-96px)] mt-[96px]">
       <div class="flex h-full">
         <!-- 병원 분류 버튼-->
         <div class="w-[120px] bg-main-400">
@@ -439,14 +210,14 @@
           </div>
           <!-- 리스트 -->
           <div class="flex flex-col h-full py-[24px] overflow-y-auto">
-            <HospitalPostList />
-            <HospitalPostList />
-            <HospitalPostList />
-            <HospitalPostList />
-            <HospitalPostList />
-            <HospitalPostList />
-            <HospitalPostList />
-            <HospitalPostList />
+            <template v-for="item in hospitalList">
+              <HospitalPostList
+                :name="item.name"
+                :type="item.type"
+                :close-time="item.closetime_mon"
+                :addr="item.addr"
+              />
+            </template>
           </div>
         </div>
         <!-- 상세 정보 -->
