@@ -9,6 +9,7 @@ import UserpageView from '@/views/UserpageView.vue';
 import MypageView from '@/views/MypageView.vue';
 import UserAuthView from '@/views/UserAuthView.vue';
 import AdminView from '@/views/AdminView.vue';
+import UserEditInformationView from '@/views/UserEditInformationView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -72,6 +73,11 @@ const router = createRouter({
       path: '/mypage',
       name: 'mypage',
       component: MypageView,
+    },
+    {
+      path:'/mypage/user-update',
+      name: 'user-update',
+      component:UserEditInformationView
     },
     {
       path: '/userpage',
