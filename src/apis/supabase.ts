@@ -1,12 +1,22 @@
-import {createClient} from '@supabase/supabase-js';
+import type {HospitalData, HospitalDetail, HospitalTraffic, HospitalTreatment} from '@/types/hospitalType';
+import {createClient, SupabaseClient} from '@supabase/supabase-js';
 import Papa from 'papaparse'; // PapaParse 라이브러리 사용
-
+type HospitalFullData = Partial<HospitalData & HospitalDetail> & {
+  traffic?: HospitalTraffic[];
+  treatment?: HospitalTreatment[];
+};
 export default class Supabase {
+  private static supabase: SupabaseClient | null = null;
   private static init() {
-    const supabaseUrl = 'https://zqfwjbrqtcmjyijyxpon.supabase.co';
-    const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-    if (!supabaseKey) return;
-    return createClient(supabaseUrl, supabaseKey);
+    if (!this.supabase) {
+      const supabaseUrl = 'https://zqfwjbrqtcmjyijyxpon.supabase.co';
+      const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+
+      if (!supabaseKey) return;
+
+      this.supabase = createClient(supabaseUrl, supabaseKey);
+    }
+    return this.supabase;
   }
 
   static async addCSVData(file: File | null, csvType: string | null = 'hospital') {
@@ -112,6 +122,15 @@ export default class Supabase {
                     etc: row.etc,
                   });
                 }
+              } else if (csvType == 'hospital_treatment' && validHospitalIds) {
+                if (validHospitalIds.has(String(row.id))) {
+                  records.push({
+                    id: row.id,
+                    code: row.code,
+                    code_name: row.code_name,
+                    num_of_doctor: row.num_of_doctor,
+                  });
+                }
               }
             });
 
@@ -151,4 +170,71 @@ export default class Supabase {
     reader.readAsText(file);
   }
 
+  static async getFullHospitalData(page: number) {
+    const supabase = this.init();
+    if (!supabase) return;
+
+    const {data: hospital, error} = await supabase
+      .from('hospital')
+      .select('*')
+      .range(0, 20 * page);
+
+    if (error) {
+      console.log('DB error : ', error);
+      return null;
+    }
+    return hospital;
+  }
+
+  static async getDetailHospitalData(id: string): Promise<HospitalFullData | null> {
+    try {
+      //supabase load
+      const supabase = this.init();
+      if (!supabase) return null;
+
+      let totalData: HospitalFullData = {};
+
+      //기본 데이터 불러오기
+      const {data: hospitalTotal, error: totalError} = await supabase
+        .from('hospital')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (totalError) return null;
+      totalData = {...hospitalTotal};
+
+      //디테일 데이터 불러오기
+      const {data: hospitalDetail, error: detailError} = await supabase
+        .from('hospital_detail')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (!detailError && hospitalDetail) {
+        totalData = {...totalData, ...hospitalDetail};
+      }
+
+      //교통 정보 불러오기
+      const {data: hospitalTraffic, error: trafficError} = await supabase
+        .from('hospital_traffic')
+        .select('traffic_type, line_num, drop_point, direction, distance, etc')
+        .eq('id', id);
+      if (!trafficError && hospitalTraffic) {
+        totalData = {...totalData, traffic: hospitalTraffic};
+      }
+
+      //진료과목 정보 불러오기
+      const {data:hospitalTreatment, error:treatmentError} = await supabase
+      .from('hospital_treatment')
+      .select('code, code_name, num_of_doctor')
+      .eq('id', id);
+      if(!treatmentError && hospitalTreatment){
+        totalData = {...totalData, treatment : hospitalTreatment}
+      }
+
+      return totalData;
+    } catch (err) {
+      console.log('DB error : ', err);
+      return null;
+    }
+  }
 }

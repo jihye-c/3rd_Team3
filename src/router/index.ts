@@ -1,6 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import CommunityView from '@/views/CommunityView.vue';
 import SubscriptionView from '@/views/SubscriptionView.vue';
 import CultureView from '@/views/CultureView.vue';
 import HospitalView from '@/views/HospitalView.vue';
@@ -9,7 +8,8 @@ import UserpageView from '@/views/UserpageView.vue';
 import MypageView from '@/views/MypageView.vue';
 import UserAuthView from '@/views/UserAuthView.vue';
 import AdminView from '@/views/AdminView.vue';
-
+import UserEditInformationView from '@/views/UserEditInformationView.vue';
+import CultureViewDetail from '@/views/CultureView_detail.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +25,21 @@ const router = createRouter({
       component: SubscriptionView,
     },
     {
+      path: '/subscription/calendar',
+      name: 'subscription-calendar',
+      component: () => import('@/views/SubscriptionCalendarView.vue'),
+    },
+    {
+      path: '/subscription/:id',
+      name: 'subscription-detail',
+      component: () => import('@/views/SubscriptionDetailView.vue'),
+    },
+    {
+      path: '/subscription/news',
+      name: 'subscription-news',
+      component: () => import('@/views/SubscriptionNewsView.vue'),
+    },
+    {
       path: '/recipe',
       name: 'recipe',
       component: RecipeView,
@@ -33,6 +48,11 @@ const router = createRouter({
       path: '/recipe/search',
       name: 'recipe-search',
       component: () => import('@/views/RecipeSearchView.vue'),
+    },
+    {
+      path: '/recipe/detail/:id',
+      name: 'recipe-detail',
+      component: () => import('@/views/RecipeDetailView.vue'),
     },
     {
       path: '/hospital',
@@ -44,15 +64,29 @@ const router = createRouter({
       name: 'culture',
       component: CultureView,
     },
+    { path: '/culture/:id', 
+      name: 'culture-detail', 
+      component: CultureViewDetail,
+    },
     {
-      path: '/community',
-      name: 'community',
-      component: CommunityView,
+      path: '/community/resale',
+      name: 'community-resale',
+      component: () => import('@/views/CommunityResaleView.vue'),
+    },
+    {
+      path: '/community/recipe',
+      name: 'community-recipe',
+      component: () => import('@/views/CommunityRecipeView.vue'),
     },
     {
       path: '/mypage',
       name: 'mypage',
       component: MypageView,
+    },
+    {
+      path:'/mypage/user-update',
+      name: 'user-update',
+      component:UserEditInformationView
     },
     {
       path: '/userpage',
@@ -63,7 +97,8 @@ const router = createRouter({
       path: '/auth',
       name: 'auth',
       component: UserAuthView,
-    },{
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: AdminView,

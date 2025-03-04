@@ -34,10 +34,12 @@
     "papaparse": "^5.5.2",
     "pinia": "^3.0.1",
     "postcss": "^8.5.3",
+    "swiper": "^11.2.4",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.0.9",
     "tailwindcss-animate": "^1.0.7",
     "vue": "^3.5.13",
+    "vue-cal": "^4.10.2",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.0"
   },
@@ -59,6 +61,7 @@
     "vite": "^6.1.0",
     "vite-plugin-vue-devtools": "^7.7.2",
     "vite-plugin-vuetify": "^2.1.0",
+    "vite-svg-loader": "^5.1.0",
     "vue-tsc": "^2.2.2",
     "vuetify": "^3.7.14"
   }
