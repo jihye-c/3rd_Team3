@@ -1,61 +1,46 @@
 <script setup lang="ts">
-  import BannerComponent from '@/components/BannerComponent.vue';
-  import CategoryFilterButton from '@/components/recipe/CategoryFilterButton.vue';
-  import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
-  import SearchBarRounded from '@/components/recipe/SearchBarRounded.vue';
-  import {reactive} from 'vue';
+import { fetchRecipes } from "@/apis/recipeApi";
+import BannerComponent from "@/components/BannerComponent.vue";
+import CategoryFilterButton from "@/components/recipe/CategoryFilterButton.vue";
+import RecipeRectangleCard from "@/components/recipe/RecipeRectangleCard.vue";
+import SearchBarRounded from "@/components/recipe/SearchBarRounded.vue";
+import type { Recipe, RecipeResponse } from "@/types/RecipeResponse";
+import { onMounted, reactive, ref } from "vue";
 
-  const categoryList = [
-    {id: 'rice', label: '밥', image: '/recipe/recipe_icon_rice.svg'},
-    {id: 'side', label: '반찬', image: '/recipe/recipe_icon_side.svg'},
-    {id: 'soup', label: '국', image: '/recipe/recipe_icon_soup.svg'},
-    {id: 'one_dish', label: '일품', image: '/recipe/recipe_icon_one_dish.svg'},
-    {id: 'dessert', label: '후식', image: '/recipe/recipe_icon_dessert.svg'},
-    {id: 'all', label: '전체', image: '/recipe/recipe_icon_all.svg'},
-  ];
-  const recipeList = [
-    {
-      name: '저염된장 삼치구이',
-      image: '/recipe/recipe_popular1.webp',
-    },
-    {
-      name: '참나물 소보로 덮밥',
-      image: '/recipe/recipe_popular2.webp',
-    },
-    {
-      name: '코코넛워터 토마토카레',
-      image: '/recipe/recipe_popular3.webp',
-    },
-    {
-      name: '저염된장 삼치구이',
-      image: '/recipe/recipe_popular1.webp',
-    },
-    {
-      name: '참나물 소보로 덮밥',
-      image: '/recipe/recipe_popular2.webp',
-    },
-    {
-      name: '코코넛워터 토마토카레',
-      image: '/recipe/recipe_popular3.webp',
-    },
-    {
-      name: '저염된장 삼치구이',
-      image: '/recipe/recipe_popular1.webp',
-    },
-    {
-      name: '참나물 소보로 덮밥',
-      image: '/recipe/recipe_popular2.webp',
-    },
-    {
-      name: '코코넛워터 토마토카레',
-      image: '/recipe/recipe_popular3.webp',
-    },
-  ];
+const categoryList = [
+  { id: "rice", label: "밥", image: "/recipe/recipe_icon_rice.svg" },
+  { id: "side", label: "반찬", image: "/recipe/recipe_icon_side.svg" },
+  { id: "soup", label: "국", image: "/recipe/recipe_icon_soup.svg" },
+  { id: "one_dish", label: "일품", image: "/recipe/recipe_icon_one_dish.svg" },
+  { id: "dessert", label: "후식", image: "/recipe/recipe_icon_dessert.svg" },
+  { id: "all", label: "전체", image: "/recipe/recipe_icon_all.svg" },
+];
 
-  const activeFilterList = reactive(['rice']);
-  const ingredientList = reactive(['소고기', '감자']);
+const activeFilterList = reactive(["rice"]);
+const ingredientList = reactive(["소고기", "감자"]);
+// api 관련
+const recipeList = ref<Recipe[]>();
+const totalCount = ref<number>(0);
+const isLoading = ref(true);
+const error = ref<string | null>(null);
 
-  const handleSearch = (searchText: string) => alert(`검색어: ${searchText}`);
+onMounted(async () => {
+  try {
+    const data = await fetchRecipes({
+      startIdx: "11",
+      endIdx: "20",
+    });
+    recipeList.value = data.COOKRCP01.row;
+    totalCount.value = Number(data.COOKRCP01.total_count);
+    console.log(recipeList.value);
+  } catch (err) {
+    error.value = "데이터를 불러오는 중 오류가 발생했습니다.";
+  } finally {
+    isLoading.value = false;
+  }
+});
+
+const handleSearch = (searchText: string) => alert(`검색어: ${searchText}`);
 </script>
 
 <template>
@@ -65,15 +50,17 @@
     title="레시피 검색"
     subtitle="간편하게 따라하는 오늘의 한끼"
     :breadcrumbs="[
-      {title: '홈', href: '/'},
-      {title: '레시피', href: '/recipe'},
-      {title: '레시피 검색'},
+      { title: '홈', href: '/' },
+      { title: '레시피', href: '/recipe' },
+      { title: '레시피 검색' },
     ]"
   />
 
   <!-- 데이터 개수 -->
-  <div class="container w-full pt-[60px] text-[20px] text-mono-600 font-medium text-right">
-    전체 : NNN개 레시피
+  <div
+    class="container w-full pt-[60px] text-[20px] text-mono-600 font-medium text-right"
+  >
+    전체 : {{ totalCount }}개 레시피
   </div>
 
   <div class="container flex justify-between pt-[28px] pb-[100px]">
@@ -125,7 +112,7 @@
     <div>
       <div class="grid grid-cols-2 gap-x-[48px] gap-y-[28px] pb-[100px]">
         <template v-for="item in recipeList">
-          <RecipeRectangleCard :title="item.name" :image="item.image" />
+          <RecipeRectangleCard :title="item.RCP_NM" :image="item.ATT_FILE_NO_MAIN" />
         </template>
       </div>
       <v-pagination length="4"></v-pagination>
@@ -134,15 +121,15 @@
 </template>
 
 <style scoped>
-  :deep(.v-divider) {
-    background-color: var(--color-mono-200);
-    opacity: 1;
-  }
-  :deep(.v-chip) {
-    color: var(--color-mono-050);
-    background: var(--color-main-400);
-    font-weight: 600;
-    padding-left: 14px;
-    padding-right: 14px;
-  }
+:deep(.v-divider) {
+  background-color: var(--color-mono-200);
+  opacity: 1;
+}
+:deep(.v-chip) {
+  color: var(--color-mono-050);
+  background: var(--color-main-400);
+  font-weight: 600;
+  padding-left: 14px;
+  padding-right: 14px;
+}
 </style>
