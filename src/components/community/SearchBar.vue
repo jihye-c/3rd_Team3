@@ -10,6 +10,11 @@
       type: String,
       default: '',
     },
+    // input의 너비 (searchbar 전체 너비 아님 주의!!)
+    width: {
+      type: Number,
+      required: false,
+    },
   });
 
   const emit = defineEmits(['update:searchCriteria', 'update:searchQuery', 'search']);
@@ -55,7 +60,8 @@
         name="search"
         v-model="localSearchQuery"
         placeholder="검색어를 입력하세요"
-        class="outline-0 pl-4 w-[1000px] text-[18px]"
+        class="outline-0 pl-4 text-[18px]"
+        :style="{width: width ? width + 'px' : '1000px'}"
         @keyup.enter="handleSearch"
       />
       <v-icon @click="handleSearch">mdi-magnify</v-icon>
