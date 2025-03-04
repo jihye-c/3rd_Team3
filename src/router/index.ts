@@ -64,10 +64,7 @@ const router = createRouter({
       name: 'culture',
       component: CultureView,
     },
-    { path: '/culture/:id', 
-      name: 'culture-detail', 
-      component: CultureViewDetail,
-    },
+    {path: '/culture/:id', name: 'culture-detail', component: CultureViewDetail},
     {
       path: '/community/resale',
       name: 'community-resale',
@@ -87,6 +84,15 @@ const router = createRouter({
       path: '/community/recipe',
       name: 'community-recipe',
       component: () => import('@/views/CommunityRecipeView.vue'),
+    },  
+    { path: '/community/review',
+      name: 'community-review',
+      component: () => import('@/views/CommunityReviewView.vue'),
+    },
+    {
+      path: '/community/question',
+      name: 'community-question',
+      component: () => import('@/views/CommunityQuestionView.vue'),
     },
     {
       path: '/community/post/:id',
@@ -104,9 +110,9 @@ const router = createRouter({
       component: MypageView,
     },
     {
-      path:'/mypage/user-update',
+      path: '/mypage/user-update',
       name: 'user-update',
-      component:UserEditInformationView
+      component: UserEditInformationView,
     },
     {
       path: '/userpage',
