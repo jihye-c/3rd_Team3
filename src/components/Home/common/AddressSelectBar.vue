@@ -23,7 +23,9 @@
 </template>
 
 <script setup lang="ts">
-  import {reactive} from 'vue';
+  import { getGeolocationAddress } from '@/apis/auth';
+import { askForLocation } from '@/lib/utils';
+import {onMounted, reactive} from 'vue';
 
   const select = reactive({state: '강남구 신사동', abbr: 'FL'});
   const items = reactive([
@@ -33,6 +35,11 @@
     {state: '강남구 신사동', abbr: 'CA'},
     {state: '강남구 신사동', abbr: 'NY'},
   ]);
+  onMounted(async()=>{
+   const location = await askForLocation()
+   console.log(location)
+    await getGeolocationAddress(location)
+  })
 </script>
 
 <style scoped>
