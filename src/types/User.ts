@@ -1,12 +1,14 @@
 // User
-interface FullName {
+export interface UserFullName {
   name: string;
   nickname: string;
+  scrapId ?: string;
+  introduce ?: string;
 }
 
 export default interface User {
   _id: string;
-  fullName: FullName;
+  fullName: UserFullName | string;
   email: string;
   emailVerified: boolean;
   username: string | null;
@@ -24,5 +26,3 @@ export default interface User {
   posts: string[];
   __v: number;
 }
-
-

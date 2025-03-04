@@ -54,8 +54,8 @@
   </div>
 </template>
 <script setup lang="ts">
-  import { userLogin } from '@/apis/auth';
-import {ref} from 'vue';
+  import {ref} from 'vue';
+  import {useAuthStore} from '@/stores/auth';
   const idRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const idInput = ref('');
   const pwInput = ref('');
@@ -64,15 +64,15 @@ import {ref} from 'vue';
   //필수 입력 정의
   const rules = {
     required: (value: string) => !!value || '필수 입력 사항입니다.',
-    id : (value: string) => idRegEx.test(value) || '올바른 이메일을 입력해주세요.'
+    id: (value: string) => idRegEx.test(value) || '올바른 이메일을 입력해주세요.',
   };
 
   const formsubmit = async () => {
-    const res = await userLogin(idInput.value, pwInput.value);
-    console.log(res);
+    const authStore = useAuthStore();
+    await authStore.login(idInput.value, pwInput.value);
+    console.log('user', authStore.user); // 로그인한 유저 정보
+    console.log('authen', authStore.isAuthenticated); // 로그인 상태 (true/false)
   };
-
-  
 </script>
 <style scoped>
   form :v-deep(.text-field-affix-color) {

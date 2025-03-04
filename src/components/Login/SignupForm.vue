@@ -82,8 +82,9 @@
 </template>
 
 <script setup lang="ts">
-  import {userSignUp} from '@/apis/auth';
   import {ref} from 'vue';
+  import {useAuthStore} from '@/stores/auth';
+  import {checkUserEmail} from '@/apis/userService';
 
   const idRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const passwordRegEx = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
@@ -98,17 +99,26 @@
   //필수 입력 정의
   const rules = {
     required: (value: string) => !!value || '필수 입력 사항입니다.',
-    id : (value:string) => idRegEx.test(value) || '올바른 이메일을 입력해주세요.',
-    password : (value:string) => passwordRegEx.test(value) || '영문,숫자를 포함한 6자리 이상의 비밀번호를 입력해주세요.',
-    passwordCheck : (value:string) => pwInput.value === value || '비밀번호가 동일하지 않습니다.',
-    name : (value:string) => nameRegEx.test(value) || '이름은 영문 및 국문만 입력 가능합니다.'
+    id: (value: string) => idRegEx.test(value) || '올바른 이메일을 입력해주세요.',
+    password: (value: string) => passwordRegEx.test(value) || '영문,숫자를 포함한 6자리 이상의 비밀번호를 입력해주세요.',
+    passwordCheck: (value: string) => pwInput.value === value || '비밀번호가 동일하지 않습니다.',
+    name: (value: string) => nameRegEx.test(value) || '이름은 영문 및 국문만 입력 가능합니다.',
   };
-
- 
-  
-  const formsubmit = () => {
-    const res = userSignUp(idInput.value, pwInput.value, nameInput.value, nicknameInput.value ==="" ? nameInput.value : nicknameInput.value);
-    console.log(res);
+  const formsubmit = async () => {
+    const idDuplicate = await checkUserEmail(idInput.value);
+    if (!idDuplicate) {
+      alert('중복된 이메일입니다. 로그인하시거나 다른 이메일을 사용해주세요.');
+      //나중에 이곳에서 모달로 띄우든 하면 될 듯
+      return;
+    }
+    const authStore = useAuthStore();
+    const formData = {
+      email: idInput.value,
+      password: pwInput.value,
+      name: nameInput.value,
+      nickname: nicknameInput.value === '' ? nameInput.value : nicknameInput.value,
+    };
+    await authStore.register(formData);
   };
 </script>
 

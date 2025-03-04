@@ -1,11 +1,12 @@
-import { defineStore } from 'pinia';
-import { ref, onMounted } from 'vue';
+import {defineStore} from 'pinia';
+import {ref, onMounted} from 'vue';
 import type User from '@/types/User';
-import { userLogin, getUserInfo } from '@/apis/auth';
-import { userRegister, updateUser, withdrawalUser } from '@/services/userService';
+import {userLogin, getUserInfo, userLogout} from '@/apis/auth';
+import {userRegister, updateUser, createScrapPost} from '@/apis/userService';
+import type UserRegisterForm from '@/types/UserRegisterForm';
+import type { UserFullName } from '@/types/User';
 
 export const useAuthStore = defineStore('auth', () => {
-
   const user = ref<User | null>(null);
   const token = ref<string | null>(localStorage.getItem('token'));
   const isAuthenticated = ref<boolean>(!!token.value);
@@ -24,7 +25,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   const fetchUser = async () => {
     try {
-      const userData = await getUserInfo();
+      if (!user.value || !user.value._id) throw new Error('유저 정보가 없습니다.');
+      const userData = await getUserInfo(user.value._id);
       user.value = userData;
     } catch (error) {
       console.error('Failed to fetch user info:', error);
@@ -32,17 +34,31 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  const register = async (formData: FormData) => {
+  const register = async (formData: UserRegisterForm) => {
     try {
       const newUser = await userRegister(formData);
-      user.value = newUser;
+      console.log('new user : ', newUser);
+      //스크랩 포스트 생성
+      await login(newUser.email, formData.password);
+      const scrapId = await createScrapPost(newUser._id);
+      console.log('scrap id : ', scrapId);
+
+      if (typeof newUser.fullName !== 'string') return
+      const prevFullName = JSON.parse(newUser.fullName);
+      const updateForm = {
+        ...prevFullName,
+        scrapId: scrapId,
+      };
+      const updatedUser = await updateUser(updateForm);
+      console.log('updated user : ', updatedUser);
+      user.value = updatedUser;
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;
     }
   };
 
-  const updateUserInfo = async (formData: FormData) => {
+  const updateUserInfo = async (formData: UserFullName) => {
     try {
       const updatedUser = await updateUser(formData);
       user.value = updatedUser;
@@ -58,17 +74,7 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null;
     isAuthenticated.value = false;
     localStorage.removeItem('token');
-  };
-
-  const withdraw = async () => {
-    try {
-      const result = await withdrawalUser();
-      logout();
-      return result;
-    } catch (error) {
-      console.error('Withdrawal failed:', error);
-      throw error;
-    }
+    userLogout();
   };
 
   // 자동 로그인 처리
@@ -87,6 +93,5 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     updateUserInfo,
     logout,
-    withdraw
   };
 });
