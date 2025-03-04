@@ -84,7 +84,7 @@ const router = createRouter({
       component: () => import('@/views/CommunityPostDetailView.vue'),
     },
     {
-      path: '/used/post/:id',
+      path: '/community/resale/:id',
       name: 'used-post-detail',
       component: () => import('@/views/UsedPostDetailView.vue'),
     }, 
