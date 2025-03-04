@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type RecipeResponse from '@/\btypes/RecipeResponse';
+  import type RecipeResponse from '@/types/RecipeResponse';
   import BannerComponent from '@/components/BannerComponent.vue';
   import BookmarkButton from '@/components/BookmarkButton.vue';
   import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
@@ -105,7 +105,9 @@
           </div>
           <div class="flex flex-col gap-[48px] p-[48px]">
             <div class="flex flex-col gap-4">
-              <div class="text-[40px] text-main-400 font-semibold">{{ recipeData.RCP_NM }}</div>
+              <div class="text-[40px] text-main-400 font-semibold">
+                {{ recipeData.RCP_NM }}
+              </div>
               <div class="text-[18px] text-mono-600">
                 {{ recipeData.RCP_PAT2 }} | {{ recipeData.RCP_WAY2 }} | #{{ recipeData.HASH_TAG }}
               </div>

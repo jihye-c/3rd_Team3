@@ -1,8 +1,9 @@
-import type {HospitalData, HospitalDetail, HospitalTraffic} from '@/types/hospitalType';
+import type {HospitalData, HospitalDetail, HospitalTraffic, HospitalTreatment} from '@/types/hospitalType';
 import {createClient, SupabaseClient} from '@supabase/supabase-js';
 import Papa from 'papaparse'; // PapaParse 라이브러리 사용
 type HospitalFullData = Partial<HospitalData & HospitalDetail> & {
   traffic?: HospitalTraffic[];
+  treatment?: HospitalTreatment[];
 };
 export default class Supabase {
   private static supabase: SupabaseClient | null = null;
@@ -121,6 +122,15 @@ export default class Supabase {
                     etc: row.etc,
                   });
                 }
+              } else if (csvType == 'hospital_treatment' && validHospitalIds) {
+                if (validHospitalIds.has(String(row.id))) {
+                  records.push({
+                    id: row.id,
+                    code: row.code,
+                    code_name: row.code_name,
+                    num_of_doctor: row.num_of_doctor,
+                  });
+                }
               }
             });
 
@@ -212,9 +222,18 @@ export default class Supabase {
         totalData = {...totalData, traffic: hospitalTraffic};
       }
 
+      //진료과목 정보 불러오기
+      const {data:hospitalTreatment, error:treatmentError} = await supabase
+      .from('hospital_treatment')
+      .select('code, code_name, num_of_doctor')
+      .eq('id', id);
+      if(!treatmentError && hospitalTreatment){
+        totalData = {...totalData, treatment : hospitalTreatment}
+      }
+
       return totalData;
     } catch (err) {
-      console.log('DB error : ', err)
+      console.log('DB error : ', err);
       return null;
     }
   }

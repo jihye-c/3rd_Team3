@@ -23,6 +23,7 @@
     "@supabase/supabase-js": "^2.49.1",
     "@tailwindcss/postcss": "^4.0.9",
     "@tailwindcss/vite": "^4.0.9",
+    "axios": "^1.8.1",
     "chart.js": "^4.4.8",
     "chartjs-plugin-annotation": "^3.1.0",
     "class-variance-authority": "^0.7.1",
@@ -60,6 +61,7 @@
     "vite": "^6.1.0",
     "vite-plugin-vue-devtools": "^7.7.2",
     "vite-plugin-vuetify": "^2.1.0",
+    "vite-svg-loader": "^5.1.0",
     "vue-tsc": "^2.2.2",
     "vuetify": "^3.7.14"
   }
