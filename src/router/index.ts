@@ -76,6 +76,11 @@ const router = createRouter({
       component: () => import('@/views/CommunityRecipeView.vue'),
     },
     {
+      path: '/community/review',
+      name: 'community-review',
+      component: () => import('@/views/CommunityReviewView.vue'),
+    },
+    {
       path: '/mypage',
       name: 'mypage',
       component: MypageView,
