@@ -50,7 +50,7 @@
               <RouterLink class="px-4" to="/recipe">자취 레시피</RouterLink>
               <RouterLink class="px-4" to="/hospital">인근 병원</RouterLink>
               <RouterLink class="px-4" to="/culture">문화 생활</RouterLink>
-              <RouterLink class="group/item relative px-6" to="/community"
+              <RouterLink class="group/item relative px-6" to="/community/resale"
                 >커뮤니티
                 <div class="absolute w-full pt-6 left-0 top-7">
                   <ul
@@ -69,12 +69,12 @@
                     <li
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      중고거래
+                      <RouterLink to="/community/resale">중고거래</RouterLink>
                     </li>
                     <li
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      나만의 레시피
+                      <RouterLink to="/community/recipe">나만의 레시피</RouterLink>
                     </li>
                   </ul>
                 </div>
@@ -101,35 +101,33 @@
               </v-select>
             </div>
 
-          <!-- <RouterLink class="tw:flex tw:items-center" to="/mypage"> </RouterLink> -->
-          <v-badge content="5" color="var(--color-main-400)">
-            <v-speed-dial
-              scrim="true"
-              location="bottom center"
-              transition="fade-transition"
-            >
-              <template v-slot:activator="{props: activatorProps}">
-                <v-avatar
-                  v-bind="activatorProps"
-                  image="https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201608/04/htm_2016080484837486184.jpg"
-                ></v-avatar>
-              </template>
+            <!-- <RouterLink class="tw:flex tw:items-center" to="/mypage"> </RouterLink> -->
+            <v-badge content="5" color="var(--color-main-400)">
+              <v-speed-dial scrim="true" location="bottom center" transition="fade-transition">
+                <template v-slot:activator="{props: activatorProps}">
+                  <v-avatar
+                    v-bind="activatorProps"
+                    image="https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201608/04/htm_2016080484837486184.jpg"
+                  ></v-avatar>
+                </template>
 
-              <v-btn key="1" class="!shadow-none" icon="$success"></v-btn>
-              <v-btn key="2" class="!shadow-none" icon="$info"></v-btn>
-              <v-btn key="3" class="!shadow-none" icon="$warning"></v-btn>
-              <v-btn key="4" class="!shadow-none" icon="$error"></v-btn>
-            </v-speed-dial>
-          </v-badge>
-        </div>
-      </nav>
-    </div>
-  </header>
-</Motion>
+                <v-btn key="1" class="!shadow-none" icon="$success"></v-btn>
+                <v-btn key="2" class="!shadow-none" icon="$info"></v-btn>
+                <v-btn key="3" class="!shadow-none" icon="$warning"></v-btn>
+                <v-btn key="4" class="!shadow-none" icon="$error"></v-btn>
+              </v-speed-dial>
+            </v-badge>
+          </div>
+        </nav>
+      </div>
+    </header>
+  </Motion>
 </template>
 
-<style scoped >
-  header :deep(.v-field__outline) {display:none;}
+<style scoped>
+  header :deep(.v-field__outline) {
+    display: none;
+  }
   header :deep(.v-field--variant-filled .v-field__overlay) {
     background-color: transparent;
     border: none;
