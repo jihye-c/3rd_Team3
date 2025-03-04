@@ -41,7 +41,7 @@
               <RouterLink class="px-4" to="/recipe">자취 레시피</RouterLink>
               <RouterLink class="px-4" to="/hospital">인근 병원</RouterLink>
               <RouterLink class="px-4" to="/culture">문화 생활</RouterLink>
-              <RouterLink class="group/item relative px-6" to="/community"
+              <RouterLink class="group/item relative px-6" to="/community/resale"
                 >커뮤니티
                 <div class="absolute w-full pt-6 left-0 top-7">
                   <ul
@@ -50,22 +50,22 @@
                     <li
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      질문 게시판
+                      <RouterLink to="/community/question">질문 게시판</RouterLink>
                     </li>
                     <li
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      동네리뷰
+                      <RouterLink to="/community/review">동네리뷰</RouterLink>
                     </li>
                     <li
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      중고거래
+                      <RouterLink to="/community/resale">중고거래</RouterLink>
                     </li>
                     <li
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      나만의 레시피
+                      <RouterLink to="/community/recipe">나만의 레시피</RouterLink>
                     </li>
                   </ul>
                 </div>
@@ -99,4 +99,17 @@
 </template>
 
 <style scoped>
+  header :deep(.v-field__outline) {
+    display: none;
+  }
+  header :deep(.v-field--variant-filled .v-field__overlay) {
+    background-color: transparent;
+    border: none;
+  }
+  header :deep(.v-select .v-select__selection-text) {
+    font-weight: bold;
+  }
+  header :deep(.v-field__input) {
+    padding-left: 4px;
+  }
 </style>

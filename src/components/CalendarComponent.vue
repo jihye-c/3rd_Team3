@@ -24,6 +24,7 @@ const nextMonth = () => {
 </script>
 
 <template>
+
   <div class="calendar-container border border-mono-300 shadow-md flex flex-col justify-between">
     <!-- 달력 상단 헤더 -->
     <div class="calendar-header">
