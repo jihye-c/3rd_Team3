@@ -8,8 +8,8 @@ import UserpageView from '@/views/UserpageView.vue';
 import MypageView from '@/views/MypageView.vue';
 import UserAuthView from '@/views/UserAuthView.vue';
 import AdminView from '@/views/AdminView.vue';
-import UserEditInformationView from '@/views/UserEditInformationView.vue';
 import CultureViewDetail from '@/views/CultureView_detail.vue';
+import UserEditInformationView from '@/views/UserEditInformationView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -85,6 +85,16 @@ const router = createRouter({
       name: 'community-question',
       component: () => import('@/views/CommunityQuestionView.vue'),
     },
+    {
+      path: '/community/post/:id',
+      name: 'community-post-detail',
+      component: () => import('@/views/CommunityPostDetailView.vue'),
+    },
+    {
+      path: '/community/resale/:id',
+      name: 'used-post-detail',
+      component: () => import('@/views/UsedPostDetailView.vue'),
+    }, 
     {
       path: '/mypage',
       name: 'mypage',
