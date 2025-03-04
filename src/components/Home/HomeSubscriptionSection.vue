@@ -5,9 +5,9 @@
       <DatePicker
         expanded
         locale="en"
+        :attributes="attributes"
         first-day-of-week="2"
         :masks="{ title: 'YYYY.MM', weekdays: 'WWW' }"
-        v-model="date"
       ></DatePicker> <!-- ✅ Self-closing 문제 해결 -->
     </div>
     <div class="w-full mt-6 px-5 pl-10 py-10 rounded-lg bg-mono-050">
@@ -38,21 +38,47 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { DatePicker } from 'v-calendar';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Pagination } from 'swiper/modules';
 
 import HomeTitle from './common/HomeTitle.vue';
-
+import SubscriptionSlideCard from '../SubscriptionSlideCard.vue';
+import { getData } from '@/apis/SubscriptionApi';
+import type { HouseInfo } from '@/types/SubscriptionTypes';
 
 import 'v-calendar/style.css';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import SubscriptionSlideCard from '../SubscriptionSlideCard.vue';
 
 
-const date = ref(new Date());
+const data = ref<HouseInfo[]>([]); // 데이터를 반응형 상태로 선언
+
+const dotColors = ["#FF5733", "#33FF57", "#5733FF", "#FFD700", "#FF33A1"];
+
+
+const attributes = computed(() =>
+    data.value.map((house, index) => ({
+    key: `house-${index}`,
+    dot: dotColors[index % dotColors.length], // ✅ 색상 순환 적용
+
+    popover: {
+      label: house.HOUSE_NM, // 툴팁에 표시할 텍스트
+    },
+    dates: [
+      new Date(house.RCRIT_PBLANC_DE)
+    ]
+    ,
+  }))
+);
+
+onMounted( async()=>{
+ const result = await getData()
+ console.log(result)
+ data.value = result.data; // data에 할당
+})
+
 </script>
 
 <style scoped>

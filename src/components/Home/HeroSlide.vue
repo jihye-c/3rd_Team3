@@ -68,34 +68,33 @@ const currentSlide = ref(0);
 const backgroundItems = [
   {
     title: "병원정보",
-    content: `나의 첫 집 찾기\n청약 정보로 시작해볼까요?`,
+    content: "내 주변 병원 정보를 한눈에 확인해보세요.",
     color: "var(--color-main-400)",
     img: "/home/main_hero1.webp",
   },
   {
     title: "나만의 레시피",
-    content: "나의 첫 집 찾기\n청약 정보로 시작해볼까요?",
+    content: "건강하고 맛있는 나만의 레시피를 찾아보세요!",
     color: "#f25267",
     img: "/home/main_hero2.webp",
   },
   {
     title: "동네정보",
-    content: "나의 첫 집 찾기\n청약 정보로 시작해볼까요?",
+    content: "우리 동네 생활 정보와 편의시설을 확인해보세요.",
     color: "#03d8b1",
     img: "/home/main_hero3.webp",
   },
   {
     title: "청약 정보",
-    content: "나의 첫 집 찾기 청약\n정보로 시작해볼까요?",
+    content: "내 집 마련! 청약 정보를 빠르게 확인해보세요.",
     color: "#00bdec",
     img: "/home/main_hero4.webp",
   },
+
 ];
 
 const onSlideChange = (swiper: any) => {
-  currentSlide.value = swiper.activeIndex;
-  console.log("slide change:", currentSlide.value);
-};
+  currentSlide.value = swiper.activeIndex;};
 </script>
 
 <style scoped>
