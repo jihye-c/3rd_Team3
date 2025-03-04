@@ -64,10 +64,7 @@ const router = createRouter({
       name: 'culture',
       component: CultureView,
     },
-    { path: '/culture/:id', 
-      name: 'culture-detail', 
-      component: CultureViewDetail,
-    },
+    {path: '/culture/:id', name: 'culture-detail', component: CultureViewDetail},
     {
       path: '/community/resale',
       name: 'community-resale',
@@ -84,9 +81,9 @@ const router = createRouter({
       component: MypageView,
     },
     {
-      path:'/mypage/user-update',
+      path: '/mypage/user-update',
       name: 'user-update',
-      component:UserEditInformationView
+      component: UserEditInformationView,
     },
     {
       path: '/userpage',
