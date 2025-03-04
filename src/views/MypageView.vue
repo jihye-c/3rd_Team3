@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import RecipeCard from '@/components/community/RecipeCard.vue';
 import ResaleCard from '@/components/community/ResaleCard.vue';
+import CommunityPostList from '@/components/community/CommunityPostList.vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 
 const profileImage = ref<string | null>(null);
@@ -30,6 +31,60 @@ const handleImageUpload = (event: Event) => {
 const toggleEdit = () => {
   isEditing.value = !isEditing.value;
 };
+
+// 🔹 동네 리뷰 게시글 데이터
+const communityPostList = ref([
+  {
+    image: '/recipe/recipe_popular2.webp',
+    title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
+    content: '자취를 시작하고 나서 주말마다 너무 심심해요...',
+    dong: '신림동',
+    tags: ['문화생활', '취미'],
+    bookmarks: 5,
+    comments: 4,
+  },
+  {
+    image: '/recipe/recipe_popular3.webp',
+    title: '집 근처 조용한 카페 추천해주세요!',
+    content: '집에서 공부하려니 너무 집중이 안 되네요...',
+    dong: '강남구',
+    tags: ['카페', '스터디'],
+    bookmarks: 3,
+    comments: 2,
+  },
+  {
+    title: '맛있는 배달 음식 추천 좀 해주세요!',
+    content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
+    dong: '홍대',
+    tags: ['배달음식', '맛집'],
+    bookmarks: 7,
+    comments: 5,
+  },
+  {
+    title: '맛있는 배달 음식 추천 좀 해주세요!',
+    content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
+    dong: '홍대',
+    tags: ['배달음식', '맛집'],
+    bookmarks: 7,
+    comments: 5,
+  },
+  {
+    title: '맛있는 배달 음식 추천 좀 해주세요!',
+    content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
+    dong: '홍대',
+    tags: ['배달음식', '맛집'],
+    bookmarks: 7,
+    comments: 5,
+  },
+  {
+    title: '맛있는 배달 음식 추천 좀 해주세요!',
+    content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
+    dong: '홍대',
+    tags: ['배달음식', '맛집'],
+    bookmarks: 7,
+    comments: 5,
+  },
+]);
 
 const postList = [
   {
@@ -178,8 +233,22 @@ const handlePageChange = (page: number) => {
 
         <!-- 탭 컨텐츠 -->
         <div class="mt-6">
-          <p v-if="selectedTab === '동네리뷰'" class="text-mono-700">동네리뷰 내용 로드...</p>
-          <div v-if="selectedTab === '중고거래'" class="grid grid-cols-3 gap-6">
+          <!-- 동네 리뷰 탭 -->
+          <div v-if="selectedTab === '동네리뷰'" class="grid grid-cols-2 gap-6">
+            <CommunityPostList
+              v-for="(post, index) in communityPostList"
+              :key="index"
+              :title="post.title"
+              :content="post.content"
+              :dong="post.dong"
+              :tags="post.tags"
+              :bookmarks="post.bookmarks"
+              :comments="post.comments"
+              :image="post.image"
+              class="w-full"
+            />
+          </div>
+          <div v-if="selectedTab === '중고거래'" class="grid grid-cols-4 gap-6">
             <ResaleCard
               v-for="(post, index) in postList"
               :key="index"
@@ -190,9 +259,22 @@ const handlePageChange = (page: number) => {
               :available="post.available"
             />
           </div>
-          <p v-if="selectedTab === '질문게시판'" class="text-mono-700">질문게시판 내용 로드...</p>
+          <div v-if="selectedTab === '질문게시판'" class="grid grid-cols-2 gap-6">
+            <CommunityPostList
+              v-for="(post, index) in communityPostList"
+              :key="index"
+              :title="post.title"
+              :content="post.content"
+              :dong="post.dong"
+              :tags="post.tags"
+              :bookmarks="post.bookmarks"
+              :comments="post.comments"
+              :image="post.image"
+              class="w-full"
+            />
+          </div>
           <!-- "나만의 레시피" 탭 - 카드 리스트 -->
-          <div v-if="selectedTab === '나만의 레시피'" class="grid grid-cols-3 gap-6">
+          <div v-if="selectedTab === '나만의 레시피'" class="grid grid-cols-4 gap-6">
             <RecipeCard
               v-for="(recipe, index) in paginatedRecipes"
               :key="index"
