@@ -2,7 +2,6 @@
   import BannerComponent from '@/components/BannerComponent.vue';
   import OrderRadioButton from '@/components/community/OrderRadioButton.vue';
   import RecipeCard from '@/components/community/RecipeCard.vue';
-  import ResaleCard from '@/components/community/ResaleCard.vue';
   import SearchBar from '@/components/community/SearchBar.vue';
   import {ref} from 'vue';
 

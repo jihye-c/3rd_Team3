@@ -8,8 +8,8 @@ import UserpageView from '@/views/UserpageView.vue';
 import MypageView from '@/views/MypageView.vue';
 import UserAuthView from '@/views/UserAuthView.vue';
 import AdminView from '@/views/AdminView.vue';
-import UserEditInformationView from '@/views/UserEditInformationView.vue';
 import CultureViewDetail from '@/views/CultureView_detail.vue';
+import UserEditInformationView from '@/views/UserEditInformationView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,10 +64,7 @@ const router = createRouter({
       name: 'culture',
       component: CultureView,
     },
-    { path: '/culture/:id', 
-      name: 'culture-detail', 
-      component: CultureViewDetail,
-    },
+    {path: '/culture/:id', name: 'culture-detail', component: CultureViewDetail},
     {
       path: '/community/resale',
       name: 'community-resale',
@@ -79,14 +76,34 @@ const router = createRouter({
       component: () => import('@/views/CommunityRecipeView.vue'),
     },
     {
+      path: '/community/review',
+      name: 'community-review',
+      component: () => import('@/views/CommunityReviewView.vue'),
+    },
+    {
+      path: '/community/question',
+      name: 'community-question',
+      component: () => import('@/views/CommunityQuestionView.vue'),
+    },
+    {
+      path: '/community/post/:id',
+      name: 'community-post-detail',
+      component: () => import('@/views/CommunityPostDetailView.vue'),
+    },
+    {
+      path: '/community/resale/:id',
+      name: 'used-post-detail',
+      component: () => import('@/views/UsedPostDetailView.vue'),
+    }, 
+    {
       path: '/mypage',
       name: 'mypage',
       component: MypageView,
     },
     {
-      path:'/mypage/user-update',
+      path: '/mypage/user-update',
       name: 'user-update',
-      component:UserEditInformationView
+      component: UserEditInformationView,
     },
     {
       path: '/userpage',
