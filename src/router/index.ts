@@ -10,7 +10,6 @@ import UserAuthView from '@/views/UserAuthView.vue';
 import AdminView from '@/views/AdminView.vue';
 import CultureViewDetail from '@/views/CultureView_detail.vue';
 import UserEditInformationView from '@/views/UserEditInformationView.vue';
-import CultureViewDetail from '@/views/CultureView_detail.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
