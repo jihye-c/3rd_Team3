@@ -59,7 +59,7 @@
                     <li
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      질문 게시판
+                      <RouterLink to="/community/question">질문 게시판</RouterLink>
                     </li>
                     <li
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
