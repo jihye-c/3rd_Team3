@@ -1,6 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import CommunityResaleView from '@/views/CommunityResaleView.vue';
 import SubscriptionView from '@/views/SubscriptionView.vue';
 import CultureView from '@/views/CultureView.vue';
 import HospitalView from '@/views/HospitalView.vue';
@@ -67,7 +66,12 @@ const router = createRouter({
     {
       path: '/community/resale',
       name: 'community-resale',
-      component: CommunityResaleView,
+      component: () => import('@/views/CommunityResaleView.vue'),
+    },
+    {
+      path: '/community/recipe',
+      name: 'community-recipe',
+      component: () => import('@/views/CommunityRecipeView.vue'),
     },
     {
       path: '/mypage',
