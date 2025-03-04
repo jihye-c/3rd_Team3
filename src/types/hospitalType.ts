@@ -58,3 +58,9 @@ export type HospitalTraffic = {
   distance: string | null;
   etc: string | null;
 };
+
+export type HospitalTreatment = {
+  code : number,
+  code_name : string,
+  num_of_doctor : number,
+}

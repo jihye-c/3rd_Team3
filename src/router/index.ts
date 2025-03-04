@@ -10,6 +10,7 @@ import UserAuthView from '@/views/UserAuthView.vue';
 import AdminView from '@/views/AdminView.vue';
 import CultureViewDetail from '@/views/CultureView_detail.vue';
 import UserEditInformationView from '@/views/UserEditInformationView.vue';
+import CultureViewDetail from '@/views/CultureView_detail.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,6 +68,16 @@ const router = createRouter({
     { path: '/culture/:id', 
       name: 'culture-detail', 
       component: CultureViewDetail,
+    },
+    {
+      path: '/community/resale',
+      name: 'community-resale',
+      component: () => import('@/views/CommunityResaleView.vue'),
+    },
+    {
+      path: '/community/recipe',
+      name: 'community-recipe',
+      component: () => import('@/views/CommunityRecipeView.vue'),
     },
     {
       path: '/community/resale',

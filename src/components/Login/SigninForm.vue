@@ -6,7 +6,7 @@
           <div class="flex flex-col items-center justify-center">
             <h1 class="!text-3xl !font-semibold text-mono-700">로그인</h1>
             <form class="mt-12 w-full" action="" method="POST">
-              <v-form @submit.prevent>
+              <v-form v-model="isValid" @submit.prevent>
                 <v-responsive class="mx-auto" max-width="420">
                   <v-text-field
                     autofocus
@@ -17,9 +17,7 @@
                     type="input"
                     v-model="idInput"
                     placeholder="이메일을 입력해주세요."
-                    :hint="idHint"
-                    persistent-hint
-                    :rules="[rules.required]"
+                    :rules="[rules.required, rules.id]"
                   ></v-text-field>
                   <v-text-field
                     bg-color="var(--color-main-50)"
@@ -29,6 +27,7 @@
                     label="패스워드"
                     v-model="pwInput"
                     type="password"
+                    autocomplete="off"
                     :rules="[rules.required]"
                   ></v-text-field>
                   <v-btn
@@ -41,6 +40,8 @@
                     color="var(--color-main-400)"
                     type="submit"
                     block
+                    :disabled="!isValid"
+                    @click="formsubmit"
                   ></v-btn>
                 </v-responsive>
               </v-form>
@@ -53,21 +54,25 @@
   </div>
 </template>
 <script setup lang="ts">
-  import {computed, ref} from 'vue';
+  import {ref} from 'vue';
+  import {useAuthStore} from '@/stores/auth';
+  const idRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const idInput = ref('');
+  const pwInput = ref('');
+  const isValid = ref(false);
 
   //필수 입력 정의
   const rules = {
     required: (value: string) => !!value || '필수 입력 사항입니다.',
+    id: (value: string) => idRegEx.test(value) || '올바른 이메일을 입력해주세요.',
   };
 
-  const idInput = ref('');
-  const idRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const idHint = computed(() => {
-    return idRegEx.test(idInput.value) || idInput.value === ''
-      ? ''
-      : '올바른 이메일을 입력해주세요.';
-  });
-  const pwInput = ref('');
+  const formsubmit = async () => {
+    const authStore = useAuthStore();
+    await authStore.login(idInput.value, pwInput.value);
+    console.log('user', authStore.user); // 로그인한 유저 정보
+    console.log('authen', authStore.isAuthenticated); // 로그인 상태 (true/false)
+  };
 </script>
 <style scoped>
   form :v-deep(.text-field-affix-color) {
