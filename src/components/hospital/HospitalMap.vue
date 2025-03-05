@@ -11,8 +11,8 @@
         right: 0,
         bottom: 0,
       },
-      lng: 126.57121880299802,
-      lat: 33.44885891518261,
+      lng:126.97672186606,
+      lat:37.576030700103,
       level: 3,
     },
   });
@@ -32,7 +32,7 @@
       const container = document.getElementById('map'); // 지도를 담을 영역의 DOM 참조
       const options = {
         center: new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng), // 중심 좌표
-        level: 3, // 확대/축소 레벨
+        level: mapData.value.level,
       };
 
       map.value = new window.kakao.maps.Map(container, options); // 지도 생성
