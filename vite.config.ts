@@ -14,4 +14,14 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    proxy: {
+      '/recipeAPI': {
+        target: 'http://openapi.foodsafetykorea.go.kr/api',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/recipeAPI/, ''),
+      },
+    },
+  },
 });

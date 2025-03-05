@@ -282,7 +282,7 @@
 
   const stopResize = () => {
     isResizing.value = false;
-    activeIdx = null;
+    activeIdx = 0;
     window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('mouseup', stopResize);
   };

@@ -1,19 +1,10 @@
 <script setup lang="ts">
-  import {reactive} from 'vue';
   import {RouterLink} from 'vue-router';
   import {Motion, useScroll, useTransform} from 'motion-v';
+  import AddressSelectBar from './Home/common/AddressSelectBar.vue';
 
   const {scrollY} = useScroll();
-  const select = reactive({state: '강남구 신사동', abbr: 'FL'});
-  const items = reactive([
-    {state: '강남구 신사동', abbr: 'FL'},
-    {state: '강남구 신사동', abbr: 'GA'},
-    {state: '강남구 신사동', abbr: 'NE'},
-    {state: '강남구 신사동', abbr: 'CA'},
-    {state: '강남구 신사동', abbr: 'NY'},
-  ]);
-
-  const background = useTransform(scrollY, [0, 100], ['rgba(0,0,0,0.2)', 'rgba(255,255,255,1)']);
+  const background = useTransform(scrollY, [0, 100], ['rgba(0,0,0,0.0)', 'rgba(255,255,255,1)']);
   const height = useTransform(scrollY, [0, 100], [0, '100%']);
   const border = useTransform(scrollY, [0, 100], ['none', '1px solid #eee']);
   const color = useTransform(scrollY, [0, 100], ['#fff', '#000']);
@@ -28,7 +19,7 @@
 <template>
   <Motion
     as="div"
-    class="w-full fixed z-[50]"
+    class="w-full fixed z-20"
     :style="{
       background: props.backgroundOpacity ? background : '#fff',
       height,
@@ -81,25 +72,8 @@
               </RouterLink>
             </div>
           </div>
-          <div class="flex items-center">
-            <div class="flex gap-1 items-center">
-              <h4>우리동네</h4>
-              <v-select
-                active
-                autofocus
-                v-model="select"
-                :items="items"
-                item-title="state"
-                item-value="abbr"
-                return-object
-                hide-details
-                closable-chips
-                eager
-                focused
-                hide-selected
-              >
-              </v-select>
-            </div>
+            <div class="flex items-center">
+              <AddressSelectBar />
 
             <!-- <RouterLink class="tw:flex tw:items-center" to="/mypage"> </RouterLink> -->
             <v-badge content="5" color="var(--color-main-400)">

@@ -9,26 +9,32 @@
   const SubscriptionCategoryData = [
     {
       category: 'APT',
+      sort: '01',
       image: '/images/subscription/subscriptionCard01.png',
     },
     {
       category: '도시형 생활주택',
+      sort: '0201',
       image: '/images/subscription/subscriptionCard02.png',
     },
     {
       category: '오피스텔',
+      sort: '0202',
       image: '/images/subscription/subscriptionCard03.png',
     },
     {
       category: '생활형 숙박시설',
+      sort: '0204',
       image: '/images/subscription/subscriptionCard04.png',
     },
     {
       category: '민간임대',
+      sort: '0203',
       image: '/images/subscription/subscriptionCard05.png',
     },
     {
       category: '공공지원 민간임대',
+      sort: '0303',
       image: '/images/subscription/subscriptionCard06.png',
     },
   ];
