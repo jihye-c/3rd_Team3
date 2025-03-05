@@ -10,7 +10,9 @@
   import PublicHealthCenterIcon from '@/assets/icons/publicHealthCenter.svg';
   import OrientalMedicineClinicIcon from '@/assets/icons/orientalMedicineClinic.svg';
   import DentalClinicIcon from '@/assets/icons/dentalClinic.svg';
-import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
+  import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
+  import HospitalMap from '@/components/hospital/HospitalMap.vue';
+  import type {MapData} from '@/types/kakao';
 
   //-----------------------------화면 제어 관련-----------------------------//
   const selectedHospitalType = ref('clinic'); // 선택된 병원 종류, default 의원
@@ -284,15 +286,28 @@ import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
     window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('mouseup', stopResize);
   };
-  
+
+  //----------------------------- 맵 관련 -----------------------------//
+  const mapData = ref<MapData>({
+    bounds: {
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+    },
+    lng: 126.57121880299802,
+    lat: 33.44885891518261,
+    level: 3,
+  });
+  const isMapChange = ref(false);
 </script>
 
 <template>
-  <div class="h-screen overflow-hidden">
-    <div class="w-full h-[calc(100vh-96px)] mt-[96px]">
-      <div class="flex h-full">
+  <div id="hospitalContent"  class="h-screen overflow-hidden">
+    <div class="w-full h-full flex pt-24">
+      <div class="flex h-full border border-red-500 relative z-10 ">
         <!-- 병원 분류 버튼-->
-        <div class="w-28 bg-main-400">
+        <div class="w-28 bg-main-400 shrink-0 ">
           <div>
             <template v-for="icon in hospitalIcons" :key="icon.id">
               <div
@@ -316,11 +331,11 @@ import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
         </div>
         <!-- 검색 & 리스트 -->
         <div
-          class="flex flex-col shadow-[4px_0_10px_rgba(0,0,0,0.1)] h-full relative"
+          class="shadow-[4px_0_10px_rgba(0,0,0,0.1)] z-10 h-full relative"
           :style="{width: resizable[0].width + 'px'}"
         >
           <!-- 검색 -->
-          <div class="border-b-1 border-mono-300 overflow-hidden box-content min-h-[174px]">
+          <div class="border-b-1 border-mono-300">
             <div class="flex flex-wrap py-6 px-5 gap-2 w-full">
               <div class="text-[20px] w-full font-semibold text-mono-700">카테고리 검색</div>
               <div class="flex gap-2 w-full">
@@ -350,7 +365,6 @@ import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
               ></v-text-field>
             </div>
           </div>
-
           <div class="h-full pb-[60px] overflow-y-auto scrollbar">
             <!-- 증상 필터 -->
             <div
@@ -358,7 +372,7 @@ import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
               v-if="isSymptomButtonShow"
             >
               <div class="text-[20px] font-semibold text-mono-700">증상 선택</div>
-              <SymptomsFilter/>
+              <SymptomsFilter />
             </div>
 
             <!-- 리스트 -->
@@ -379,12 +393,10 @@ import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
             @mousedown="(e) => startResize(0, e)"
           ></div>
         </div>
-
         <!-- 상세 정보 -->
-        <div class="relative" :style="{width: resizable[1].width + 'px'}">
+        <div id="detialInfoBox" :style="{width: resizable[1].width + 'px'}" v-show="isDetailPageShow">
           <div class="resizer" @mousedown="(e) => startResize(1, e)"></div>
           <HospitalDetailCard
-            v-show="isDetailPageShow"
             @close="closeDetail"
             :name="selectedHospital.name"
             :type="selectedHospital.type"
@@ -398,14 +410,20 @@ import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
             :parking_etc="selectedHospital.parking_etc"
           />
         </div>
-        <!-- 지도 -->
-        <div></div>
       </div>
+      <HospitalMap v-model:mapData="mapData" v-model:isMapChange="isMapChange" />
     </div>
   </div>
 </template>
 
 <style scoped>
+  #detialInfoBox{
+    position: absolute;
+    height: 100%;
+    background: white;
+    right: 0; top: 0;
+    transform: translateX(100%);
+  }
   :deep(.v-icon.search) {
     color: var(--color-mono-500);
   }
@@ -425,11 +443,12 @@ import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
   }
   .resizer.hide::before {
     content: '';
+    z-index: 9;
     position: absolute;
-    right: -16px;
+    right: -20px;
     top: 50%;
     transform: translateY(-50%);
-    width: 16px;
+    width: 20px;
     height: 120px;
     background: var(--color-main-400);
     border-radius: 0px 12px 12px 0px;
