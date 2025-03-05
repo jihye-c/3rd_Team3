@@ -22,3 +22,33 @@ export interface HouseInfo {
   SUBSCRPT_RCEPT_ENDDE: string; // 청약 접수 종료일 (YYYY-MM-DD)
   TOT_SUPLY_HSHLDCO: number; // 총 공급 세대 수
 }
+
+// 아파트 청약 정보
+export interface AptInfo {
+  BSNS_MBY_NM: string; // 사업주체명
+  CNSTRCT_ENTRPS_NM: string; // 건설업체명
+  HMPG_ADRES: string; // 홈페이지 주소
+  HOUSE_DTL_SECD: string; // 주택상세구분코드
+  HOUSE_DTL_SECD_NM: string; // 주택상세구분코드명
+  HOUSE_MANAGE_NO: string; // 주택관리번호
+  HOUSE_NM: string; // 주택명
+  HOUSE_SECD: string; // 주택구분코드
+  HOUSE_SECD_NM: string; // 주택구분코드명
+  HSSPLY_ADRES: string; // 공급위치
+  HSSPLY_ZIP: string; // 공급위치 우편번호
+  MDHS_TELNO: string; // 담당자 전화번호
+  MVN_PREARNGE_YM: string; // 입주예정월 (YYYYMM)
+  PBLANC_NO: string; // 공고번호
+  PBLANC_URL: string; // 공고 상세 URL
+  PRZWNER_PRESNATN_DE: string; // 당첨자 발표일 (YYYY-MM-DD)
+  RCRIT_PBLANC_DE: string; // 모집공고일
+  RENT_SECD: string; // 분양구분코드
+  RENT_SECD_NM: string; // 분양구분코드명
+  RCEPT_BGNDE: string; // 접수 시작일 (YYYY-MM-DD)
+  RCEPT_ENDDE: string; // 접수 종료일 (YYYY-MM-DD)
+  SPSPLY_RCEPT_BGNDE: string | null; // 특별공급 접수 시작일 (null 허용) (YYYY-MM-DD)
+  SPSPLY_RCEPT_ENDDE: string | null; // 특별공급 접수 종료일 (null 허용) (YYYY-MM-DD)
+  SUBSCRPT_AREA_CODE: string; // 공급지역코드
+  SUBSCRPT_AREA_CODE_NM: string; // 공급지역명
+  TOT_SUPLY_HSHLDCO: number; // 총 공급세대수
+}
