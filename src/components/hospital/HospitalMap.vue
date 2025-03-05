@@ -109,7 +109,7 @@
 <template v-slot:actions>
   <div id="map" class="w-full h-full relative">
     <v-btn
-      class="absolute z-10 top-11/12 left-1/2 "
+      class="absolute z-10 top-11/12 left-1/2 bg-main-400 "
       elevation="6"
       rounded="xl"
       size="large"
@@ -124,12 +124,13 @@
 <style scoped>
   button.v-btn {
     transform: translateX(-50%);
-    background: var(--color-main-400);
+    background: rgba(248, 154, 0, .65);
+    backdrop-filter: blur(3px);
     color: white;
     font-weight: bold;
     cursor: pointer;
   }
   button.v-btn:hover{
-    background: var(--color-main-500);
+    background: rgba(248, 154, 0, .95);
   }
 </style>
