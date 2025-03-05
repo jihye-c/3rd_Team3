@@ -7,6 +7,7 @@
   import {useRoute} from 'vue-router';
   import {fetchRecipe} from '@/apis/recipeApi';
   import type {Recipe} from '@/types/RecipeResponse';
+  import {fetchYoutube} from '@/apis/youtubeApi';
 
   interface Nutrition {
     calories: number;
@@ -27,6 +28,7 @@
     fat: 0,
   });
   const manuals = ref<string[]>([]);
+  const videoId = ref<string[]>([]);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
@@ -41,8 +43,13 @@
     // api 호출
     try {
       isLoading.value = true;
+      // 레시피 데이터 불러오기
       const data = await fetchRecipe(String(paramId.value));
       recipeData.value = data;
+      // 유튜브 데이터 불러오기
+      const keyword = String(paramId.value).split(' ').at(-1)!;
+      const youtubeResponse = await fetchYoutube(keyword);
+      videoId.value = youtubeResponse.items.map((item) => item.id.videoId);
     } catch (err) {
       error.value = '데이터를 불러오는 중 오류가 발생했습니다.';
     } finally {
@@ -159,8 +166,12 @@
         <div class="flex flex-col gap-2">
           <div class="text-[40px] text-mono-700 font-semibold">연관 레시피</div>
           <div class="flex gap-[24px]">
-            <div class="bg-mono-200 h-[360px] w-full rounded-2xl"></div>
-            <div class="bg-mono-200 h-[360px] w-full rounded-2xl"></div>
+            <div class="bg-mono-200 h-[360px] w-full rounded-2xl overflow-hidden">
+              <iframe :src="`https://www.youtube.com/embed/${videoId[0]}`" class="w-full h-full" />
+            </div>
+            <div class="bg-mono-200 h-[360px] w-full rounded-2xl overflow-hidden">
+              <iframe :src="`https://www.youtube.com/embed/${videoId[1]}`" class="w-full h-full" />
+            </div>
           </div>
         </div>
       </div>
