@@ -14,7 +14,10 @@
 </script>
 
 <template>
-  <div :style="{width: size + 'px', height: size + 'px'}" class="overflow-hidden rounded-[20px]">
+  <div
+    :style="{width: size + 'px', height: size + 'px'}"
+    class="overflow-hidden rounded-[20px] cursor-pointer"
+  >
     <div :style="{backgroundImage: `url(${image})`}" class="w-full h-full bg-cover bg-center">
       <div
         :class="

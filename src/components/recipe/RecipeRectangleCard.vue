@@ -1,17 +1,17 @@
 <script setup lang="ts">
-interface Props {
-  image: string;
-  title: string;
-}
+  interface Props {
+    image: string;
+    title: string;
+  }
 
-const props = defineProps<Props>();
+  const props = defineProps<Props>();
 </script>
 
 <template>
-  <div class="flex flex-col gap-[16px] w-[516px]">
+  <div class="flex flex-col gap-[16px] w-[516px] cursor-pointer">
     <div class="h-[344px] overflow-hidden rounded-[12px]">
       <div
-        :style="{ backgroundImage: `url(${props.image})` }"
+        :style="{backgroundImage: `url(${props.image})`}"
         class="w-full h-full bg-cover bg-center"
       ></div>
     </div>
