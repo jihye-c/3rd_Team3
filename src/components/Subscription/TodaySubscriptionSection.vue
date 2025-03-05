@@ -17,7 +17,7 @@
 
   const subscriptions = ref<Subscription[]>([
     {
-      id: 1,
+      id: 2025000001,
       name: '레미안 원페를라',
       location: '서울특별시 서초구 방배동 818-14번지 일대',
       details: ['민영', 'APT', '서초구'],
@@ -30,7 +30,7 @@
       applicationEndDates: '02월 06일',
     },
     {
-      id: 2,
+      id: 2024000718,
       name: '더샵 퍼스트 월드',
       location: '서울특별시 중랑구 상봉동 83-1번지 일원',
       details: ['민영', 'APT', '중랑구'],
@@ -42,7 +42,7 @@
       applicationEndDates: '02월 21일',
     },
     {
-      id: 3,
+      id: 2024000692,
       name: '창경궁 롯데캐슬 시그니처',
       location: '서울특별시 성북구 삼선동2가 296번지 일원',
       details: ['민영', 'APT', '성북구'],

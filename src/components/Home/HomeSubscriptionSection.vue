@@ -2,111 +2,130 @@
   <div class="flex w-full gap-4">
     <div class="flex flex-col justify-between gap-15">
       <HomeTitle title="이 달의 청약정보" content="놓치지 말아야 할 이 달의 청약정보" />
-      <DatePicker
+      <Calendar
         expanded
         locale="en"
+        @dayclick="handleDayClick"
+        @did-move="onMonthChangee"
         :attributes="attributes"
-        first-day-of-week="2"
-        :masks="{ title: 'YYYY.MM', weekdays: 'WWW' }"
-      ></DatePicker> <!-- ✅ Self-closing 문제 해결 -->
+        :first-day-of-week="2"
+        :masks="{title: 'YYYY.MM', weekdays: 'WWW'}"
+      ></Calendar>
     </div>
     <div class="w-full mt-6 px-5 pl-10 py-10 rounded-lg bg-mono-050">
-    <div>
-      <swiper
-    :direction="'vertical'"
-    :slidesPerView="3"
-    :space-between="40"
-    :centeredSlides="true"
-    :pagination="{
-      type: 'progressbar',
-      el:'.progressbar'
-    }"
-    :modules="[Pagination]"
-    class="mySwiper w-full h-[500px]"
-  >
-    <swiper-slide><SubscriptionSlideCard/></swiper-slide>
-    <swiper-slide><SubscriptionSlideCard/></swiper-slide>
-    <swiper-slide><SubscriptionSlideCard/></swiper-slide>
-    <swiper-slide><SubscriptionSlideCard/></swiper-slide>
-    <swiper-slide><SubscriptionSlideCard/></swiper-slide>
-    <div class="swiper-pagination progressbar "></div>
+      <div>
+        <SwiperComponent
+          @swiper="setSwiper"
+          :direction="'vertical'"
+          :slidesPerView="3"
+          :space-between="40"
+          :centeredSlides="true"
+          :pagination="{
+            type: 'progressbar',
+            el: '.progressbar',
+          }"
+          class="mySwiper w-full h-[500px]"
+        >
+          <swiper-slide v-for="(data, i) in filterData" :key="i"
+            ><SubscriptionSlideCard :id="String(i)" :data="data"
+          /></swiper-slide>
+          <div class="swiper-pagination progressbar"></div>
+        </SwiperComponent>
 
-  </swiper>
+      </div>
     </div>
-  </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { DatePicker } from 'v-calendar';
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Pagination } from 'swiper/modules';
+  import {computed, ref, watchEffect} from 'vue';
+  import {Calendar} from 'v-calendar';
+  import {Swiper as SwiperComponent, SwiperSlide} from 'swiper/vue';
+  import type {Swiper} from 'swiper/types';
+  import HomeTitle from './common/HomeTitle.vue';
+  import SubscriptionSlideCard from '../SubscriptionSlideCard.vue';
+  import type {HouseInfo} from '@/types/SubscriptionTypes';
 
-import HomeTitle from './common/HomeTitle.vue';
-import SubscriptionSlideCard from '../SubscriptionSlideCard.vue';
-import { getData } from '@/apis/SubscriptionApi';
-import type { HouseInfo } from '@/types/SubscriptionTypes';
+  import 'v-calendar/style.css';
+  import 'swiper/css';
+  import 'swiper/css/pagination';
 
-import 'v-calendar/style.css';
-import 'swiper/css';
-import 'swiper/css/pagination';
+  import {useSubscriptionStore} from '@/stores/subscriptionStore.ts';
+  import type {CalendarDay, Page} from 'v-calendar/dist/types/src/utils/page.js';
+import type { AttributeConfig } from 'v-calendar/dist/types/src/utils/attribute.js';
+import { getLocalDate } from '@/utils/dateFormat';
 
+  const swipers = ref<Swiper | null>(null);
+  const data = ref<HouseInfo[] | null>([]); // 데이터를 반응형 상태로 선언
+  const filterData = ref<HouseInfo[] | null>([]); // 데이터를 반응형 상태로 선언
 
-const data = ref<HouseInfo[]>([]); // 데이터를 반응형 상태로 선언
+  const subscriptionStore = useSubscriptionStore();
+  const dotColors = ['#FF5733', '#33FF57', '#5733FF', '#FFD700', '#FF33A1'];
 
-const dotColors = ["#FF5733", "#33FF57", "#5733FF", "#FFD700", "#FF33A1"];
+  const setSwiper = (instance: Swiper): void => {
+    swipers.value = instance;
+  };
 
-
-const attributes = computed(() =>
-    data.value.map((house, index) => ({
-    key: `house-${index}`,
-    dot: dotColors[index % dotColors.length], // ✅ 색상 순환 적용
-
-    popover: {
-      label: house.HOUSE_NM, // 툴팁에 표시할 텍스트
+  const attributes = computed<AttributeConfig[]>(() =>
+    data.value!.map((house, index) => ({
+      key: `house-${index}`,
+      dot: {
+      style: {
+        backgroundColor: dotColors[index % dotColors.length],
+      },
     },
-    dates: [
-      new Date(house.RCRIT_PBLANC_DE)
-    ]
-    ,
-  }))
-);
+      popover: {
+        label: house.HOUSE_NM,
+        visibility: 'click'
+      },
+      dates: [new Date(house.RCRIT_PBLANC_DE)],
+    })),
+  );
 
-onMounted( async()=>{
- const result = await getData()
- console.log(result)
- data.value = result.data; // data에 할당
-})
+  const handleDayClick =  (calendarDay: CalendarDay) => {
+    const date = getLocalDate(calendarDay.date)
+    console.log(data.value)
+    const index = Object.keys(filterData.value!).findIndex((k) => k === date)
+    swipers.value?.slideTo(index);
+  };
 
+  const onMonthChangee = async (calendarWeek: Page[]) => {
+    subscriptionStore.filteredData(calendarWeek[0].id);
+  };
+
+  watchEffect(async () => {
+    data.value = subscriptionStore.SubscriptionList;
+    filterData.value = subscriptionStore.filteredDayhDatas;
+    console.log(filterData.value);
+  });
 </script>
 
 <style scoped>
-:deep(.vc-title) {
-  font-weight: 800;
-}
-:deep(.vc-bordered) {
-  padding: 5px 80px;
-  width: 653px;
-  height: 400px;
-}
-:deep(.vc-weekday){
-  font-weight: 400;
-}
-:deep(.vc-header){
-  padding: 0 100px;
-  margin: 20px 0px;
-}
-:deep(.vc-arrow){
-  width: 25px;
-  height: 25px;
-  color:#fff;
-  background-color: var(--color-main-400);
-}
-:deep(.vc-day){
-  min-height: 45px;
-}
-:deep(.swiper-pagination-progressbar ) {
+  :deep(.vc-title) {
+    font-weight: 800;
+  }
+  :deep(.vc-bordered) {
+    padding: 5px 80px;
+    width: 653px;
+    height: 400px;
+  }
+  :deep(.vc-weekday) {
+    font-weight: 400;
+  }
+  :deep(.vc-header) {
+    padding: 0 100px;
+    margin: 20px 0px;
+  }
+  :deep(.vc-arrow) {
+    width: 25px;
+    height: 25px;
+    color: #fff;
+    background-color: var(--color-main-400);
+  }
+  :deep(.vc-day) {
+    min-height: 45px;
+  }
+  :deep(.swiper-pagination-progressbar) {
     position: absolute;
     /* top: 300px; */
     left: 850px;

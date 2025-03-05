@@ -1,0 +1,100 @@
+[
+  {
+    "id": "abdominal_pain",
+    "name": "복통",
+    "image": "/images/hospital/abdominal_pain.svg",
+    "departments": ["내과", "소아청소년과", "가정의학과", "한방내과", "한방소아과"]
+  },
+  {
+    "id": "fever",
+    "name": "열/오한",
+    "image": "/images/hospital/fever.svg",
+    "departments": ["내과", "소아청소년과", "가정의학과", "응급의학과"]
+  },
+  {
+    "id": "burn",
+    "name": "화상",
+    "image": "/images/hospital/burn.svg",
+    "departments": ["외과", "성형외과", "피부과", "응급의학과"]
+  },
+  {
+    "id": "tinnitus",
+    "name": "이명",
+    "image": "/images/hospital/tinnitus.svg",
+    "departments": ["이비인후과", "한방안·이비인후·피부과", "정신건강의학과"]
+  },
+  {
+    "id": "vomiting",
+    "name": "구토",
+    "image": "/images/hospital/vomiting.svg",
+    "departments": ["내과", "소아청소년과", "응급의학과"]
+  },
+  {
+    "id": "cough",
+    "name": "기침",
+    "image": "/images/hospital/cough.svg",
+    "departments": ["내과", "소아청소년과", "가정의학과", "이비인후과"]
+  },
+  {
+    "id": "fracture",
+    "name": "골절",
+    "image": "/images/hospital/fracture.svg",
+    "departments": ["정형외과", "응급의학과"]
+  },
+  {
+    "id": "muscle_pain",
+    "name": "근육통",
+    "image": "/images/hospital/muscle_pain.svg",
+    "departments": ["재활의학과", "정형외과", "한방재활의학과", "침구과"]
+  },
+  {
+    "id": "fatigue",
+    "name": "피로감",
+    "image": "/images/hospital/fatigue.svg",
+    "departments": ["가정의학과", "내과", "한방내과"]
+  },
+  {
+    "id": "emergency",
+    "name": "응급",
+    "image": "/images/hospital/emergency.svg",
+    "departments": ["응급의학과", "외과"]
+  },
+  {
+    "id": "headache",
+    "name": "두통",
+    "image": "/images/hospital/headache.svg",
+    "departments": ["신경과", "정신건강의학과", "가정의학과", "한방신경정신과"]
+  },
+  {
+    "id": "toothache",
+    "name": "치통",
+    "image": "/images/hospital/toothache.svg",
+    "departments": ["치과", "치과보존과", "치과보철과", "구강내과"]
+  },
+  {
+    "id": "urinary",
+    "name": "비뇨",
+    "image": "/images/hospital/urinary.svg",
+    "departments": ["비뇨의학과"]
+  },
+  {
+    "id": "eye_congestion",
+    "name": "충혈",
+    "image": "/images/hospital/eye_congestion.svg",
+    "departments": ["안과"]
+  },
+  {
+    "id": "menstrual_pain",
+    "name": "생리통",
+    "image": "/images/hospital/menstrual_pain.svg",
+    "departments": ["산부인과", "한방부인과"]
+  },
+  {
+    "id": "depression",
+    "name": "우울증",
+    "image": "/images/hospital/depression.svg",
+    "departments": ["정신건강의학과", "한방신경정신과"]
+  }
+]
+  
+  

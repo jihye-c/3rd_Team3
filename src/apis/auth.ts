@@ -1,7 +1,10 @@
 import type User from '@/types/User';
 import axiosApi from '@/utils/axiosConfig';
+import axios from 'axios';
 
 const apiRoot = import.meta.env.VITE_PROGRAMMERS_API_ROOT;
+const kakaoApi = import.meta.env.VITE_KAKAO_REST_BASE_API_URL
+const kakaoApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
 
 export async function userLogin(email: string, password: string): Promise<User> {
   const res = await axiosApi.post(`${apiRoot}/login`, {email, password});
@@ -26,4 +29,21 @@ export async function getUserInfo(id:string):Promise<User>{ //return 어떻게 �
 
 export async function userLogout(){
   await axiosApi.post(`${apiRoot}/logout`);
+}
+
+// 좌표를 주소로 받아오는 API
+export async function getGeolocationAddress(locations: { latitude: number; longitude: number; }){
+  const res = await axios.get(`${kakaoApi}`,{
+    headers:{
+      Authorization:`KakaoAK ${kakaoApiKey}`
+    },
+    params:{
+      x: locations.longitude,
+      y: locations.latitude
+    }
+  });
+  if(res.status !== 200){
+    throw new Error('주소를 받아오지 못했습니다. : '+ res.status);
+  }
+  return res.data
 }

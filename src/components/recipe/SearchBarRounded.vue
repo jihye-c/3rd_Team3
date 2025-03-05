@@ -1,20 +1,58 @@
 <script setup lang="ts">
-  import {ref} from 'vue';
+  import {ref, watch} from 'vue';
+  import {useRoute} from 'vue-router';
 
   interface Props {
+    modelValue?: string | string[];
     long?: boolean;
   }
   const props = defineProps<Props>();
 
+  const route = useRoute();
+
+  // 이벤트 정의
+  const emit = defineEmits(['update:modelValue']);
+
   // 검색어
   const searchText = ref<string>('');
 
-  // 이벤트 정의
-  const emit = defineEmits(['search']);
+  // URL 쿼리에 검색어가 있으면 복원
+  if (typeof props.modelValue === 'string') {
+    if (props.modelValue) {
+      searchText.value = String(route.query.keyword);
+    }
+  }
 
-  const handleClick = () => {
-    emit('search', searchText.value);
+  // 입력값을 업데이트하는 함수
+  const updateValue = () => {
+    const trimmedValue = searchText.value.trim();
+    // modelValue가 `string`이면 새로운 값으로 변경
+    if (typeof props.modelValue === 'string') {
+      emit('update:modelValue', trimmedValue);
+    }
+    // modelValue가 `string[]`이면 배열에 추가
+    else if (Array.isArray(props.modelValue)) {
+      // 값 입력 없으면 return
+      if (!trimmedValue) return;
+      // 이미 있는 값이라면 추가 X
+      if (props.modelValue.includes(trimmedValue)) {
+        searchText.value = ''; // 입력값 초기화
+        return;
+      }
+      emit('update:modelValue', [...props.modelValue, trimmedValue]);
+      searchText.value = ''; // 입력값 초기화
+    }
   };
+
+  // modelValue가 변경될 때 searchText를 자동 업데이트 (초기화하면 값 비우는 용도)
+  watch(
+    () => props.modelValue,
+    (newValue) => {
+      if (typeof newValue === 'string') {
+        searchText.value = newValue;
+      }
+    },
+  );
 </script>
 
 <template>
@@ -26,7 +64,7 @@
       type="text"
       placeholder="검색어를 입력하세요"
       v-model="searchText"
-      @keyup.enter="handleClick"
+      @keyup.enter="updateValue"
       :class="
         long
           ? 'w-[900px] placeholder:text-[20px] text-[20px]'
@@ -34,7 +72,7 @@
       "
       class="outline-none text-mono-700"
     />
-    <button @click="handleClick">
+    <button @click="updateValue">
       <v-icon :size="long ? '40px' : '24px'">mdi-magnify</v-icon>
     </button>
   </div>

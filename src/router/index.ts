@@ -40,6 +40,11 @@ const router = createRouter({
       component: () => import('@/views/SubscriptionNewsView.vue'),
     },
     {
+      path: '/subscription/news/:id',
+      name: 'subscription-news-detail',
+      component: () => import('@/views/SubscriptionNewsDetailView.vue'),
+    },
+    {
       path: '/recipe',
       name: 'recipe',
       component: RecipeView,
@@ -93,7 +98,12 @@ const router = createRouter({
       path: '/community/resale/:id',
       name: 'used-post-detail',
       component: () => import('@/views/UsedPostDetailView.vue'),
-    }, 
+    },
+    {
+      path: '/community/post',
+      name: 'posting',
+      component: () => import('@/views/PostView.vue'),
+    },
     {
       path: '/community/post',
       name: 'posting',
