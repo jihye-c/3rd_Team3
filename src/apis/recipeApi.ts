@@ -2,8 +2,9 @@ import type {Recipe, RecipeResponse} from '@/types/RecipeResponse';
 import {recipeApiInstance} from '@/utils/axiosInstance';
 
 interface RecipeParams {
-  startIdx: string;
-  endIdx: string;
+  // startIdx: string;
+  // endIdx: string;
+  page: number;
   RCP_NM: string;
   RCP_PAT2: string;
   RCP_PARTS_DTLS: string[];
@@ -13,7 +14,9 @@ const apiKey = import.meta.env.VITE_RECIPE_API_KEY; // API 키 가져오기
 
 export const fetchRecipes = async (params: RecipeParams): Promise<RecipeResponse> => {
   try {
-    const {startIdx, endIdx, RCP_NM, RCP_PAT2, RCP_PARTS_DTLS} = params;
+    const {page, RCP_NM, RCP_PAT2, RCP_PARTS_DTLS} = params;
+    const startIdx = (page - 1) * 20 + 1;
+    const endIdx = page * 20;
 
     // 재료 있을 때
     if (RCP_PARTS_DTLS.length) {

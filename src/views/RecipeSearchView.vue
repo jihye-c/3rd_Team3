@@ -23,8 +23,9 @@
   const router = useRouter();
 
   // 검색 관련
+  const page = ref<number>(1);
   const searchKeyword = ref<string>('');
-  const searchCategory = ref<string>('밥');
+  const searchCategory = ref<string>('');
   const searchIngredients = ref<string[]>([]);
   const isInit = ref(false);
 
@@ -49,17 +50,35 @@
     updateQuery();
   };
 
-  // 쿼리 업데이트
-  const updateQuery = () => {
-    router.push({
-      query: {
-        keyword: searchKeyword.value,
-        category: searchCategory.value,
-        ingredients: searchIngredients.value?.join(','),
-      },
-    });
+  // 페이지네이션
+  const handlePageChange = (page: number) => {
+    updateQuery();
+    // 페이지 상단으로 이동
+    window.scrollTo({top: 0, behavior: 'instant'});
   };
 
+  // 쿼리 업데이트
+  const updateQuery = () => {
+    const currentQuery = {...route.query};
+
+    // 페이지 변경 시, 기존 쿼리에 page 값만 업데이트
+    if (page.value !== Number(route.query.page)) {
+      router.push({query: {...currentQuery, page: page.value}});
+    }
+    // 검색 조건 변경 시, 모든 쿼리 업데이트 (페이지는 1로 초기화)
+    else {
+      router.push({
+        query: {
+          page: 1,
+          keyword: searchKeyword.value,
+          category: searchCategory.value,
+          ingredients: searchIngredients.value.join(','),
+        },
+      });
+    }
+  };
+
+  // url query 변경 및 api 호출
   watch(
     () => JSON.stringify(route.query),
     async (newQuery, oldQuery) => {
@@ -69,6 +88,7 @@
       // 처음에 url query 설정 하기
       if (!isInit.value) {
         isInit.value = true;
+        page.value = route.query.page ? Number(route.query.page) : 1;
         searchKeyword.value = route.query.keyword ? String(route.query.keyword) : '';
         searchCategory.value = route.query.category ? String(route.query.category) : '';
         searchIngredients.value = route.query.ingredients
@@ -78,6 +98,7 @@
       }
 
       // url 변경 시(뒤로가기)에 검색어 및 필터값 변경
+      page.value = JSON.parse(newQuery).page ? Number(JSON.parse(newQuery).page) : 1;
       searchKeyword.value = JSON.parse(newQuery).keyword
         ? String(JSON.parse(newQuery).keyword)
         : '';
@@ -91,8 +112,7 @@
       // api 호출
       try {
         const data = await fetchRecipes({
-          startIdx: '1',
-          endIdx: '20',
+          page: page.value,
           RCP_NM: searchKeyword.value,
           RCP_PAT2: searchCategory.value,
           RCP_PARTS_DTLS: searchIngredients.value,
@@ -184,7 +204,13 @@
           <RecipeRectangleCard :title="item.RCP_NM" :image="item.ATT_FILE_NO_MAIN" />
         </template>
       </div>
-      <v-pagination :length="paginationLength" :total-visible="7"></v-pagination>
+      <v-pagination
+        v-model="page"
+        :length="paginationLength"
+        :total-visible="7"
+        active-color="#f89a00"
+        @update:modelValue="handlePageChange"
+      ></v-pagination>
     </div>
   </div>
 </template>
