@@ -295,19 +295,19 @@
       right: 0,
       bottom: 0,
     },
-    lng:126.97672186606,
-    lat:37.576030700103,
+    lng: 126.97672186606,
+    lat: 37.576030700103,
     level: 3,
   });
   const isMapChange = ref(false);
 </script>
 
 <template>
-  <div id="hospitalContent"  class="h-screen overflow-hidden">
+  <div id="hospitalContent" class="h-screen overflow-hidden">
     <div class="w-full h-full flex pt-24">
-      <div class="flex h-full border border-red-500 relative z-10 ">
+      <div class="flex h-full border border-red-500 relative z-10">
         <!-- 병원 분류 버튼-->
-        <div class="w-28 bg-main-400 shrink-0 ">
+        <div class="w-28 bg-main-400 shrink-0">
           <div>
             <template v-for="icon in hospitalIcons" :key="icon.id">
               <div
@@ -391,10 +391,26 @@
           <div
             :class="{resizer: true, hide: resizable[0].hide}"
             @mousedown="(e) => startResize(0, e)"
-          ></div>
+          >
+            <button
+              class="justify-center items-center absolute cursor-pointer bg-main-400/40 hover:bg-main-400/85 backdrop-blur-sm"
+              @click="
+                () => {
+                  resizable[0].width = 380;
+                  resizable[0].hide = false;
+                }
+              "
+            >
+              <v-icon>mdi-chevron-right</v-icon>
+            </button>
+          </div>
         </div>
         <!-- 상세 정보 -->
-        <div id="detialInfoBox" :style="{width: resizable[1].width + 'px'}" v-show="isDetailPageShow">
+        <div
+          id="detialInfoBox"
+          :style="{width: resizable[1].width + 'px'}"
+          v-show="isDetailPageShow"
+        >
           <div class="resizer" @mousedown="(e) => startResize(1, e)"></div>
           <HospitalDetailCard
             @close="closeDetail"
@@ -417,11 +433,12 @@
 </template>
 
 <style scoped>
-  #detialInfoBox{
+  #detialInfoBox {
     position: absolute;
     height: 100%;
     background: white;
-    right: 0; top: 0;
+    right: 0;
+    top: 0;
     transform: translateX(100%);
   }
   :deep(.v-icon.search) {
@@ -438,21 +455,24 @@
     height: 100%;
     cursor: ew-resize;
   }
-  .resizer.hide {
-    border-right: 1px solid var(--color-mono-200);
-  }
-  .resizer.hide::before {
-    content: '';
-    z-index: 9;
-    position: absolute;
-    right: -20px;
+  .resizer button {
+    display: none;
+    right: -32px;
+    width: 32px;
     top: 50%;
     transform: translateY(-50%);
-    width: 20px;
     height: 120px;
-    background: var(--color-main-400);
     border-radius: 0px 12px 12px 0px;
     box-shadow: inset 4px 0px 4px rgba(0, 0, 0, 0.1);
+    color: white;
+    transition: all 0.3s;
+  }
+  .resizer.hide {
+    border-right: 1px solid var(--color-mono-200);
+    width: 20px;
+  }
+  .resizer.hide button {
+    display: flex;
   }
 
   /* 스크롤바의 폭 너비 */
