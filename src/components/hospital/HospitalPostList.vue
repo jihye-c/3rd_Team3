@@ -2,7 +2,6 @@
   interface Props {
     name: string;
     type: string;
-    closeTime: string;
     addr: string;
   }
 
@@ -26,7 +25,7 @@
       <div class="flex items-center h-[14px] w-[1px] place-self-center">
         <v-divider vertical></v-divider>
       </div>
-      <div class="text-[14px] text-mono-400">{{ formatTime(closeTime) }}에 마감</div>
+      <!-- <div class="text-[14px] text-mono-400">{{ formatTime(closeTime) }}에 마감</div> -->
     </div>
     <div class="flex items-center gap-1.5 relative">
       <svg

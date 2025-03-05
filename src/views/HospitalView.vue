@@ -13,11 +13,14 @@
   import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
   import HospitalMap from '@/components/hospital/HospitalMap.vue';
   import type {MapData} from '@/types/kakao';
+  import Supabase from '@/apis/supabase';
+  import type {HospitalData} from '@/types/hospitalType';
 
   //-----------------------------화면 제어 관련-----------------------------//
   const selectedHospitalType = ref('clinic'); // 선택된 병원 종류, default 의원
   const isDetailPageShow = ref(false); // 상세페이지 표시 여부
   const isSymptomButtonShow = ref(true); // 증상 선택 버튼 표시 여부
+  const hospitalList = ref<HospitalData[]>([]);
 
   // 아이콘 데이터 배열 정의
   const hospitalIcons = [
@@ -106,59 +109,6 @@
         '회기동',
         '길동',
       ],
-    },
-  ];
-
-  // 병원 리스트 데이터
-  const hospitalList = [
-    {
-      addr: '서울특별시 종로구 대학로 101, (연건동)',
-      closed_holiday: '휴무',
-      closed_sun: '휴무',
-      closetime_fri: '1700',
-      closetime_mon: '1700',
-      closetime_sat: '1300',
-      closetime_sun: null,
-      closetime_thu: '1700',
-      closetime_tue: '1700',
-      closetime_wed: '1700',
-      dong: '연건동',
-      emergency_day: 'Y',
-      emergency_day_call1: '02-2072-3564',
-      emergency_day_call2: '02-2072-2474',
-      emergency_night: 'Y',
-      emergency_night_call1: '02-2072-3564',
-      emergency_night_call2: '02-2072-2474',
-      gu_code: 110016,
-      gu_name: '종로구',
-      homepage: 'http://www.snuh.org',
-      id: 'JDQ4MTg4MSM1MSMkMSMkMCMkODkkMzgxMzUxIzExIyQxIyQzIyQ3OSQzNjE4MzIjODEjJDEjJDYjJDgz',
-      location_direction: '3번출구',
-      location_distance: '100M',
-      location_place: '혜화역',
-      lunchbreak_sat: null,
-      lunchbreak_weekday: '12:00~13:00',
-      mapx: 126.9990168,
-      mapy: 37.5797151,
-      name: '서울대학교병원',
-      open_date: '19810709',
-      opentime_fri: null,
-      opentime_mon: null,
-      opentime_sat: null,
-      opentime_sun: null,
-      opentime_thu: null,
-      opentime_tue: null,
-      opentime_wed: null,
-      parking_capacity: '951',
-      parking_cost: 'Y',
-      parking_etc:
-        '진료예약 및 진료비수납 1시간 무료, 장애인 및 국가유공자 3시간 무료, 진료, 검사 및 입,퇴원 4시간 무료, 당일진료+입원 6시간 무료, 2개과 진료 및 특수검사 8시간 무료',
-      post_num: 3080,
-      reception_sat: null,
-      reception_weekday: null,
-      tel: '1588-5700',
-      traffic: null,
-      type: '상급종합',
     },
   ];
 
@@ -299,13 +249,28 @@
     lat: 37.576030700103,
     level: 3,
   });
+  const mapReady = ref(false);
   const isMapChange = ref(false);
+
+  const loadHospital = async (
+    mapData: MapData,
+    page: number,
+    hospitalType?: string[],
+    symptomsQuery?: string[],
+  ) => {
+    //page는 1부터 시작
+    const data = await Supabase.getFullHospitalData(mapData, 0, hospitalType, symptomsQuery);
+    if (data) {
+      hospitalList.value = data;
+    }
+    console.log(data);
+  };
 </script>
 
 <template>
   <div id="hospitalContent" class="h-screen overflow-hidden">
     <div class="w-full h-full flex pt-24">
-      <div class="flex h-full border border-red-500 relative z-10">
+      <div class="flex h-full relative z-10">
         <!-- 병원 분류 버튼-->
         <div class="w-28 bg-main-400 shrink-0">
           <div>
@@ -377,11 +342,10 @@
 
             <!-- 리스트 -->
             <div class="flex flex-col py-[24px]">
-              <template v-for="item in hospitalList">
+              <template v-for="item in hospitalList" :key="item.id">
                 <HospitalPostList
                   :name="item.name"
                   :type="item.type"
-                  :close-time="item.closetime_mon"
                   :addr="item.addr"
                   @click="openDetail"
                 />
@@ -427,12 +391,19 @@
           />
         </div>
       </div>
-      <HospitalMap v-model:mapData="mapData" v-model:isMapChange="isMapChange" />
+      <HospitalMap
+        v-model:mapData="mapData"
+        v-model:isMapChange="isMapChange"
+        :loadHospital="loadHospital"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
+  #hospitalContent * {
+    box-sizing: border-box;
+  }
   #detialInfoBox {
     position: absolute;
     height: 100%;

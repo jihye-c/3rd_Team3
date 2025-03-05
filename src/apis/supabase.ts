@@ -1,3 +1,4 @@
+import type { MapData } from '@/types/kakao.d';
 import type {HospitalData, HospitalDetail, HospitalTraffic, HospitalTreatment} from '@/types/hospitalType';
 import {createClient, SupabaseClient} from '@supabase/supabase-js';
 import Papa from 'papaparse'; // PapaParse 라이브러리 사용
@@ -19,7 +20,7 @@ export default class Supabase {
     return this.supabase;
   }
 
-  static async addCSVData(file: File | null, csvType: string | null = 'hospital') {
+  static async addCSVData(file: File | null, csvType: string | null = 'hospital'){
     let validHospitalIds = undefined;
     let record: any;
 
@@ -170,20 +171,40 @@ export default class Supabase {
     reader.readAsText(file);
   }
 
-  static async getFullHospitalData(page: number) {
+  static async getFullHospitalData(location:MapData, page: number, hospitalType?:string[], symptomsQuery?:string[]):Promise<HospitalData[]>{
     const supabase = this.init();
     if (!supabase) return;
 
-    const {data: hospital, error} = await supabase
+    if(page < 1) page = 1;//1부터 시작
+
+    if(symptomsQuery){
+      //symptoms.json 데이터 파싱
+      //해당하는 과목들 set에다가 넣기(중복 제거)
+      //  supabase.from('hospital_treatment').select('id') 
+      // .in('code_name', setData)
+      // return된 set들 
+      // const {data} = 
+    } 
+    console.log(location.bounds)
+    const dbQuery = supabase
       .from('hospital')
       .select('*')
-      .range(0, 20 * page);
+      .gte('mapx', location.bounds.left)
+      .lte('mapx',location.bounds.right)
+      .lte('mapy',location.bounds.top)
+      .gte('mapy', location.bounds.bottom)
+      .range((page - 1) * 20, page * 20 - 1);
 
+    if(hospitalType){
+      dbQuery.in('type', hospitalType)
+    }
+
+    const {data: hospitals, error} = await dbQuery;
     if (error) {
       console.log('DB error : ', error);
       return null;
     }
-    return hospital;
+    return hospitals;
   }
 
   static async getDetailHospitalData(id: string): Promise<HospitalFullData | null> {

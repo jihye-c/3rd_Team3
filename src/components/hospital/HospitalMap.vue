@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import { useUserStore } from '@/stores/userStore';
-import type {MapData} from '@/types/kakao';
-  import {onMounted, defineModel, ref} from 'vue';
+  import {useUserStore} from '@/stores/userStore';
+  import type {MapData} from '@/types/kakao';
+  import {onMounted, defineModel, ref, nextTick} from 'vue';
 
   //lat은 위도 (latitude), lng은 경도 (longtitude)
   const mapData = defineModel<MapData>('mapData', {
@@ -31,6 +31,14 @@ import type {MapData} from '@/types/kakao';
     lat: 37.576030700103,
     level: 3,
   });
+  const props = defineProps<{
+    loadHospital: (
+      mapData: MapData,
+      page: number, //1부터 시작
+      hospitalType?: string[],
+      symptomsQuery?: string[],
+    ) => void;
+  }>();
 
   const loadScript = () => {
     const script = document.createElement('script');
@@ -44,18 +52,20 @@ import type {MapData} from '@/types/kakao';
     if (window.kakao && window.kakao.maps) {
       const container = document.getElementById('map');
       if (container) {
-        const userStore = useUserStore()
-        if(userStore.userLocation){
+        const userStore = useUserStore();
+        if (userStore.userLocation) {
           mapData.value.lat = userStore.userLocation.latitude;
           mapData.value.lng = userStore.userLocation.longitude;
         }
         const options = {
-        center: new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng), // 중심 좌표
-        level: mapData.value.level,
-      };
+          center: new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng), // 중심 좌표
+          level: mapData.value.level,
+        };
         map.value = new window.kakao.maps.Map(container, options); // 지도 생성
         changeMapData(map.value);
-
+        nextTick(() => {
+          props.loadHospital(mapData.value, 1);
+        });
         container.addEventListener('mousedown', () => {
           prevMapData.value = mapData.value;
         });
@@ -91,7 +101,6 @@ import type {MapData} from '@/types/kakao';
     ) {
       if (!isMapChange.value) {
         isMapChange.value = true;
-        console.log(Math.abs(prevMapData.value.lng - mapData.value.lng));
       }
     }
   };
@@ -105,6 +114,7 @@ import type {MapData} from '@/types/kakao';
   });
   const listLoad = () => {
     loading.value = true;
+    props.loadHospital(mapData.value, 1);
     setTimeout(() => {
       loading.value = false;
       isMapChange.value = false;
@@ -115,7 +125,7 @@ import type {MapData} from '@/types/kakao';
 <template v-slot:actions>
   <div id="map" class="w-full h-full relative">
     <v-btn
-      class="absolute z-10 top-11/12 left-1/2 bg-main-400 "
+      class="absolute z-10 top-11/12 left-1/2 bg-main-400"
       elevation="6"
       rounded="xl"
       size="large"
@@ -130,13 +140,13 @@ import type {MapData} from '@/types/kakao';
 <style scoped>
   button.v-btn {
     transform: translateX(-50%);
-    background: rgba(248, 154, 0, .65);
+    background: rgba(248, 154, 0, 0.65);
     backdrop-filter: blur(3px);
     color: white;
     font-weight: bold;
     cursor: pointer;
   }
-  button.v-btn:hover{
-    background: rgba(248, 154, 0, .95);
+  button.v-btn:hover {
+    background: rgba(248, 154, 0, 0.95);
   }
 </style>
