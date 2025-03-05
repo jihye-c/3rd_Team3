@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import {ref, onMounted} from 'vue';
+  import {ref} from 'vue';
 
   import HospitalPostList from '@/components/hospital/HospitalPostList.vue';
   import HospitalDetailCard from '@/components/hospital/HospitalDetailCard.vue';
@@ -335,7 +335,7 @@
           :style="{width: resizable[0].width + 'px'}"
         >
           <!-- 검색 -->
-          <div class="border-b-1 border-mono-300">
+          <div class="border-b-1 border-mono-300 overflow-hidden">
             <div class="flex flex-wrap py-6 px-5 gap-2 w-full">
               <div class="text-[20px] w-full font-semibold text-mono-700">카테고리 검색</div>
               <div class="flex gap-2 w-full">
