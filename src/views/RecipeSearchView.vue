@@ -35,6 +35,14 @@
   const error = ref<string | null>(null);
   const paginationLength = computed(() => Math.ceil(totalCount.value / POSTS_PER_PAGE));
 
+  // 필터 초기화
+  const resetFilter = () => {
+    searchKeyword.value = '';
+    searchCategory.value = '';
+    searchIngredients.value = [];
+    updateQuery();
+  };
+
   // chip 닫으면 searchIngredients에 반영
   const removeIngredient = (itemToRemove: string) => {
     searchIngredients.value = searchIngredients.value.filter((item) => item !== itemToRemove);
@@ -54,17 +62,32 @@
 
   watch(
     () => JSON.stringify(route.query),
-    async () => {
+    async (newQuery, oldQuery) => {
+      // 쿼리가 변경되었을 때만 실행
+      if (JSON.stringify(newQuery) === JSON.stringify(oldQuery)) return;
+
       // 처음에 url query 설정 하기
       if (!isInit.value) {
         isInit.value = true;
         searchKeyword.value = route.query.keyword ? String(route.query.keyword) : '';
-        searchCategory.value = route.query.category ? String(route.query.category) : '밥';
+        searchCategory.value = route.query.category ? String(route.query.category) : '';
         searchIngredients.value = route.query.ingredients
           ? String(route.query.ingredients).split(',')
           : [];
         updateQuery();
       }
+
+      // url 변경 시(뒤로가기)에 검색어 및 필터값 변경
+      searchKeyword.value = JSON.parse(newQuery).keyword
+        ? String(JSON.parse(newQuery).keyword)
+        : '';
+      searchCategory.value = JSON.parse(newQuery).category
+        ? String(JSON.parse(newQuery).category)
+        : '';
+      searchIngredients.value = JSON.parse(newQuery).ingredients
+        ? String(JSON.parse(newQuery).ingredients).split(',')
+        : [];
+
       // api 호출
       try {
         const data = await fetchRecipes({
@@ -83,7 +106,8 @@
         isLoading.value = false;
       }
     },
-    {immediate: true}, // 즉시 실행된 후, 쿼리가 변경될 때마다 다시 실행
+    // 즉시 실행된 후, 쿼리가 변경될 때마다 다시 실행
+    {immediate: true},
   );
 </script>
 
@@ -112,7 +136,7 @@
     >
       <!-- 초기화 버튼 -->
       <div class="flex justify-end">
-        <button>
+        <button @click="resetFilter">
           <div class="flex gap-1 items-center">
             <div class="text-[18px] text-mono-400">초기화</div>
             <v-icon size="20px" color="#79716b">mdi-restart</v-icon>

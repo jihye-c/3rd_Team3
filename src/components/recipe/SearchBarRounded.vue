@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import {ref} from 'vue';
+  import {ref, watch} from 'vue';
+  import {useRoute} from 'vue-router';
 
   interface Props {
     modelValue?: string | string[];
@@ -7,13 +8,22 @@
   }
   const props = defineProps<Props>();
 
+  const route = useRoute();
+
   // 이벤트 정의
   const emit = defineEmits(['update:modelValue']);
 
   // 검색어
   const searchText = ref<string>('');
 
-  // ✅ 입력값을 업데이트하는 a함수
+  // URL 쿼리에 검색어가 있으면 복원
+  if (typeof props.modelValue === 'string') {
+    if (props.modelValue) {
+      searchText.value = String(route.query.keyword);
+    }
+  }
+
+  // 입력값을 업데이트하는 함수
   const updateValue = () => {
     const trimmedValue = searchText.value.trim();
     // modelValue가 `string`이면 새로운 값으로 변경
@@ -33,6 +43,16 @@
       searchText.value = ''; // 입력값 초기화
     }
   };
+
+  // modelValue가 변경될 때 searchText를 자동 업데이트 (초기화하면 값 비우는 용도)
+  watch(
+    () => props.modelValue,
+    (newValue) => {
+      if (typeof newValue === 'string') {
+        searchText.value = newValue;
+      }
+    },
+  );
 </script>
 
 <template>
