@@ -11,7 +11,7 @@
   const route = useRoute();
 
   // 이벤트 정의
-  const emit = defineEmits(['update:modelValue']);
+  const emit = defineEmits(['update:modelValue', 'search']);
 
   // 검색어
   const searchText = ref<string>('');
@@ -42,6 +42,7 @@
       emit('update:modelValue', [...props.modelValue, trimmedValue]);
       searchText.value = ''; // 입력값 초기화
     }
+    emit('search', trimmedValue);
   };
 
   // modelValue가 변경될 때 searchText를 자동 업데이트 (초기화하면 값 비우는 용도)
@@ -72,7 +73,7 @@
       "
       class="outline-none text-mono-700"
     />
-    <button @click="updateValue">
+    <button @click="updateValue" class="cursor-pointer">
       <v-icon :size="long ? '40px' : '24px'">mdi-magnify</v-icon>
     </button>
   </div>

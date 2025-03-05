@@ -4,8 +4,7 @@
   import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
   import RecipeSquareCard from '@/components/recipe/RecipeSquareCard.vue';
   import SearchBarRounded from '@/components/recipe/SearchBarRounded.vue';
-
-  const handleSearch = (searchText: string) => alert(`검색어: ${searchText}`);
+  import {useRouter} from 'vue-router';
 
   const recipeCategoryData = [
     {
@@ -33,18 +32,22 @@
     {
       category: '육류',
       image: '/recipe/recipe_ingredient_meat.webp',
+      ingredient: '고기',
     },
     {
       category: '채소',
       image: '/recipe/recipe_ingredient_vegetable.webp',
+      ingredient: '양파',
     },
     {
       category: '해산물',
       image: '/recipe/recipe_ingredient_seafood.webp',
+      ingredient: '새우',
     },
     {
       category: '과일',
       image: '/recipe/recipe_ingredient_fruit.webp',
+      ingredient: '사과',
     },
   ];
   const todaysRecipeData = {
@@ -93,6 +96,11 @@
       image: '/recipe/recipe_category_one_dish.webp',
     },
   ];
+
+  const router = useRouter();
+
+  const handleSearch = (searchText: string) =>
+    router.push({name: 'recipe-search', query: {keyword: searchText}});
 </script>
 
 <template>
@@ -125,6 +133,7 @@
             :image="item.image"
             :size="300"
             class="px-6 py-4"
+            @click="() => router.push({name: 'recipe-search', query: {category: item.category}})"
           />
         </template>
       </div>
@@ -150,9 +159,9 @@
           class="px-9 py-8"
         />
         <div class="flex flex-col w-[1040px] justify-between text-mono-700">
-          <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-3">
             <div class="text-[32px] font-bold">레시피 설명</div>
-            <p class="text-[20px] leading-[24px]">{{ todaysRecipeData.description }}</p>
+            <p class="text-[20px] leading-[28px]">{{ todaysRecipeData.description }}</p>
           </div>
           <div class="flex flex-col gap-2">
             <div class="text-[32px] font-bold">영양정보</div>
@@ -177,7 +186,18 @@
       <div class="ft-point text-[48px] text-mono-700">냉장고 속 재료별 레시피</div>
       <div class="flex justify-between">
         <template v-for="item in recipeIngredientData" :key="item.category">
-          <RecipeSquareCard :title="item.category" :image="item.image" :size="380" />
+          <RecipeSquareCard
+            :title="item.category"
+            :image="item.image"
+            :size="380"
+            @click="
+              () =>
+                router.push({
+                  name: 'recipe-search',
+                  query: {ingredients: item.ingredient},
+                })
+            "
+          />
         </template>
       </div>
     </div>
@@ -197,7 +217,8 @@
     </div>
     <!-- 커뮤니티 이동 배너 -->
     <div
-      class="container h-[230px] w-full bg-main-50 rounded-[12px] p-[72px] flex items-center justify-between"
+      class="container h-[230px] w-full bg-main-50 rounded-[12px] p-[72px] flex items-center justify-between cursor-pointer"
+      @click="() => router.push('/community/recipe')"
     >
       <div class="w-[200px] h-[160px] bg-[url(/recipe/recipe_illustration.svg)]"></div>
       <div class="flex flex-col items-end">
