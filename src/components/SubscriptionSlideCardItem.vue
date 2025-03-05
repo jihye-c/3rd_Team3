@@ -1,16 +1,22 @@
 <template>
-      <div class="flex flex-col gap-3">
-          <span class="w-12 text-sm px-2 rounded-sm text-center text-main-50 bg-main-400"
-            >민영</span
+      <div class="flex w-full flex-col gap-3">
+      <div>
+        <span class="grow-0 text-sm px-2 py-1 rounded-sm text-center text-main-50 bg-main-400"
+            >{{data?.HOUSE_DTL_SECD_NM}}</span
           >
+      </div>
           <div class="">
-            <strong>레미안 원페룰라</strong>
-            <p class="text-mono-400">접수기간:02.20 ~ 02.22 ㅣ 공급위치: 용산구</p>
+            <strong>{{data?.HOUSE_NM}}</strong>
+            <p class="text-mono-400">접수기간:{{data?.SUBSCRPT_RCEPT_BGNDE}} ~ {{data?.SUBSCRPT_RCEPT_ENDDE}} </p>
+            <p class="text-xs">공급위치: {{ data?.HSSPLY_ADRES }}</p>
           </div>
         </div>
 </template>
 
 <script setup lang="ts">
+const {data} = defineProps({
+  data: Object,
+})
 
 </script>
 

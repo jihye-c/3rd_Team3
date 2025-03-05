@@ -2,8 +2,11 @@ import type {UserFullName} from '@/types/User';
 import type User from '@/types/User';
 import type UserRegisterForm from '@/types/UserRegisterForm';
 import axiosApi from '@/utils/axiosConfig';
+import axios from 'axios';
 
 const apiRoot = import.meta.env.VITE_PROGRAMMERS_API_ROOT;
+const kakaoApi = import.meta.env.VITE_KAKAO_REST_BASE_API_URL
+const kakaoApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
 
 export async function userRegister(formData: UserRegisterForm): Promise<User> {
   const fullName = JSON.stringify({
@@ -50,4 +53,18 @@ export async function createScrapPost(id: string): Promise<string> {
     channelId: '67bfdc61ff075444a9c22ebd', //scrap 채널
   });
   return res.data._id;
+}
+
+// 좌표를 주소로 받아오는 API
+export async function getGeolocationAddress(locations: { latitude: number; longitude: number; }){
+  const res = await axios.get(`${kakaoApi}`,{
+    headers:{
+      Authorization:`KakaoAK ${kakaoApiKey}`
+    },
+    params:{
+      x: locations.longitude,
+      y: locations.latitude
+    }
+  });
+  return res.data
 }

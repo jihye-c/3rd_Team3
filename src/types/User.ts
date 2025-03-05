@@ -26,3 +26,8 @@ export default interface User {
   posts: string[];
   __v: number;
 }
+export interface UserAddress {
+  address: string;
+  latitude: number;
+  longitude: number;
+}

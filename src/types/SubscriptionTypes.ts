@@ -22,3 +22,6 @@ export interface HouseInfo {
   SUBSCRPT_RCEPT_ENDDE: string; // 청약 접수 종료일 (YYYY-MM-DD)
   TOT_SUPLY_HSHLDCO: number; // 총 공급 세대 수
 }
+export interface SubscriptionDateListType {
+  [key: string]: HouseInfo[]; // 날짜별로 배열이 있는 객체
+}
