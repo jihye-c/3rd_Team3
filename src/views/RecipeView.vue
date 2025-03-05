@@ -57,11 +57,11 @@
       '소고기 들깨 알토란탕은 고소한 들깨가루와 부드러운 소고기, 그리고 특유의 식감이 일품인 알토란을 주재료로 한 영양가 높은 한식 탕입니다. 알토란의 아삭한 식감과 들깨의 고소함이 어우러져 깊은 맛을 내며, 소고기의 감칠맛이 국물에 배어 풍미를 더합니다.',
     image: '/recipe/recipe_todays.webp',
     nutrition: {
-      INFO_ENG: 146.42,
-      INFO_NA: 675.68,
-      INFO_PRO: 7.57,
-      INFO_FAT: 5.17,
-      INFO_CAR: 17.4,
+      calories: 146.42,
+      sodium: 675.68,
+      protein: 7.57,
+      fat: 5.17,
+      carbohydrates: 17.4,
     },
   };
   const popularRecipeData = [
@@ -111,7 +111,7 @@
         <div class="flex flex-col gap-10 justify-center">
           <!-- 타이틀 -->
           <div>
-            <div class="text-[40px] text-mono-050 leading-10">혼자 살아도 건강하게!</div>
+            <div class="text-[40px] text-mono-050 leading-[52px]">혼자 살아도 건강하게!</div>
             <div class="text-[48px] font-bold text-mono-050 leading-16">
               자취생을 위한 영양만점 레시피
             </div>
@@ -143,7 +143,11 @@
       <div class="ft-point text-[48px] text-mono-700">인기 레시피</div>
       <div class="flex justify-between">
         <template v-for="item in popularRecipeData" :key="item.title">
-          <RecipeRectangleCard :image="item.image" :title="item.title" />
+          <RecipeRectangleCard
+            :image="item.image"
+            :title="item.title"
+            @click="router.push({name: 'recipe-detail', params: {id: item.title}})"
+          />
         </template>
       </div>
     </div>
@@ -157,6 +161,13 @@
           :image="todaysRecipeData.image"
           :size="460"
           class="px-9 py-8"
+          @click="
+            () =>
+              router.push({
+                name: 'recipe-detail',
+                params: {id: todaysRecipeData.title},
+              })
+          "
         />
         <div class="flex flex-col w-[1040px] justify-between text-mono-700">
           <div class="flex flex-col gap-3">
