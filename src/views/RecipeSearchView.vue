@@ -32,7 +32,7 @@
   // api 관련
   const recipeList = ref<Recipe[]>();
   const totalCount = ref<number>(0);
-  const isLoading = ref(true);
+  const isLoading = ref(false);
   const error = ref<string | null>(null);
   const paginationLength = computed(() => Math.ceil(totalCount.value / POSTS_PER_PAGE));
 
@@ -111,6 +111,7 @@
 
       // api 호출
       try {
+        isLoading.value = true;
         const data = await fetchRecipes({
           page: page.value,
           RCP_NM: searchKeyword.value,
@@ -200,8 +201,16 @@
     <!-- 리스트 -->
     <div>
       <div class="grid grid-cols-2 gap-x-[48px] gap-y-[28px] pb-[100px]">
-        <template v-for="item in recipeList">
-          <RecipeRectangleCard :title="item.RCP_NM" :image="item.ATT_FILE_NO_MAIN" />
+        <template v-for="(item, index) in recipeList" :key="index">
+          <v-skeleton-loader
+            v-if="isLoading"
+            type="image, list-item"
+            class="skeleton"
+            height="344"
+            width="516"
+            :rounded="10"
+          />
+          <RecipeRectangleCard v-else :title="item.RCP_NM" :image="item.ATT_FILE_NO_MAIN" />
         </template>
       </div>
       <v-pagination
@@ -226,5 +235,19 @@
     font-weight: 600;
     padding-left: 14px;
     padding-right: 14px;
+  }
+  :deep(.v-skeleton-loader__image) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+  :deep(.v-skeleton-loader__text) {
+    margin-top: 10px;
+    height: 28px;
+    border-radius: 100px;
+  }
+  :deep(.v-skeleton-loader) {
+    margin-bottom: 56px;
   }
 </style>

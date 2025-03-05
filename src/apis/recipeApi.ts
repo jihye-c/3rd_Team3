@@ -18,8 +18,8 @@ export const fetchRecipes = async (params: RecipeParams): Promise<RecipeResponse
     const startIdx = (page - 1) * 20 + 1;
     const endIdx = page * 20;
 
-    // 재료 있을 때
-    if (RCP_PARTS_DTLS.length) {
+    // RCP_PARTS_DTLS 2개 이상일 때
+    if (RCP_PARTS_DTLS.length > 1) {
       const allRecipes: Recipe[][] = [];
 
       for (let ingredient of RCP_PARTS_DTLS) {
@@ -49,9 +49,10 @@ export const fetchRecipes = async (params: RecipeParams): Promise<RecipeResponse
         },
       };
     }
-    // 재료 없을 때
-    const url = `/${apiKey}/COOKRCP01/json/${startIdx}/${endIdx}/${RCP_NM ? `RCP_NM=${RCP_NM}&` : ''}${RCP_PAT2 ? `RCP_PAT2=${RCP_PAT2}&` : ''}`;
+    // RCP_PARTS_DTLS 1개 이하일 때
+    const url = `/${apiKey}/COOKRCP01/json/${startIdx}/${endIdx}/${RCP_NM ? `RCP_NM=${RCP_NM}&` : ''}${RCP_PAT2 ? `RCP_PAT2=${RCP_PAT2}&` : ''}${RCP_PARTS_DTLS.length > 0 ? `RCP_PARTS_DTLS=${RCP_PARTS_DTLS[0]}` : ''}`;
     const response = await recipeApiInstance.get<RecipeResponse>(url);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching recipes:', error);
