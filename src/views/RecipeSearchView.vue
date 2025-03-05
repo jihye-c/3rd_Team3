@@ -99,7 +99,6 @@
         });
         recipeList.value = data.COOKRCP01.row;
         totalCount.value = Number(data.COOKRCP01.total_count);
-        console.log(data.COOKRCP01.row);
       } catch (err) {
         error.value = '데이터를 불러오는 중 오류가 발생했습니다.';
       } finally {
