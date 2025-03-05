@@ -33,7 +33,22 @@
   import HomeRecipeSection from '@/components/Home/HomeRecipeSection.vue';
   import HomeSubscriptionSection from '@/components/Home/HomeSubscriptionSection.vue';
   import HomeSection from '@/components/Home/common/HomeSection.vue';
+import { useSubscriptionStore } from '@/stores/subscriptionStore.ts';
+  import {useUserStore} from '@/stores/userStore';
+import { askForLocation } from '@/utils/location';
+  import {onBeforeMount} from 'vue';
+
+  const userStore = useUserStore();
+  const subscriptionStore = useSubscriptionStore()
+  onBeforeMount(async () => {
+    const address = localStorage.getItem('userAddress');
+    if (!address) {
+      const location = await askForLocation();
+      console.log(location);
+      await userStore.getUserAddress(location);
+    }
+      await subscriptionStore.getSubscription()
+  });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

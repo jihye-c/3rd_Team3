@@ -1,39 +1,44 @@
 <template>
-         <div class="flex gap-1 items-center">
-            <h4>우리동네</h4>
-            <v-select
-            active
-            autofocus
-              v-model="select"
-              :items="items"
-              item-title="state"
-              item-value="abbr"
-              return-object
-              hide-details
-              closable-chips
-              eager
-              focused
-              hide-selected
-              color="#00d"
-              item-color="bg-main-50"
-            base-color="#0f0"
-            >
-            </v-select>
-          </div>
+  <div class="flex gap-1 items-center">
+    <h4>우리동네</h4>
+    <v-select
+      v-model="select"
+      :items="items"
+      @update:modelValue="onChangeAddress()"
+      item-title="address"
+      item-value="abbr"
+      return-object
+      hide-details
+      closable-chips
+      color="#00d"
+      base-color="#0f0"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-  import {reactive} from 'vue';
+import { address_select_items } from '@/config/config';
+import { useUserStore } from '@/stores/userStore';
+import type { UserAddress } from '@/types/User';
+import { reactive, ref, watchEffect } from 'vue';
 
-  const select = reactive({state: '강남구 신사동', abbr: 'FL'});
-  const items = reactive([
-    {state: '강남구 신사동', abbr: 'FL'},
-    {state: '강남구 신사동', abbr: 'GA'},
-    {state: '강남구 신사동', abbr: 'NE'},
-    {state: '강남구 신사동', abbr: 'CA'},
-    {state: '강남구 신사동', abbr: 'NY'},
-  ]);
+const userStore = useUserStore();
+const select = ref<UserAddress | null>({address:"로드중",longitude:0,latitude:0});
+const items = reactive<UserAddress[]>(address_select_items);
+
+const onChangeAddress = () =>{
+    userStore.updateUserAddress(select.value)
+}
+
+watchEffect(() => {
+  if (userStore.userLocation) {
+    select.value = userStore.userLocation;
+    console.log("초기값 업데이트:", userStore.userLocation);
+  }
+});
+
 </script>
+
 
 <style scoped>
   div :deep(.v-field__outline) {display:none;}

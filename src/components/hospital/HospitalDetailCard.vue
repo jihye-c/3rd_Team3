@@ -28,7 +28,7 @@
 
 <template>
   <div
-    class="w-[400px] px-[28px] pt-[28px] pb-[40px] h-full shadow-[4px_0_10px_rgba(0,0,0,0.1)] flex flex-col gap-12 overflow-auto"
+    class="w-full px-[28px] pt-[28px] pb-[40px] h-full shadow-[4px_0_10px_rgba(0,0,0,0.1)] flex flex-col gap-12 overflow-auto"
   >
     <div class="flex flex-col gap-2">
       <div class="flex justify-end">
