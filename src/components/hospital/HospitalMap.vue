@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import type {MapData} from '@/types/kakao';
+  import { useUserStore } from '@/stores/userStore';
+import type {MapData} from '@/types/kakao';
   import {onMounted, defineModel, ref} from 'vue';
 
   //lat은 위도 (latitude), lng은 경도 (longtitude)
@@ -41,12 +42,17 @@
   };
   const loadMap = () => {
     if (window.kakao && window.kakao.maps) {
-      const options = {
+      const container = document.getElementById('map');
+      if (container) {
+        const userStore = useUserStore()
+        if(userStore.userLocation){
+          mapData.value.lat = userStore.userLocation.latitude;
+          mapData.value.lng = userStore.userLocation.longitude;
+        }
+        const options = {
         center: new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng), // 중심 좌표
         level: mapData.value.level,
       };
-      const container = document.getElementById('map');
-      if (container) {
         map.value = new window.kakao.maps.Map(container, options); // 지도 생성
         changeMapData(map.value);
 
