@@ -21,7 +21,9 @@
       <div class="text-sm text-mono-400">{{ props.card.date }}</div>
     </div>
     <div class="bg-mono-200 h-10 rounded-lg mx-5 flex justify-center items-center">
-      <RouterLink to="/" class="font-bold text-mono-400"> 더 알아보기 </RouterLink>
+      <RouterLink to="/subscription/news/:id" class="font-bold text-mono-400">
+        더 알아보기
+      </RouterLink>
     </div>
   </div>
 </template>

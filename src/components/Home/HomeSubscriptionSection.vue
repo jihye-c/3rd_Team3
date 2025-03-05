@@ -24,7 +24,6 @@
             type: 'progressbar',
             el: '.progressbar',
           }"
-          :modules="[Pagination]"
           class="mySwiper w-full h-[500px]"
         >
           <swiper-slide v-for="(data, i) in filterData" :key="i"
@@ -32,6 +31,7 @@
           /></swiper-slide>
           <div class="swiper-pagination progressbar"></div>
         </SwiperComponent>
+
       </div>
     </div>
   </div>
@@ -42,8 +42,6 @@
   import {Calendar} from 'v-calendar';
   import {Swiper as SwiperComponent, SwiperSlide} from 'swiper/vue';
   import type {Swiper} from 'swiper/types';
-  import {Pagination} from 'swiper/modules';
-
   import HomeTitle from './common/HomeTitle.vue';
   import SubscriptionSlideCard from '../SubscriptionSlideCard.vue';
   import type {HouseInfo} from '@/types/SubscriptionTypes';
@@ -51,6 +49,7 @@
   import 'v-calendar/style.css';
   import 'swiper/css';
   import 'swiper/css/pagination';
+
   import {useSubscriptionStore} from '@/stores/subscriptionStore.ts';
   import type {CalendarDay, Page} from 'v-calendar/dist/types/src/utils/page.js';
 import type { AttributeConfig } from 'v-calendar/dist/types/src/utils/attribute.js';

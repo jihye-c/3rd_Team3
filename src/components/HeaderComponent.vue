@@ -99,6 +99,10 @@
 </template>
 
 <style scoped>
+  #app:has(#hospitalContent) header{
+    background: white !important;
+    color: var(--color-mono-900);
+  }
   header :deep(.v-field__outline) {
     display: none;
   }

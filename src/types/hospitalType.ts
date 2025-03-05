@@ -60,7 +60,63 @@ export type HospitalTraffic = {
 };
 
 export type HospitalTreatment = {
-  code : number,
-  code_name : string,
-  num_of_doctor : number,
-}
+  code: number;
+  code_name: string;
+  num_of_doctor: number;
+};
+
+export type Symptoms = {
+  id: string;
+  name: string;
+  image: string;
+  departments: [Department,...Department[]];
+};
+
+export type Department =
+  | '치과'
+  | '직업환경의학과'
+  | '예방치과'
+  | '산부인과'
+  | '피부과'
+  | '이비인후과'
+  | '한방부인과'
+  | '진단검사의학과'
+  | '성형외과'
+  | '신경과'
+  | '한방신경정신과'
+  | '구강병리과'
+  | '영상치의학과'
+  | '사상체질과'
+  | '한방내과'
+  | '소아청소년과'
+  | '치주과'
+  | '결핵과'
+  | '구강악안면외과'
+  | '외과'
+  | '신경외과'
+  | '응급의학과'
+  | '침구과'
+  | '마취통증의학과'
+  | '구강내과'
+  | '병리과'
+  | '치과보존과'
+  | '정형외과'
+  | '안과'
+  | '비뇨의학과'
+  | '정신건강의학과'
+  | '한방재활의학과'
+  | '소아치과'
+  | '방사선종양학과'
+  | '핵의학과'
+  | '한방응급'
+  | '치과보철과'
+  | '영상의학과'
+  | '가정의학과'
+  | '내과'
+  | '예방의학과'
+  | '한방안·이비인후·피부과'
+  | '치과교정과'
+  | '재활의학과'
+  | '심장혈관흉부외과'
+  | '한방소아과'
+  | '통합치의학과';

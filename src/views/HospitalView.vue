@@ -1,4 +1,8 @@
 <script setup lang="ts">
+  import {ref} from 'vue';
+
+  import HospitalPostList from '@/components/hospital/HospitalPostList.vue';
+  import HospitalDetailCard from '@/components/hospital/HospitalDetailCard.vue';
   import ClinicIcon from '@/assets/icons/clinic.svg';
   import TertiaryHospitalIcon from '@/assets/icons/tertiaryHospital.svg';
   import GeneralHospitalIcon from '@/assets/icons/generalHospital.svg';
@@ -6,9 +10,14 @@
   import PublicHealthCenterIcon from '@/assets/icons/publicHealthCenter.svg';
   import OrientalMedicineClinicIcon from '@/assets/icons/orientalMedicineClinic.svg';
   import DentalClinicIcon from '@/assets/icons/dentalClinic.svg';
-  import HospitalPostList from '@/components/hospital/HospitalPostList.vue';
-  import HospitalDetailCard from '@/components/hospital/HospitalDetailCard.vue';
-  import {ref} from 'vue';
+  import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
+  import HospitalMap from '@/components/hospital/HospitalMap.vue';
+  import type {MapData} from '@/types/kakao';
+
+  //-----------------------------화면 제어 관련-----------------------------//
+  const selectedHospitalType = ref('clinic'); // 선택된 병원 종류, default 의원
+  const isDetailPageShow = ref(false); // 상세페이지 표시 여부
+  const isSymptomButtonShow = ref(true); // 증상 선택 버튼 표시 여부
 
   // 아이콘 데이터 배열 정의
   const hospitalIcons = [
@@ -204,99 +213,6 @@
     type: '상급종합',
   };
 
-  // 증상 데이터
-  const symptoms = [
-    {
-      id: 'abdominal_pain',
-      name: '복통',
-      image: '/images/hospital/abdominal_pain.svg',
-    },
-    {
-      id: 'fever',
-      name: '열/오한',
-      image: '/images/hospital/fever.svg',
-    },
-    {
-      id: 'burn',
-      name: '화상',
-      image: '/images/hospital/burn.svg',
-    },
-    {
-      id: 'tinnitus',
-      name: '이명',
-      image: '/images/hospital/tinnitus.svg',
-    },
-    {
-      id: 'vomiting',
-      name: '구토',
-      image: '/images/hospital/vomiting.svg',
-    },
-    {
-      id: 'cough',
-      name: '기침',
-      image: '/images/hospital/cough.svg',
-    },
-    {
-      id: 'fracture',
-      name: '골절',
-      image: '/images/hospital/fracture.svg',
-    },
-    {
-      id: 'muscle_pain',
-      name: '근육통',
-      image: '/images/hospital/muscle_pain.svg',
-    },
-    {
-      id: 'fatigue',
-      name: '피로감',
-      image: '/images/hospital/fatigue.svg',
-    },
-    {
-      id: 'emergency',
-      name: '응급',
-      image: '/images/hospital/emergency.svg',
-    },
-    {
-      id: 'headache',
-      name: '두통',
-      image: '/images/hospital/headache.svg',
-    },
-    {
-      id: 'toothache',
-      name: '치통',
-      image: '/images/hospital/toothache.svg',
-    },
-    {
-      id: 'urinary',
-      name: '비뇨',
-      image: '/images/hospital/urinary.svg',
-    },
-    {
-      id: 'eye_congestion',
-      name: '충혈',
-      image: '/images/hospital/eye_congestion.svg',
-    },
-    {
-      id: 'menstrual_pain',
-      name: '생리통',
-      image: '/images/hospital/menstrual_pain.svg',
-    },
-    {
-      id: 'depression',
-      name: '우울증',
-      image: '/images/hospital/depression.svg',
-    },
-  ];
-
-  // 선택된 병원 종류
-  const selectedHospitalType = ref('clinic'); // default 의원
-
-  // 상세페이지 표시 여부
-  const isDetailPageShow = ref(false);
-
-  // 증상 선택 버튼 표시 여부
-  const isSymptomButtonShow = ref(true);
-
   // 병원 종류 선택하기
   const selectHospitalType = (type: string) => {
     selectedHospitalType.value = type;
@@ -323,14 +239,75 @@
   const onDistrictChange = () => {
     // 구에 따라 동 바꾸는 로직 추가하기
   };
+
+  //----------------------------- 리사이징 함수 -----------------------------//
+  const resizable = ref([
+    {width: 380, minWidth: 240, maxWidth: 460, hide: false},
+    {width: 380, minWidth: 240, maxWidth: 460},
+  ]);
+
+  const isResizing = ref(false);
+  let startX = 0;
+  let activeIdx: number = 0;
+
+  const startResize = (idx: number, e) => {
+    e.preventDefault();
+    isResizing.value = true;
+    startX = e.clientX;
+    activeIdx = idx;
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', stopResize);
+  };
+
+  const onMouseMove = (e) => {
+    if (isResizing.value) {
+      const dragCheck = 5;
+      const diff = e.clientX - startX;
+      const activeDiv = resizable.value[activeIdx];
+      const newWidth = activeDiv.width + diff;
+      if (newWidth <= activeDiv.minWidth && activeIdx === 0) {
+        if (diff < -dragCheck) {
+          activeDiv.width = 0;
+          activeDiv.hide = true;
+        } else if (diff > dragCheck) {
+          activeDiv.width = activeDiv.minWidth;
+          activeDiv.hide = false;
+        }
+      } else {
+        activeDiv.width = Math.max(activeDiv.minWidth, Math.min(newWidth, activeDiv.maxWidth));
+      }
+      startX = e.clientX;
+    }
+  };
+
+  const stopResize = () => {
+    isResizing.value = false;
+    activeIdx = null;
+    window.removeEventListener('mousemove', onMouseMove);
+    window.removeEventListener('mouseup', stopResize);
+  };
+
+  //----------------------------- 맵 관련 -----------------------------//
+  const mapData = ref<MapData>({
+    bounds: {
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+    },
+    lng:126.97672186606,
+    lat:37.576030700103,
+    level: 3,
+  });
+  const isMapChange = ref(false);
 </script>
 
 <template>
-  <div class="h-screen overflow-hidden">
-    <div class="w-full h-[calc(100vh-96px)] mt-[96px]">
-      <div class="flex h-full">
+  <div id="hospitalContent"  class="h-screen overflow-hidden">
+    <div class="w-full h-full flex pt-24">
+      <div class="flex h-full border border-red-500 relative z-10 ">
         <!-- 병원 분류 버튼-->
-        <div class="w-[120px] bg-main-400">
+        <div class="w-28 bg-main-400 shrink-0 ">
           <div>
             <template v-for="icon in hospitalIcons" :key="icon.id">
               <div
@@ -353,59 +330,49 @@
           </div>
         </div>
         <!-- 검색 & 리스트 -->
-        <div class="flex flex-col w-[380px] shadow-[4px_0_10px_rgba(0,0,0,0.1)] h-full">
+        <div
+          class="shadow-[4px_0_10px_rgba(0,0,0,0.1)] z-10 h-full relative"
+          :style="{width: resizable[0].width + 'px'}"
+        >
           <!-- 검색 -->
-          <div class="flex flex-col p-6 border-b-1 border-mono-300">
-            <div class="text-[20px] font-semibold text-mono-700">카테고리 검색</div>
-            <div class="flex gap-4 pt-4">
-              <v-select
-                label="구 선택"
-                :items="districts.map((district) => district.gu)"
-                variant="outlined"
-                rounded="lg"
-                density="compact"
-              ></v-select>
-              <v-select
-                label="동 선택"
-                variant="outlined"
-                rounded="lg"
-                density="compact"
-              ></v-select>
-            </div>
-            <div
-              class="h-[40px] w-full border-1 border-mono-300 rounded-[8px] flex justify-between px-4"
-            >
-              <input
-                type="text"
+          <div class="border-b-1 border-mono-300 overflow-hidden">
+            <div class="flex flex-wrap py-6 px-5 gap-2 w-full">
+              <div class="text-[20px] w-full font-semibold text-mono-700">카테고리 검색</div>
+              <div class="flex gap-2 w-full">
+                <v-select
+                  class="w-1/2"
+                  label="구 선택"
+                  :items="districts.map((district) => district.gu)"
+                  variant="outlined"
+                  rounded="lg"
+                  density="compact"
+                ></v-select>
+                <v-select
+                  class="w-1/2"
+                  label="동 선택"
+                  variant="outlined"
+                  rounded="lg"
+                  density="compact"
+                ></v-select>
+              </div>
+              <v-text-field
+                append-inner-icon="mdi-magnify"
                 placeholder="병원 이름 검색"
-                class="text-[16px] font-normal text-mono-700 placeholder-mono-400 outline-none"
-              />
-              <button>
-                <v-icon class="search">mdi-magnify</v-icon>
-              </button>
+                variant="outlined"
+                rounded="lg"
+                density="compact"
+                class="h-[40px] w-full text-[16px] font-normal text-mono-700"
+              ></v-text-field>
             </div>
           </div>
-
-          <div class="h-full pb-[60px] overflow-y-auto">
+          <div class="h-full pb-[60px] overflow-y-auto scrollbar">
             <!-- 증상 필터 -->
             <div
-              class="flex flex-col gap-4 p-6 border-b-1 border-mono-200"
+              class="flex flex-col gap-4 py-6 px-5 border-b-1 border-mono-200"
               v-if="isSymptomButtonShow"
             >
               <div class="text-[20px] font-semibold text-mono-700">증상 선택</div>
-              <div class="grid grid-cols-3 gap-[20px] justify-center items-center">
-                <template v-for="(item, index) in symptoms">
-                  <div
-                    class="flex flex-col gap-1.5 justify-center items-center py-[12px] w-[88px] h-[88px] bg-main-50 rounded-[12px] border-1 border-main-400"
-                    :class="index === symptoms.length - 1 ? 'col-start-2' : ''"
-                  >
-                    <img :src="item.image" alt="symptom_icon" class="w-[40px] h-[40px]" />
-                    <div class="text-[16px] text-main-500 font-medium">
-                      {{ item.name }}
-                    </div>
-                  </div>
-                </template>
-              </div>
+              <SymptomsFilter />
             </div>
 
             <!-- 리스트 -->
@@ -421,11 +388,15 @@
               </template>
             </div>
           </div>
+          <div
+            :class="{resizer: true, hide: resizable[0].hide}"
+            @mousedown="(e) => startResize(0, e)"
+          ></div>
         </div>
         <!-- 상세 정보 -->
-        <div>
+        <div id="detialInfoBox" :style="{width: resizable[1].width + 'px'}" v-show="isDetailPageShow">
+          <div class="resizer" @mousedown="(e) => startResize(1, e)"></div>
           <HospitalDetailCard
-            v-show="isDetailPageShow"
             @close="closeDetail"
             :name="selectedHospital.name"
             :type="selectedHospital.type"
@@ -439,15 +410,65 @@
             :parking_etc="selectedHospital.parking_etc"
           />
         </div>
-        <!-- 지도 -->
-        <div></div>
       </div>
+      <HospitalMap v-model:mapData="mapData" v-model:isMapChange="isMapChange" />
     </div>
   </div>
 </template>
 
 <style scoped>
+  #detialInfoBox{
+    position: absolute;
+    height: 100%;
+    background: white;
+    right: 0; top: 0;
+    transform: translateX(100%);
+  }
   :deep(.v-icon.search) {
     color: var(--color-mono-500);
+  }
+  :deep(.v-input__details) {
+    display: none;
+  }
+  .resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 30px;
+    height: 100%;
+    cursor: ew-resize;
+  }
+  .resizer.hide {
+    border-right: 1px solid var(--color-mono-200);
+  }
+  .resizer.hide::before {
+    content: '';
+    z-index: 9;
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 120px;
+    background: var(--color-main-400);
+    border-radius: 0px 12px 12px 0px;
+    box-shadow: inset 4px 0px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* 스크롤바의 폭 너비 */
+  ::-webkit-scrollbar {
+    width: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px; /* 스크롤바 둥근 테두리 */
+    background: var(--color-main-400);
+    border: 3px solid white;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent; /*스크롤바 뒷 배경 색상*/
   }
 </style>

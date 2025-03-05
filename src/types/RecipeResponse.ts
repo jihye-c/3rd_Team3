@@ -1,4 +1,4 @@
-export default interface RecipeResponse {
+export interface Recipe {
   RCP_NM: string; // 레시피 이름
   RCP_PARTS_DTLS: string; // 재료 상세 정보
   RCP_PAT2: string; // 요리 종류 (예: 반찬)
@@ -33,4 +33,12 @@ export default interface RecipeResponse {
   MANUAL18?: string;
   MANUAL19?: string;
   MANUAL20?: string;
+}
+
+export interface RecipeResponse {
+  COOKRCP01: {
+    RESULT: {MSG: string; CODE: string};
+    row: Recipe[];
+    total_count: string;
+  };
 }
