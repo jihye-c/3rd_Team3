@@ -72,8 +72,8 @@
               </RouterLink>
             </div>
           </div>
-            <div class="flex items-center">
-              <AddressSelectBar />
+          <div class="flex items-center">
+            <AddressSelectBar />
 
             <!-- <RouterLink class="tw:flex tw:items-center" to="/mypage"> </RouterLink> -->
             <v-badge content="5" color="var(--color-main-400)">
@@ -85,10 +85,36 @@
                   ></v-avatar>
                 </template>
 
-                <v-btn key="1" class="!shadow-none" icon="$success"></v-btn>
-                <v-btn key="2" class="!shadow-none" icon="$info"></v-btn>
-                <v-btn key="3" class="!shadow-none" icon="$warning"></v-btn>
-                <v-btn key="4" class="!shadow-none" icon="$error"></v-btn>
+                <v-tooltip  location="end">
+                  <template v-slot:activator="{props}">
+                    <v-btn icon v-bind="props">
+                      <v-icon color="grey-lighten-1"> mdi-account </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>마이페이지</span>
+                </v-tooltip>
+                <v-tooltip  location="end">
+                  <template v-slot:activator="{props}">
+                    <v-btn icon v-bind="props">
+                      <v-icon color="grey-lighten-1"> mdi-bell </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>알림</span>
+                </v-tooltip>
+                <v-tooltip  location="end">
+                  <template v-slot:activator="{props}">
+                    <v-btn icon v-bind="props">
+                      <v-icon color="grey-lighten-1"> mdi-logout </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>로그아웃</span>
+                </v-tooltip>
+                <v-tooltip  location="end">
+                  <template v-slot:activator="{props}">
+                    <v-btn  v-bind="props" key="4" class="!shadow-none" icon="$error"></v-btn>
+                  </template>
+                  <span>닫기</span>
+                </v-tooltip>
               </v-speed-dial>
             </v-badge>
           </div>
@@ -99,7 +125,7 @@
 </template>
 
 <style scoped>
-  #app:has(#hospitalContent) header{
+  #app:has(#hospitalContent) header {
     background: white !important;
     color: var(--color-mono-900);
   }

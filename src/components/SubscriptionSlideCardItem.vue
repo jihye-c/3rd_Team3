@@ -1,5 +1,5 @@
 <template>
-      <div class="flex w-full flex-col gap-3">
+      <div class="flex w-full px-12 flex-col gap-3">
       <div>
         <span class="grow-0 text-sm px-2 py-1 rounded-sm text-center text-main-50 bg-main-400"
             >{{data?.HOUSE_DTL_SECD_NM}}</span
@@ -16,6 +16,7 @@
 <script setup lang="ts">
 const {data} = defineProps({
   data: Object,
+  activeData:Boolean,
 })
 
 </script>

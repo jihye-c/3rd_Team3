@@ -19,7 +19,6 @@ export const getSubscriptionList = async() =>{
 
     }
   )
-  console.log(response.data)
   return response.data
   }catch(e){
     console.error(e);

@@ -33,7 +33,6 @@ const onChangeAddress = () =>{
 watchEffect(() => {
   if (userStore.userLocation) {
     select.value = userStore.userLocation;
-    console.log("초기값 업데이트:", userStore.userLocation);
   }
 });
 
