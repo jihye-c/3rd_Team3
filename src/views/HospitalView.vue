@@ -342,20 +342,29 @@
           </div>
           <div class="h-full pb-[60px] overflow-y-auto scrollbar">
             <!-- 증상 필터 -->
-            <div
-              class="flex flex-col gap-4 py-6 px-5 border-b-1 border-mono-200"
-              v-if="isSymptomButtonShow"
-            >
-              <div class="text-[20px] font-semibold text-mono-700">증상 선택</div>
-              <SymptomsFilter />
+            <div class="flex flex-col gap-4 py-6 px-5 border-b border-mono-200">
+              <div
+                class="text-[20px] font-semibold text-mono-700 cursor-pointer "
+                @click="isSymptomButtonShow = !isSymptomButtonShow"
+              >
+                증상 선택
+              <v-icon>{{ isSymptomButtonShow ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+              </div>
+              <SymptomsFilter v-if="isSymptomButtonShow" />
             </div>
 
             <!-- 리스트 -->
             <div class="pt-6 px-6 pb-34 relative">
-              <p class="text-right text-mono-300 absolute right-6">전체 : {{ hospitalList?.length }}개</p>
-              <div id="postList" class="flex flex-col ">
-                <template v-for="(item, idx) in hospitalList?.data" :key="item.id" >
-                  <HospitalPostList :class="{'border-t' : idx !== 0}" :data="item" @click="openDetail" />
+              <p class="text-right text-mono-300 absolute right-6">
+                전체 : {{ hospitalList?.length }}개
+              </p>
+              <div id="postList" class="flex flex-col">
+                <template v-for="(item, idx) in hospitalList?.data" :key="item.id">
+                  <HospitalPostList
+                    :class="{'border-t': idx !== 0}"
+                    :data="item"
+                    @click="openDetail"
+                  />
                 </template>
                 <v-pagination
                   v-model="nowPage"
