@@ -4,8 +4,7 @@
   import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
   import RecipeSquareCard from '@/components/recipe/RecipeSquareCard.vue';
   import SearchBarRounded from '@/components/recipe/SearchBarRounded.vue';
-
-  const handleSearch = (searchText: string) => alert(`검색어: ${searchText}`);
+  import {useRouter} from 'vue-router';
 
   const recipeCategoryData = [
     {
@@ -33,18 +32,22 @@
     {
       category: '육류',
       image: '/recipe/recipe_ingredient_meat.webp',
+      ingredient: '고기',
     },
     {
       category: '채소',
       image: '/recipe/recipe_ingredient_vegetable.webp',
+      ingredient: '양파',
     },
     {
       category: '해산물',
       image: '/recipe/recipe_ingredient_seafood.webp',
+      ingredient: '새우',
     },
     {
       category: '과일',
       image: '/recipe/recipe_ingredient_fruit.webp',
+      ingredient: '사과',
     },
   ];
   const todaysRecipeData = {
@@ -54,11 +57,11 @@
       '소고기 들깨 알토란탕은 고소한 들깨가루와 부드러운 소고기, 그리고 특유의 식감이 일품인 알토란을 주재료로 한 영양가 높은 한식 탕입니다. 알토란의 아삭한 식감과 들깨의 고소함이 어우러져 깊은 맛을 내며, 소고기의 감칠맛이 국물에 배어 풍미를 더합니다.',
     image: '/recipe/recipe_todays.webp',
     nutrition: {
-      INFO_ENG: 146.42,
-      INFO_NA: 675.68,
-      INFO_PRO: 7.57,
-      INFO_FAT: 5.17,
-      INFO_CAR: 17.4,
+      calories: 146.42,
+      sodium: 675.68,
+      protein: 7.57,
+      fat: 5.17,
+      carbohydrates: 17.4,
     },
   };
   const popularRecipeData = [
@@ -93,6 +96,11 @@
       image: '/recipe/recipe_category_one_dish.webp',
     },
   ];
+
+  const router = useRouter();
+
+  const handleSearch = (searchText: string) =>
+    router.push({name: 'recipe-search', query: {keyword: searchText}});
 </script>
 
 <template>
@@ -103,7 +111,7 @@
         <div class="flex flex-col gap-10 justify-center">
           <!-- 타이틀 -->
           <div>
-            <div class="text-[40px] text-mono-050 leading-10">혼자 살아도 건강하게!</div>
+            <div class="text-[40px] text-mono-050 leading-[52px]">혼자 살아도 건강하게!</div>
             <div class="text-[48px] font-bold text-mono-050 leading-16">
               자취생을 위한 영양만점 레시피
             </div>
@@ -120,7 +128,13 @@
       <div class="ft-point text-[48px] text-mono-700">카테고리별 레시피</div>
       <div class="flex justify-between">
         <template v-for="item in recipeCategoryData" :key="item.category">
-          <RecipeSquareCard :title="item.category" :image="item.image" :size="300" />
+          <RecipeSquareCard
+            :title="item.category"
+            :image="item.image"
+            :size="300"
+            class="px-6 py-4"
+            @click="() => router.push({name: 'recipe-search', query: {category: item.category}})"
+          />
         </template>
       </div>
     </div>
@@ -129,7 +143,11 @@
       <div class="ft-point text-[48px] text-mono-700">인기 레시피</div>
       <div class="flex justify-between">
         <template v-for="item in popularRecipeData" :key="item.title">
-          <RecipeRectangleCard :image="item.image" :title="item.title" />
+          <RecipeRectangleCard
+            :image="item.image"
+            :title="item.title"
+            @click="router.push({name: 'recipe-detail', params: {id: item.title}})"
+          />
         </template>
       </div>
     </div>
@@ -142,11 +160,19 @@
           :subtitle="todaysRecipeData.subtitle"
           :image="todaysRecipeData.image"
           :size="460"
+          class="px-9 py-8"
+          @click="
+            () =>
+              router.push({
+                name: 'recipe-detail',
+                params: {id: todaysRecipeData.title},
+              })
+          "
         />
         <div class="flex flex-col w-[1040px] justify-between text-mono-700">
-          <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-3">
             <div class="text-[32px] font-bold">레시피 설명</div>
-            <p class="text-[20px] leading-[24px]">{{ todaysRecipeData.description }}</p>
+            <p class="text-[20px] leading-[28px]">{{ todaysRecipeData.description }}</p>
           </div>
           <div class="flex flex-col gap-2">
             <div class="text-[32px] font-bold">영양정보</div>
@@ -171,7 +197,18 @@
       <div class="ft-point text-[48px] text-mono-700">냉장고 속 재료별 레시피</div>
       <div class="flex justify-between">
         <template v-for="item in recipeIngredientData" :key="item.category">
-          <RecipeSquareCard :title="item.category" :image="item.image" :size="380" />
+          <RecipeSquareCard
+            :title="item.category"
+            :image="item.image"
+            :size="380"
+            @click="
+              () =>
+                router.push({
+                  name: 'recipe-search',
+                  query: {ingredients: item.ingredient},
+                })
+            "
+          />
         </template>
       </div>
     </div>
@@ -191,7 +228,8 @@
     </div>
     <!-- 커뮤니티 이동 배너 -->
     <div
-      class="container h-[230px] w-full bg-main-50 rounded-[12px] p-[72px] flex items-center justify-between"
+      class="container h-[230px] w-full bg-main-50 rounded-[12px] p-[72px] flex items-center justify-between cursor-pointer"
+      @click="() => router.push('/community/recipe')"
     >
       <div class="w-[200px] h-[160px] bg-[url(/recipe/recipe_illustration.svg)]"></div>
       <div class="flex flex-col items-end">

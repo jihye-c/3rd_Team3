@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import {fetchRecipes} from '@/apis/recipeApi';
+  import {fetchRecipeList} from '@/apis/recipeApi';
   import BannerComponent from '@/components/BannerComponent.vue';
   import CategoryFilterButton from '@/components/recipe/CategoryFilterButton.vue';
   import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
@@ -76,6 +76,7 @@
         },
       });
     }
+    window.scrollTo({top: 0, behavior: 'instant'});
   };
 
   // url query 변경 및 api 호출
@@ -112,7 +113,7 @@
       // api 호출
       try {
         isLoading.value = true;
-        const data = await fetchRecipes({
+        const data = await fetchRecipeList({
           page: page.value,
           RCP_NM: searchKeyword.value,
           RCP_PAT2: searchCategory.value,
@@ -210,7 +211,12 @@
             width="516"
             :rounded="10"
           />
-          <RecipeRectangleCard v-else :title="item.RCP_NM" :image="item.ATT_FILE_NO_MAIN" />
+          <RecipeRectangleCard
+            v-else
+            :title="item.RCP_NM"
+            :image="item.ATT_FILE_NO_MAIN"
+            @click="() => router.push({name: 'recipe-detail', params: {id: item.RCP_NM}})"
+          />
         </template>
       </div>
       <v-pagination

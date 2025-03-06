@@ -1,6 +1,7 @@
 <template>
   <div class="flex w-full gap-4">
     <div class="flex flex-col justify-between gap-15">
+
       <HomeTitle title="이 달의 청약정보" link="/subscription" content="놓치지 말아야 할 이 달의 청약정보" />
       <Calendar
         expanded
@@ -20,13 +21,13 @@
           @slide-change="onSlideChange"
           :direction="'vertical'"
           :slidesPerView="3"
+          :modules="[Pagination]"
           :space-between="40"
           :centeredSlides="true"
           :pagination="{
             type: 'progressbar',
             el: '.progressbar',
           }"
-          :modules="[Pagination]"
           class="mySwiper w-full h-[500px]"
         >
           <swiper-slide v-for="([key, value], index) in Object.entries(filterData)" :key="index">
@@ -67,6 +68,7 @@
   import 'swiper/css';
   import 'swiper/css/pagination';
 
+
   const subscriptionStore = useSubscriptionStore();
 
   const swipers = ref<Swiper | null>(null);
@@ -102,6 +104,7 @@
   const handleDayClick = (calendarDay: CalendarDay) => {
     const date = getLocalDate(calendarDay.date);
     const index = Object.keys(filterData.value!).findIndex((k) => k === date);
+
     swipers.value?.slideTo(index);
   };
 
@@ -116,6 +119,7 @@
 
   onUpdated(() => {
     swipers.value?.slideTo(1);
+
   });
 </script>
 

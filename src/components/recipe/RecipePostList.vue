@@ -10,7 +10,8 @@
 </script>
 
 <template>
-  <div class="flex hover-target h-[124px] w-full">
+
+  <div class="flex hover-target cursor-pointer h-[124px] w-full">
     <div class="min-w-[124px] w-[124px] rounded-[16px] overflow-hidden shrink-0">
       <div
         :style="{backgroundImage: `url(${props.image})`}"

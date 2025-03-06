@@ -1,4 +1,5 @@
-import type {HospitalData, HospitalDetail, HospitalTraffic, HospitalTreatment} from '@/types/hospitalType';
+import type { MapData } from '@/types/kakao.d';
+import type {FullHospitalRes, HospitalData, HospitalDetail, HospitalTraffic, HospitalTreatment} from '@/types/hospitalType';
 import {createClient, SupabaseClient} from '@supabase/supabase-js';
 import Papa from 'papaparse'; // PapaParse 라이브러리 사용
 type HospitalFullData = Partial<HospitalData & HospitalDetail> & {
@@ -19,7 +20,7 @@ export default class Supabase {
     return this.supabase;
   }
 
-  static async addCSVData(file: File | null, csvType: string | null = 'hospital') {
+  static async addCSVData(file: File | null, csvType: string | null = 'hospital'){
     let validHospitalIds = undefined;
     let record: any;
 
@@ -170,20 +171,40 @@ export default class Supabase {
     reader.readAsText(file);
   }
 
-  static async getFullHospitalData(page: number) {
+  
+  static async getFullHospitalData(location:MapData, page: number, hospitalType?:string[], symptomsQuery?:string[]):Promise<FullHospitalRes>{
     const supabase = this.init();
-    if (!supabase) return;
+    if (!supabase) return {length:0, data:null};
 
-    const {data: hospital, error} = await supabase
+    if(page < 1) page = 1;//1부터 시작
+
+    if(symptomsQuery){
+      //symptoms.json 데이터 파싱
+      //해당하는 과목들 set에다가 넣기(중복 제거)
+      //  supabase.from('hospital_treatment').select('id') 
+      // .in('code_name', setData)
+      // return된 set들 
+      // const {data} = 
+    } 
+    const dbQuery = supabase
       .from('hospital')
-      .select('*')
-      .range(0, 20 * page);
+      .select('*, hospital_detail(opentime_sun,closetime_sun,opentime_mon,closetime_mon,opentime_tue,closetime_tue,opentime_wed,closetime_wed,opentime_thu,closetime_thu,opentime_fri,closetime_fri,opentime_sat,closetime_sat)', {count:'exact'})
+      .gte('mapx', location.bounds.left)
+      .lte('mapx',location.bounds.right)
+      .lte('mapy',location.bounds.top)
+      .gte('mapy', location.bounds.bottom)
+      .range((page - 1) * 10, page * 10 - 1);
 
-    if (error) {
-      console.log('DB error : ', error);
-      return null;
+    if(hospitalType){
+      dbQuery.in('type', hospitalType)
     }
-    return hospital;
+    
+    const {data: hospitals, count, error} = await dbQuery;
+    if (error || !count) {
+      console.log('DB error : ', error);
+      return {length:0, data:null};
+    }
+    return {length:count, data:hospitals };
   }
 
   static async getDetailHospitalData(id: string): Promise<HospitalFullData | null> {

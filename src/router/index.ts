@@ -79,9 +79,8 @@ const router = createRouter({
       path: '/community/recipe',
       name: 'community-recipe',
       component: () => import('@/views/CommunityRecipeView.vue'),
-    },
-    {
-      path: '/community/review',
+    }, 
+    { path: '/community/review',
       name: 'community-review',
       component: () => import('@/views/CommunityReviewView.vue'),
     },
@@ -105,6 +104,11 @@ const router = createRouter({
       name: 'posting',
       component: () => import('@/views/PostView.vue'),
     },
+    {
+      path: '/community/post',
+      name: 'posting',
+      component: () => import('@/views/PostView.vue'),
+    }, 
     {
       path: '/mypage',
       name: 'mypage',
