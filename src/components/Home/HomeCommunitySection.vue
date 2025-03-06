@@ -1,5 +1,5 @@
 <template>
-  <HomeTitle title="커뮤니티" content="자취의 다양한 소식을 들을 수 있는 꿀팁 커뮤니티" />
+  <HomeTitle title="커뮤니티" link="/community/question" content="자취의 다양한 소식을 들을 수 있는 꿀팁 커뮤니티" />
   <div class="flex py-10 gap-10">
     <div>
       <div

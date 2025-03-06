@@ -6,7 +6,6 @@
 </template>
 
 <script setup lang="ts">
-
 import AddressSelectBar from './common/AddressSelectBar.vue';
 
 </script>

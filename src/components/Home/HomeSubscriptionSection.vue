@@ -1,7 +1,7 @@
 <template>
   <div class="flex w-full gap-4">
     <div class="flex flex-col justify-between gap-15">
-      <HomeTitle title="이 달의 청약정보" content="놓치지 말아야 할 이 달의 청약정보" />
+      <HomeTitle title="이 달의 청약정보" link="/subscription" content="놓치지 말아야 할 이 달의 청약정보" />
       <Calendar
         expanded
         locale="en"
