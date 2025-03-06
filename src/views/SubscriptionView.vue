@@ -43,24 +43,28 @@
 
   const cards = [
     {
+      id: '67c914d3822d1f733057817d',
       imageURL:
         'https://www.i-sh.co.kr/main/upload/bbs/KS070702/20241231011825178_979eaf8298e446fa93b9dd312c70d80d.jpg',
       title: '2024년 공공임대주택 및 토지 등 자산공개',
       date: '2024년 02월 20일',
     },
     {
+      id: '67c9255c822d1f73305781b5',
       imageURL:
         'https://www.i-sh.co.kr/main/upload/bbs/KS070702/20241218102520326_8402fff2063b460c88a5915459b73bb9.jpg',
       title: '주거안심종합센터, 원스톱 주거복지서비스',
       date: '2024년 02월 20일',
     },
     {
+      id: '67c93a83822d1f7330578285',
       imageURL:
-        'https://www.i-sh.co.kr/main/upload/bbs/KS070702/20241029011156405_6d3d0afba27b4791b0e0534a455aa776.jpg',
-      title: '서울주택도시공사 장기전세주택 운영 성과 분석, 장기전세 확대해야',
+        'https://www.i-sh.co.kr/main/upload/bbs/KS070702/20240726110238300_c59c5ac0c00e404eba79740af1345c59.jpg',
+      title: '카드뉴스로 보는 주택분양제도, 선분양과 후분양',
       date: '2024년 02월 20일',
     },
     {
+      id: '67c93b09822d1f73305782b7',
       imageURL:
         'https://www.i-sh.co.kr/main/upload/bbs/KS070702/20241025031052149_9ab1cfac61cc4614a7b4bf2b56e292da.jpg',
       title: '서울주택도시공사, 세곡2 공공임대 주택 자산 가치 증가로 개발이익 대폭 증가',
