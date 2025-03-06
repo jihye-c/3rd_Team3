@@ -1,3 +1,4 @@
+import { getUserInfo } from '@/apis/auth';
 import {getGeolocationAddress} from '@/apis/userService';
 import type {UserAddress} from '@/types/User';
 import {defineStore} from 'pinia';
@@ -6,7 +7,7 @@ import {ref} from 'vue';
 export const useUserStore = defineStore('user', () => {
   const storedAddress = localStorage.getItem('userAddress');
   const userLocation = ref<UserAddress | null>(storedAddress ? JSON.parse(storedAddress) : null);
-
+  const userInfo = ref()
   //유저 위치 정보 조회
   const getUserAddress = async (location: {latitude: number; longitude: number}) => {
     try {
@@ -21,7 +22,17 @@ export const useUserStore = defineStore('user', () => {
       console.log(e);
     }
   };
+const getUser = async (id) =>{
+  try{
+    const data = await getUserInfo(id)
+    const fullName = JSON.parse(data.fullName);
+    console.log(fullName)
+    userInfo.value = {...data, fullName}
+  }catch (e){
+    console.log(e)
+  }
 
+}
   //유저 위치정보 업데이트
   const updateUserAddress = (newAddress: UserAddress |null) => {
     localStorage.setItem('userAddress', JSON.stringify(newAddress));
@@ -29,7 +40,9 @@ export const useUserStore = defineStore('user', () => {
   };
   return {
     userLocation,
+    userInfo,
     getUserAddress,
     updateUserAddress,
+    getUser
   };
 });

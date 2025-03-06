@@ -30,7 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = userData;
     } catch (error) {
       console.error('Failed to fetch user info:', error);
-      logout();
+      // logout();
     }
   };
 
@@ -78,11 +78,11 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   // 자동 로그인 처리
-  onMounted(async () => {
-    if (token.value) {
-      await fetchUser();
-    }
-  });
+  // onMounted(async () => {
+  //   if (token.value) {
+  //     await fetchUser();
+  //   }
+  // });
 
   return {
     user,

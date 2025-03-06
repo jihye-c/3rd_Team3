@@ -1,21 +1,20 @@
 <template>
-  <div class="w-full h-full flex text-mono-900 items-center">
-    <div class="w-full flex flex-col items-start gap-4">
+  <div class="w-full h-full flex justify-center text-mono-900 items-center'">
+    <div class=" w-[850px]  flex flex-col items-start gap-4">
       <div class="">
-        <span class="w-2 h-2 rounded-full bg-main-400 block mb-1"></span>
-        <strong class="font-semibold text-2xl">{{id}}</strong>
+      <div v-if="active" class="flex px-12 gap-1">
+        <span  v-for="(subData,index) in data" :key="index" class="w-2 h-2 rounded-full bg-main-400 block mb-1"></span>
       </div>
-      <div class="">
+        <strong :class="`px-12 font-semibold  text-2xl ${active ? 'text-main-500' : 'text-mono-300'}`">{{id}}</strong>
+      </div>
+      <div class="w-full flex justify-center">
         <swiper
           :slidesPerView="2"
-          :pagination="{
-            type: 'progressbar',
-            el: '.progressbar',
-          }"
-          :modules="[Pagination]"
-          class="mySwiper flex w-[800px] "
+          :navigation="active"
+          :modules="[Navigation]"
+          class="mySwiper flex justify-center w-[850px] "
         >
-          <swiper-slide v-for="(subData,index) in data" :key="index"><SubscriptionSlideCardItem :data="subData"/></swiper-slide>
+          <swiper-slide  v-for="(subData,index) in data" :key="index"><SubscriptionSlideCardItem :active :data="subData"/></swiper-slide>
         </swiper>
 
       </div>
@@ -26,22 +25,36 @@
 <script setup lang="ts">
 
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Pagination } from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 
 import 'swiper/css';
-import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 import SubscriptionSlideCardItem from './SubscriptionSlideCardItem.vue';
-import { onMounted } from 'vue';
+import {  onMounted } from 'vue';
 
-const {data,id} = defineProps({
+
+const {data,id,active} = defineProps({
   data: Object,
   id: String,
+  active:Boolean
 })
 
 onMounted(()=>{
-  console.log(data)
-  console.log(id)
+
+
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+:deep(.swiper-button-prev, .swiper-button-next){
+  left: 0px;
+
+}
+:deep(.swiper-button-next){
+  color: var(--color-main-400) !important;
+}
+:deep(.swiper-button-prev){
+  color: var(--color-main-400) !important;
+}
+
+</style>

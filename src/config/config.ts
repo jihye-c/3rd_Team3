@@ -56,3 +56,22 @@ export const background_items = [
   },
 
 ];
+
+// 행사 카테고리
+
+export const sub_categories = [
+  { name: "문화관광축제", code: "A02070100" },
+  { name: "일반축제", code: "A02070200" },
+  { name: "전통공연", code: "A02080100" },
+  { name: "연극", code: "A02080200" },
+  { name: "뮤지컬", code: "A02080300" },
+  { name: "오페라", code: "A02080400" },
+  { name: "전시회", code: "A02080500" },
+  { name: "박람회", code: "A02080600" },
+  { name: "무용", code: "A02080800" },
+  { name: "클래식음악회", code: "A02080900" },
+  { name: "대중콘서트", code: "A02081000" },
+  { name: "영화", code: "A02081100" },
+  { name: "스포츠경기", code: "A02081200" },
+  { name: "기타행사", code: "A02081300" }
+];

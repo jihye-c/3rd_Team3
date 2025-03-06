@@ -55,7 +55,7 @@ const selectedFilters = ref({
 const filterFestivals = () => {
   console.log("✅ 필터링 전 데이터 개수:", festivalData.value.length);
 
-  if (!selectedFilters.value.category && !selectedFilters.value.subCategory && 
+  if (!selectedFilters.value.category && !selectedFilters.value.subCategory &&
     !selectedFilters.value.keyword && selectedFilters.value.location === "전체" &&
     !selectedFilters.value.period) { // 🛠 기간 필터도 체크
   filteredFestivals.value = festivalData.value;
@@ -85,9 +85,9 @@ const filterFestivals = () => {
     const matchesKeyword =
       !selectedFilters.value.keyword ||
       festival.name.includes(selectedFilters.value.keyword);
-    
+
     const matchesLocation =
-      !selectedFilters.value.location || selectedFilters.value.location === "전체" || 
+      !selectedFilters.value.location || selectedFilters.value.location === "전체" ||
       festival.gu_name.trim() === selectedFilters.value.location.trim();
 
     // ✅ 기간 필터링 적용
@@ -95,7 +95,7 @@ const filterFestivals = () => {
 
 
 
-    console.log(`🔎 필터 조건 검사: 
+    console.log(`🔎 필터 조건 검사:
       - 카테고리: ${matchesCategory ? "✅" : "❌"} (${festival.category2} vs ${selectedFilters.value.category})
       - 상세 분류: ${matchesSubCategory ? "✅" : "❌"} (${festival.category3} vs ${selectedFilters.value.subCategory})
       - 키워드: ${matchesKeyword ? "✅" : "❌"} (${selectedFilters.value.keyword})
@@ -129,7 +129,7 @@ const handleFilterChange = (filters: { category: string; subCategory: string; lo
   selectedFilters.value.period = filters.period;
 
   currentPage.value = 1;
-  
+
   filterFestivals(); // 즉각 필터 적용
 };
 
@@ -281,19 +281,19 @@ onMounted(fetchFestivals);
                 <p class="text-mono-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[90%]">
                   {{ festival.overview.split('.')[0] }}.
                 </p>
-                
+
               </div>
               <!-- ✅ 행사 기간 별도 박스 -->
               <div class="mt-4 text-[12px] text-mono-600">
-                {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}  
-                <br /> 
+                {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}
+                <br />
                 {{ festival.gu_name }}
               </div>
             </div>
           </div>
           <PaginationComponent
             :totalPages="totalPages"
-            :currentPage="currentPage" 
+            :currentPage="currentPage"
             @pageChange="handlePageChange"
           />
         </div>

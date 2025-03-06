@@ -49,7 +49,7 @@ export default class CultureAPI {
   static async getSeoulFestivalsAndEvents() {
     try {
       console.log("🚀 API 요청 시작: 서울의 행사 목록 조회");
-      
+
       const response = await axios.get(`${TOUR_API_URL}searchFestival1`, {
         params: {
           ...defaultParams,
@@ -111,7 +111,7 @@ export default class CultureAPI {
   static async getEventDetail(contentId, contentTypeId) {
     try {
       console.log(`🚀 API 요청 시작: 상세 정보 조회 (contentId: ${contentId})`);
-      
+
       const response = await axios.get(`${TOUR_API_URL}detailCommon1`, {
         params: {
           MobileOS: "ETC",
@@ -130,7 +130,7 @@ export default class CultureAPI {
           serviceKey: TOUR_API_KEY,
         },
       });
-      
+
       console.log("📌 API 응답 데이터:", response.data);
 
       // ✅ 응답 데이터 구조 검증
@@ -138,9 +138,9 @@ export default class CultureAPI {
         console.warn("⚠️ API 응답이 예상과 다름:", response.data);
         return null;
       }
-      
+
       const item = response.data.response.body.items.item[0];
-      
+
       // ✅ 상세 정보 변환
       const eventDetail = {
         content_id: item.contentid,
@@ -185,7 +185,7 @@ export default class CultureAPI {
   static async getEventIntro(contentId, contentTypeId) {
     try {
       console.log(`🚀 API 요청 시작: 행사 소개 조회 (contentId: ${contentId})`);
-      
+
       const response = await axios.get(`${TOUR_API_URL}detailIntro1`, {
         params: {
           MobileOS: "ETC",
@@ -196,15 +196,15 @@ export default class CultureAPI {
           serviceKey: TOUR_API_KEY,
         },
       });
-      
+
       console.log("📌 API 응답 데이터:", response.data);
       if (!response.data.response || !response.data.response.body.items.item) {
         console.warn("⚠️ API 응답이 예상과 다름:", response.data);
         return null;
       }
-      
+
       const item = response.data.response.body.items.item[0];
-      
+
       // ✅ 상세 정보 변환
       const eventIntro = {
         content_id: item.contentid,
@@ -228,7 +228,7 @@ export default class CultureAPI {
         spend_time_festival: item.spendtimefestival || "",
         festival_grade: item.festivalgrade || "",
       };
-      
+
       console.log("✅ 행사 소개 조회 성공:", eventIntro);
       return eventIntro;
     } catch (error) {
@@ -245,7 +245,7 @@ export default class CultureAPI {
   static async getEventInfo(contentId, contentTypeId) {
     try {
       console.log(`🚀 API 요청 시작: 행사 정보 조회 (contentId: ${contentId})`);
-      
+
       const response = await axios.get(`${TOUR_API_URL}detailInfo1`, {
         params: {
           MobileOS: "ETC",
@@ -256,13 +256,13 @@ export default class CultureAPI {
           serviceKey: TOUR_API_KEY,
         },
       });
-      
+
       console.log("📌 API 응답 데이터:", response.data);
       if (!response.data.response || !response.data.response.body.items.item) {
         console.warn("⚠️ API 응답이 예상과 다름:", response.data);
         return null;
       }
-      
+
       const items = response.data.response.body.items.item.map((item) => ({
         content_id: item.contentid,
         content_type_id: item.contenttypeid,
@@ -271,7 +271,7 @@ export default class CultureAPI {
         info_text: item.infotext,
         field_category: item.fldgubun,
       }));
-      
+
       console.log("✅ 행사 정보 조회 성공:", items);
       return items;
     } catch (error) {
@@ -287,7 +287,7 @@ export default class CultureAPI {
   static async getEventImages(contentId) {
     try {
       console.log(`🚀 API 요청 시작: 행사 이미지 조회 (contentId: ${contentId})`);
-      
+
       const response = await axios.get(`${TOUR_API_URL}detailImage1`, {
         params: {
           MobileOS: "ETC",
@@ -299,13 +299,13 @@ export default class CultureAPI {
           serviceKey: TOUR_API_KEY,
         },
       });
-      
+
       console.log("📌 API 응답 데이터:", response.data);
       if (!response.data.response || !response.data.response.body.items.item) {
         console.warn("⚠️ API 응답이 예상과 다름:", response.data);
         return null;
       }
-      
+
       const items = response.data.response.body.items.item.map((item) => ({
         content_id: item.contentid,
         original_image_url: item.originimgurl,
@@ -314,7 +314,7 @@ export default class CultureAPI {
         copyright_div_code: item.cpyrhtDivCd,
         serial_num: item.serialnum,
       }));
-      
+
       console.log("✅ 행사 이미지 조회 성공:", items);
       return items;
     } catch (error) {

@@ -16,7 +16,7 @@
 <template>
   <div
     :style="{width: size + 'px', height: size + 'px'}"
-    class="overflow-hidden rounded-[20px] cursor-pointer"
+    class="overflow-hidden rounded-[20px] hover-target cursor-pointer"
   >
     <div :style="{backgroundImage: `url(${image})`}" class="w-full h-full bg-cover bg-center">
       <div
