@@ -1,70 +1,36 @@
 <script setup lang="ts">
-  import type RecipeResponse from '@/types/RecipeResponse';
   import BannerComponent from '@/components/BannerComponent.vue';
   import BookmarkButton from '@/components/BookmarkButton.vue';
   import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
   import ShareButton from '@/components/ShareButton.vue';
-  import {computed, reactive, ref} from 'vue';
+  import {onMounted, watch, ref} from 'vue';
+  import {useRoute} from 'vue-router';
+  import {fetchRecipe} from '@/apis/recipeApi';
+  import type {Recipe} from '@/types/RecipeResponse';
+  import {fetchYoutube} from '@/apis/youtubeApi';
 
-  const recipeData: RecipeResponse = reactive({
-    RCP_NM: '저염된장 삼치구이',
-    RCP_PARTS_DTLS:
-      '•필수재료 : 삼치(140g), 치커리(35g), 전분가루(10g)\n•구이소스 : 일본된장(5g), 청주(5g)\n•곁들임소스 : 유자청(15g), 다진마늘(5g), 청고추(15g), 홍고추(20g)',
-    RCP_PAT2: '반찬',
-    RCP_WAY2: '굽기',
-    RCP_SEQ: '430',
-    INFO_WGT: '130',
-    INFO_ENG: '196.3', // 열량
-    INFO_CAR: '5.8', // 탄수화물
-    INFO_NA: '168.8', // 나트륨
-    INFO_PRO: '18.9', // 단백질
-    INFO_FAT: '10.8', // 지방
-    HASH_TAG: '일본된장',
-    ATT_FILE_NO_MK:
-      'http://www.foodsafetykorea.go.kr/uploadimg/20230306/20230306050812_1678090092306.jpg',
-    ATT_FILE_NO_MAIN:
-      'http://www.foodsafetykorea.go.kr/uploadimg/20230306/20230306050759_1678090079442.jpg',
-    MANUAL01: '1. 삼치는 세척 후 전분가루로 옷을 입혀준다.',
-    MANUAL02: '2. 일본된장과 청주를 섞어 구이소스를 만들어 삼치를 재운다.',
-    MANUAL03: '3. 청고추와 홍고추는 곱게 다지고 치커리는 적당하게 잘라서 물에 담가준다.',
-    MANUAL04: '4. 유자청, 다진마늘, 다진 청고추와 홍고추를 섞어 곁들임소스를 만든다.',
-    MANUAL05: '5. 재워두었던 삼치를 굽는다.',
-    MANUAL06: '6. 접시에 구운 삼치와 치커리를 올리고 치커리를 올리고 곁들임소스를 뿌려 완성한다.',
-    MANUAL07: '',
-    MANUAL08: '',
-    MANUAL09: '',
-    MANUAL10: '',
-    MANUAL11: '',
-    MANUAL12: '',
-    MANUAL13: '',
-    MANUAL14: '',
-    MANUAL15: '',
-    MANUAL16: '',
-    MANUAL17: '',
-    MANUAL18: '',
-    MANUAL19: '',
-    MANUAL20: '',
+  interface Nutrition {
+    calories: number;
+    sodium: number;
+    carbohydrates: number;
+    protein: number;
+    fat: number;
+  }
+
+  const route = useRoute();
+  const paramId = ref(route.params.id);
+  const recipeData = ref<Recipe | null>(null);
+  const nutrition = ref<Nutrition>({
+    calories: 0,
+    sodium: 0,
+    carbohydrates: 0,
+    protein: 0,
+    fat: 0,
   });
-
-  // 영양 정보 데이터 가공
-  const {INFO_ENG, INFO_NA, INFO_PRO, INFO_FAT, INFO_CAR} = recipeData;
-  const nutrition = {
-    INFO_ENG: parseFloat(INFO_ENG),
-    INFO_NA: parseFloat(INFO_NA),
-    INFO_CAR: parseFloat(INFO_CAR),
-    INFO_PRO: parseFloat(INFO_PRO),
-    INFO_FAT: parseFloat(INFO_FAT),
-  };
-
-  // 요리 방법 데이터 가공
-  const manuals = computed(() =>
-    Object.entries(recipeData)
-      .filter(
-        ([key, value]) =>
-          key.startsWith('MANUAL') && !key.startsWith('MANUAL_IMG') && value.trim() !== '',
-      )
-      .map(([_, value]) => value),
-  );
+  const manuals = ref<string[]>([]);
+  const videoId = ref<string[]>([]);
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
 
   // 북마크 상태 관리
   const isBookmarked = ref(false);
@@ -72,6 +38,46 @@
   const toggleBookmark = () => {
     isBookmarked.value = !isBookmarked.value;
   };
+
+  onMounted(async () => {
+    // api 호출
+    try {
+      isLoading.value = true;
+      // 레시피 데이터 불러오기
+      const data = await fetchRecipe(String(paramId.value));
+      recipeData.value = data;
+      // 유튜브 데이터 불러오기
+      const keyword = String(paramId.value).replace(/\s/g, '')!;
+      const youtubeResponse = await fetchYoutube(keyword);
+      videoId.value = youtubeResponse.items.map((item) => item.id.videoId);
+    } catch (err) {
+      error.value = '데이터를 불러오는 중 오류가 발생했습니다.';
+    } finally {
+      isLoading.value = false;
+    }
+  });
+
+  watch(recipeData, (newData) => {
+    if (newData) {
+      // 영양 정보 데이터 가공
+      nutrition.value = {
+        calories: parseFloat(newData.INFO_ENG || '0'),
+        sodium: parseFloat(newData.INFO_NA || '0'),
+        carbohydrates: parseFloat(newData.INFO_CAR || '0'),
+        protein: parseFloat(newData.INFO_PRO || '0'),
+        fat: parseFloat(newData.INFO_FAT || '0'),
+      };
+
+      // manuals도 함께 계산
+      manuals.value = Object.entries(newData)
+        .filter(
+          ([key, value]) =>
+            key.startsWith('MANUAL') && !key.startsWith('MANUAL_IMG') && value.trim() !== '',
+        )
+        .map(([_, value]) => value)
+        .sort((a, b) => Number(a[0].split('.')[0]) - Number(b[0].split('.')[0]));
+    }
+  });
 </script>
 
 <template>
@@ -84,6 +90,7 @@
       :breadcrumbs="[
         {title: '홈', href: '/'},
         {title: '레시피', href: '/recipe'},
+        {title: '레시피 검색', href: '/recipe/search'},
         {title: '레시피 상세'},
       ]"
     />
@@ -93,12 +100,12 @@
         <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
         <ShareButton />
       </div>
-      <div class="flex flex-col gap-[80px] border-mono-200 w-[1330px]">
+      <div v-if="recipeData" class="flex flex-col gap-[80px] border-mono-200 w-[1330px]">
         <!-- 상세 내용 -->
         <div class="h-[580px] flex gap-[48px] rounded-[20px] shadow-lg overflow-hidden">
           <div class="w-[677px] overflow-hidden shrink-0">
             <img
-              :src="recipeData.ATT_FILE_NO_MAIN"
+              :src="recipeData?.ATT_FILE_NO_MAIN"
               alt="recipe_image"
               class="w-full h-full object-cover object-center"
             />
@@ -106,16 +113,17 @@
           <div class="flex flex-col gap-[48px] p-[48px]">
             <div class="flex flex-col gap-4">
               <div class="text-[40px] text-main-400 font-semibold">
-                {{ recipeData.RCP_NM }}
+                {{ recipeData?.RCP_NM }}
               </div>
               <div class="text-[18px] text-mono-600">
-                {{ recipeData.RCP_PAT2 }} | {{ recipeData.RCP_WAY2 }} | #{{ recipeData.HASH_TAG }}
+                {{ recipeData?.RCP_PAT2 }} | {{ recipeData?.RCP_WAY2 }}
+                {{ recipeData.HASH_TAG ? ` | #${recipeData?.HASH_TAG}` : '' }}
               </div>
             </div>
             <div class="flex flex-col gap-4">
               <div class="text-[28px] text-main-700 font-bold">재료</div>
               <div class="text-[18px] text-mono-600">
-                {{ recipeData.RCP_PARTS_DTLS }}
+                {{ recipeData?.RCP_PARTS_DTLS }}
               </div>
             </div>
           </div>
@@ -159,8 +167,12 @@
         <div class="flex flex-col gap-2">
           <div class="text-[40px] text-mono-700 font-semibold">연관 레시피</div>
           <div class="flex gap-[24px]">
-            <div class="bg-mono-200 h-[360px] w-full rounded-2xl"></div>
-            <div class="bg-mono-200 h-[360px] w-full rounded-2xl"></div>
+            <div class="bg-mono-200 h-[360px] w-full rounded-2xl overflow-hidden">
+              <iframe :src="`https://www.youtube.com/embed/${videoId[0]}`" class="w-full h-full" />
+            </div>
+            <div class="bg-mono-200 h-[360px] w-full rounded-2xl overflow-hidden">
+              <iframe :src="`https://www.youtube.com/embed/${videoId[1]}`" class="w-full h-full" />
+            </div>
           </div>
         </div>
       </div>

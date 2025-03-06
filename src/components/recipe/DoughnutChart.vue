@@ -12,44 +12,44 @@
   const props = defineProps<Props>();
 
   const rid = (nutrition: string): number => {
-    if (nutrition === 'INFO_NA') {
+    if (nutrition === 'sodium') {
       return 2000;
-    } else if (nutrition === 'INFO_FAT') {
+    } else if (nutrition === 'fat') {
       return 54;
-    } else if (nutrition === 'INFO_ENG') {
+    } else if (nutrition === 'calories') {
       return 2000;
-    } else if (nutrition === 'INFO_CAR') {
+    } else if (nutrition === 'carbohydrates') {
       return 324;
-    } else if (nutrition === 'INFO_PRO') {
+    } else if (nutrition === 'protein') {
       return 55;
     }
     return 0;
   };
 
   const color = (nutrition: string) => {
-    if (nutrition === 'INFO_NA') {
+    if (nutrition === 'sodium') {
       return '#03d8b1';
-    } else if (nutrition === 'INFO_FAT') {
+    } else if (nutrition === 'fat') {
       return '#f25267';
-    } else if (nutrition === 'INFO_ENG') {
+    } else if (nutrition === 'calories') {
       return '#f89a00';
-    } else if (nutrition === 'INFO_CAR') {
+    } else if (nutrition === 'carbohydrates') {
       return '#b05bff';
-    } else if (nutrition === 'INFO_PRO') {
+    } else if (nutrition === 'protein') {
       return '#00bdec';
     }
   };
 
   const label = (nutrition: string) => {
-    if (nutrition === 'INFO_NA') {
+    if (nutrition === 'sodium') {
       return '나트륨(mg)';
-    } else if (nutrition === 'INFO_FAT') {
+    } else if (nutrition === 'fat') {
       return '지방(g)';
-    } else if (nutrition === 'INFO_ENG') {
+    } else if (nutrition === 'calories') {
       return '열량(kcal)';
-    } else if (nutrition === 'INFO_CAR') {
+    } else if (nutrition === 'carbohydrates') {
       return '탄수화물(g)';
-    } else if (nutrition === 'INFO_PRO') {
+    } else if (nutrition === 'protein') {
       return '단백질(g)';
     }
   };
