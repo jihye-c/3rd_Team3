@@ -47,7 +47,7 @@
       const data = await fetchRecipe(String(paramId.value));
       recipeData.value = data;
       // 유튜브 데이터 불러오기
-      const keyword = String(paramId.value).split(' ').at(-1)!;
+      const keyword = String(paramId.value).replace(/\s/g, '')!;
       const youtubeResponse = await fetchYoutube(keyword);
       videoId.value = youtubeResponse.items.map((item) => item.id.videoId);
     } catch (err) {
@@ -90,6 +90,7 @@
       :breadcrumbs="[
         {title: '홈', href: '/'},
         {title: '레시피', href: '/recipe'},
+        {title: '레시피 검색', href: '/recipe/search'},
         {title: '레시피 상세'},
       ]"
     />
