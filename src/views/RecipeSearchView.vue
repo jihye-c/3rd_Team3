@@ -76,6 +76,7 @@
         },
       });
     }
+    window.scrollTo({top: 0, behavior: 'instant'});
   };
 
   // url query 변경 및 api 호출

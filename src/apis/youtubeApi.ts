@@ -1,4 +1,4 @@
-import type {YoutubeResponse} from '@/types/youtubeResponse';
+import type {YoutubeResponse} from '@/types/YoutubeResponse';
 import {youtubeApiInstance} from '@/utils/axiosInstance';
 
 const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY; // API 키 가져오기
