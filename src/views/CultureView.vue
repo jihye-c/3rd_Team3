@@ -12,6 +12,8 @@ import FestivalSearchComponent from "@/components/FestivalSearchComponent.vue";
 import PaginationComponent from "@/components/PaginationComponent.vue";
 import CultureAPI from "@/apis/cultureApi"; // ✅ API 가져오기
 
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 // ✅ API 데이터 저장할 곳
 const festivalData = ref<any[]>([]);
@@ -214,6 +216,10 @@ const updateUpcomingEvents = (events: any[]) => {
   upcomingEvents.value = events;
 };
 
+const goToDetail = (contentId) => {
+  router.push(`/culture/${contentId}`); // ✅ 클릭 시 상세 페이지로 이동
+};
+
 // ✅ 마운트 시 데이터 가져오기
 onMounted(fetchFestivals);
 </script>
@@ -265,25 +271,22 @@ onMounted(fetchFestivals);
 
           <!-- 카드 리스트 -->
           <div class="grid grid-cols-3 gap-4 w-full">
-            <div v-for="(festival, index) in paginatedFestivals" :key="index" class="p-4 rounded-lg shadow border border-mono-300">
-
-              <!-- ✅ 서브카테고리 태그 (마커 + 텍스트) -->
+            <div 
+              v-for="(festival, index) in paginatedFestivals"
+              :key="index"
+              class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer"
+              @click="goToDetail(festival.content_id)"
+            >
               <p class="text-sm text-mono-600 flex items-center mb-4">
                 <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>{{ getCategoryName(festival.category3) }}
               </p>
-
-              <!-- ✅ 이미지 -->
               <img :src="festival.homepage || '/images/default-image.jpg'" class="h-[340px] w-full object-cover rounded-lg" />
-
-              <!-- ✅ 텍스트 정보 -->
               <div class="mt-4">
                 <p class="font-bold text-mono-900">{{ festival.name }}</p>
                 <p class="text-mono-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[90%]">
                   {{ festival.overview.split('.')[0] }}.
                 </p>
-                
               </div>
-              <!-- ✅ 행사 기간 별도 박스 -->
               <div class="mt-4 text-[12px] text-mono-600">
                 {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}  
                 <br /> 
@@ -291,6 +294,7 @@ onMounted(fetchFestivals);
               </div>
             </div>
           </div>
+
           <PaginationComponent
             :totalPages="totalPages"
             :currentPage="currentPage" 

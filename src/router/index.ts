@@ -66,10 +66,10 @@ const router = createRouter({
     },
     {
       path: '/culture',
-      name: 'culture',
+      name: 'CultureView',
       component: CultureView,
     },
-    {path: '/culture/:id', name: 'culture-detail', component: CultureViewDetail},
+    {path: '/culture/:id', name: 'CultureViewDetail', component: CultureViewDetail},
     {
       path: '/community/resale',
       name: 'community-resale',
@@ -136,5 +136,7 @@ const router = createRouter({
     },
   ],
 });
+
+
 
 export default router;
