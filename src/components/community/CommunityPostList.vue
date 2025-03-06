@@ -24,13 +24,12 @@
         <div class="flex gap-4">
           <div class="text-[24px] text-mono-400">{{ dong }}</div>
           <div class="flex gap-4">
-            <template v-for="tag in tags">
-              <div
-                class="text-[18px] text-mono-600 leading-[20px] bg-mono-200 self-start py-1 px-3 rounded-[4px]"
-              >
-                {{ tag }}
-              </div>
-            </template>
+            <div
+              v-for="tag in tags"
+              class="text-[18px] text-mono-600 leading-[20px] bg-mono-200 self-start py-1 px-3 rounded-[4px]"
+            >
+              {{ tag }}
+            </div>
           </div>
         </div>
       </div>

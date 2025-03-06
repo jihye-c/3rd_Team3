@@ -9,6 +9,9 @@
   import {ref, watch} from 'vue';
   import {useRoute, useRouter} from 'vue-router';
 
+  const route = useRoute();
+  const router = useRouter();
+
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
   // 검색어
@@ -18,9 +21,6 @@
 
   const postList = ref<Post[]>([]);
   const isLoading = ref<boolean>(false);
-
-  const route = useRoute();
-  const router = useRouter();
 
   watch(
     () => JSON.stringify(route.query),

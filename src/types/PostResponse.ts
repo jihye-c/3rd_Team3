@@ -14,7 +14,7 @@ interface Post {
   imagePublicId: string;
   title: string;
   channel: Channel;
-  author: string;
+  author: Author;
   createdAt: string;
   updatedAt: string;
   likes: Like[];
@@ -38,4 +38,26 @@ interface Comment {
   updatedAt: string;
 }
 
-export type {Post};
+interface Author {
+  _id: string;
+  fullName: string;
+  email: string;
+  image: string | null;
+  emailVerified: boolean;
+  username: string | null;
+  role: 'Regular' | 'Admin' | 'SuperAdmin';
+  isOnline: boolean;
+  banned: boolean;
+  createdAt: string;
+  updatedAt: string;
+  followers: string[];
+  following: string[];
+  likes: string[];
+  comments: string[];
+  messages: string[];
+  notifications: string[];
+  posts: string[];
+  __v: number;
+}
+
+export type {Post, Author};

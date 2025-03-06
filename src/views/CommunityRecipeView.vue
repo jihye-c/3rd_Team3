@@ -3,93 +3,14 @@
   import OrderRadioButton from '@/components/community/OrderRadioButton.vue';
   import RecipeCard from '@/components/community/RecipeCard.vue';
   import SearchBar from '@/components/community/SearchBar.vue';
-  import {ref} from 'vue';
-  import {useRouter} from 'vue-router';
+  import {RECIPE_CHANNEL_ID} from '@/constants/channelId';
+  import type {Post} from '@/types/PostResponse';
+  import {programmersApiInstance} from '@/utils/axiosInstance';
+  import {ref, watch} from 'vue';
+  import {useRoute, useRouter} from 'vue-router';
 
-  // 더미 데이터
-  const postList = [
-    {
-      author: {
-        profileImg: '/recipe/recipe_popular1.webp',
-        name: '혼밥왕',
-      },
-      image: '/recipe/recipe_popular2.webp',
-      title: '초간단 원팬 파스타',
-      tag: '일품',
-    },
-    {
-      author: {
-        profileImg: '/recipe/recipe_popular1.webp',
-        name: '혼밥왕',
-      },
-      image: '/recipe/recipe_popular2.webp',
-      title: '초간단 원팬 파스타',
-      tag: '일품',
-    },
-    {
-      author: {
-        profileImg: '/recipe/recipe_popular1.webp',
-        name: '혼밥왕',
-      },
-      image: '/recipe/recipe_popular2.webp',
-      title: '초간단 원팬 파스타',
-      tag: '일품',
-    },
-    {
-      author: {
-        profileImg: '/recipe/recipe_popular1.webp',
-        name: '혼밥왕',
-      },
-      image: '/recipe/recipe_popular2.webp',
-      title: '초간단 원팬 파스타',
-      tag: '일품',
-    },
-    {
-      author: {
-        profileImg: '/recipe/recipe_popular1.webp',
-        name: '혼밥왕',
-      },
-      image: '/recipe/recipe_popular2.webp',
-      title: '초간단 원팬 파스타',
-      tag: '일품',
-    },
-    {
-      author: {
-        profileImg: '/recipe/recipe_popular1.webp',
-        name: '혼밥왕',
-      },
-      image: '/recipe/recipe_popular2.webp',
-      title: '초간단 원팬 파스타',
-      tag: '일품',
-    },
-    {
-      author: {
-        profileImg: '/recipe/recipe_popular1.webp',
-        name: '혼밥왕',
-      },
-      image: '/recipe/recipe_popular2.webp',
-      title: '초간단 원팬 파스타',
-      tag: '일품',
-    },
-    {
-      author: {
-        profileImg: '/recipe/recipe_popular1.webp',
-        name: '혼밥왕',
-      },
-      image: '/recipe/recipe_popular2.webp',
-      title: '초간단 원팬 파스타',
-      tag: '일품',
-    },
-    {
-      author: {
-        profileImg: '/recipe/recipe_popular1.webp',
-        name: '혼밥왕',
-      },
-      image: '/recipe/recipe_popular2.webp',
-      title: '초간단 원팬 파스타',
-      tag: '일품',
-    },
-  ];
+  const route = useRoute();
+  const router = useRouter();
 
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
@@ -98,7 +19,27 @@
   // 정렬기준
   const selectedOrder = ref('recent');
 
-  const router = useRouter();
+  const postList = ref<Post[]>([]);
+  const isLoading = ref<boolean>(false);
+
+  watch(
+    () => JSON.stringify(route.query),
+    async (newQuery, oldQuery) => {
+      try {
+        isLoading.value = true;
+        const response = await programmersApiInstance.get<Post[]>(
+          `/posts/channel/${RECIPE_CHANNEL_ID}`,
+        );
+        postList.value = response.data;
+        console.log(JSON.parse(response.data[0].title).title);
+      } catch (error) {
+        console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
+      } finally {
+        isLoading.value = false;
+      }
+    },
+    {immediate: true},
+  );
 </script>
 
 <template>
@@ -156,8 +97,8 @@
           <RecipeCard
             :author="item.author"
             :image="item.image"
-            :title="item.title"
-            :tag="item.tag"
+            :title="JSON.parse(item.title).title"
+            :tags="JSON.parse(item.title).tags"
           />
         </template>
       </div>
