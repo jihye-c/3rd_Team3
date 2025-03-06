@@ -1,4 +1,4 @@
-import { formatDate } from "@/utils/dateFormat"
+import { formatDate } from "@/utils/format"
 import axios from "axios"
 
 
@@ -19,7 +19,6 @@ export const getSubscriptionList = async() =>{
 
     }
   )
-  console.log(response.data)
   return response.data
   }catch(e){
     console.error(e);

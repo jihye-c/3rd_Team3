@@ -1,6 +1,6 @@
 import { getSubscriptionList } from '@/apis/subscriptionApi';
 import type { HouseInfo, SubscriptionDateListType } from '@/types/SubscriptionTypes';
-import { groupByDay, groupByMonth } from '@/utils/dateFormat';
+import { groupByDay, groupByMonth } from '@/utils/format';
 import {defineStore} from 'pinia';
 import {ref} from 'vue';
 
@@ -31,7 +31,8 @@ export const useSubscriptionStore = defineStore('subscription', () => {
    if(filter){
     const sortMonthDate =  await groupByDay(filter)
     filteredDayhDatas.value = sortMonthDate
-    console.log(sortMonthDate)
+   }else{
+    filteredDayhDatas.value = []
    }
 
 

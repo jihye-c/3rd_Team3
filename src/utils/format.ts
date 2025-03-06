@@ -1,3 +1,4 @@
+import { sub_categories } from "@/config/config";
 import type { HouseInfo } from "@/types/SubscriptionTypes";
 
 //날짜 포멧
@@ -40,3 +41,8 @@ export function getLocalDate(date:Date){
     .replace(".", "");
     return formattedDate;
 }
+
+export function getCategoryName (code) {
+  const category = sub_categories.find((sub) => sub.code === code);
+  return category ? category.name : "기타"; // 코드 매칭 안되면 '기타'로 표시
+};

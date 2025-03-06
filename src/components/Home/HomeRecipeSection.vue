@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HomeTitle title="오늘의 레시피" content="간편하게 따라하는 오늘의 한 끼" />
+    <HomeTitle title="오늘의 레시피" link="/recipe" content="간편하게 따라하는 오늘의 한 끼" />
     <div class="flex py-10 gap-10">
       <div>
         <RecipeSquareCard

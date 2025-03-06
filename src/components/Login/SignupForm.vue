@@ -35,6 +35,7 @@
                     base-color="var(--color-main-400)"
                     color="var(--color-main-400)"
                     class="my-btn"
+                    v-model="pwInputCheck"
                     label="비밀번호 확인"
                     type="password"
                     autocomplete="off"
@@ -85,17 +86,20 @@
   import {ref} from 'vue';
   import {useAuthStore} from '@/stores/auth';
   import {checkUserEmail} from '@/apis/userService';
-
+  const props = defineProps<{
+  setIsAnimated: (value: boolean) => void;
+  }>();
   const idRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const passwordRegEx = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
   const nameRegEx = /^[a-zA-Z가-힣]+$/;
 
   const idInput = ref('');
   const pwInput = ref('');
+  const pwInputCheck = ref('');
+
   const nameInput = ref('');
   const nicknameInput = ref('');
   const isValid = ref(false);
-
   //필수 입력 정의
   const rules = {
     required: (value: string) => !!value || '필수 입력 사항입니다.',
@@ -118,7 +122,17 @@
       name: nameInput.value,
       nickname: nicknameInput.value === '' ? nameInput.value : nicknameInput.value,
     };
-    await authStore.register(formData);
+    try{
+      await authStore.register(formData);
+      props.setIsAnimated(!props.isAnimated);
+      idInput.value = ""
+      pwInput.value = ""
+      nameInput.value = ""
+      nicknameInput.value = ""
+      pwInputCheck.value = ""
+    }catch(e){
+      console.error(e);
+    }
   };
 </script>
 
