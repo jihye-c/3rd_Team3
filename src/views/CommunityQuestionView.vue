@@ -86,7 +86,7 @@
           <OrderRadioButton v-model="selectedOrder" value="popular" label="인기순" />
         </div>
         <!-- 글작성 버튼 -->
-        <v-btn variant="flat" class="write" @click="() => router.push('/community/post')"
+        <v-btn variant="flat" class="write" @click="() => router.push('/community/create/question')"
           >글작성</v-btn
         >
       </div>

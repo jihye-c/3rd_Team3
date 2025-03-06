@@ -4,6 +4,7 @@
   import RecipeCard from '@/components/community/RecipeCard.vue';
   import SearchBar from '@/components/community/SearchBar.vue';
   import {ref} from 'vue';
+  import {useRouter} from 'vue-router';
 
   // 더미 데이터
   const postList = [
@@ -96,6 +97,8 @@
   const searchQuery = ref('');
   // 정렬기준
   const selectedOrder = ref('recent');
+
+  const router = useRouter();
 </script>
 
 <template>
@@ -142,7 +145,9 @@
           <OrderRadioButton v-model="selectedOrder" value="popular" label="인기순" />
         </div>
         <!-- 글작성 버튼 -->
-        <v-btn variant="flat" class="write">글작성</v-btn>
+        <v-btn variant="flat" class="write" @click="() => router.push('/community/create/recipe')"
+          >글작성</v-btn
+        >
       </div>
 
       <!-- 리스트 -->

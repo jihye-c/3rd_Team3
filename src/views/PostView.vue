@@ -9,13 +9,14 @@
   import {useUserStore} from '@/stores/userStore';
   import {programmersApiInstance} from '@/utils/axiosInstance';
   import {ref, onMounted, nextTick, computed, watch} from 'vue';
-  import {useRouter} from 'vue-router';
+  import {useRoute, useRouter} from 'vue-router';
 
   interface Channel {
     name: string;
     id: string;
     type: string;
   }
+  type PostType = 'question' | 'review' | 'recipe' | 'resale';
 
   const channels: Channel[] = [
     {name: '질문게시판', type: 'question', id: QUESTION_CHANNEL_ID},
@@ -30,7 +31,13 @@
     recipe: ['밥', '반찬', '국', '후식', '일품'],
   };
 
-  const selectedChannelId = ref<string>(REVIEW_CHANNEL_ID);
+  const route = useRoute();
+  const router = useRouter();
+
+  const paramType = ref(route.params.type);
+  console.log(paramType.value);
+  const defaultChannel = channels.find((c) => c.type === paramType.value)?.id || REVIEW_CHANNEL_ID;
+  const selectedChannelId = ref<string>(defaultChannel);
   const selectedTags = ref<string[]>([]);
   const price = ref<number>();
   const title = ref<string>('');
@@ -42,8 +49,6 @@
   const availableTags = computed(() =>
     selectedChannel.value ? tags[selectedChannel.value.type] || [] : [],
   );
-
-  const router = useRouter();
 
   // 토큰 가져오기
   const authStore = useAuthStore();

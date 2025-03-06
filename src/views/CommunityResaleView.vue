@@ -4,6 +4,7 @@
   import ResaleCard from '@/components/community/ResaleCard.vue';
   import SearchBar from '@/components/community/SearchBar.vue';
   import {ref} from 'vue';
+  import {useRouter} from 'vue-router';
 
   // 더미 데이터
   const postList = [
@@ -57,6 +58,8 @@
   const searchQuery = ref('');
   // 정렬기준
   const selectedOrder = ref('recent');
+
+  const router = useRouter();
 </script>
 
 <template>
@@ -96,7 +99,9 @@
           <OrderRadioButton v-model="selectedOrder" value="available" label="판매완료 제외" />
         </div>
         <!-- 글작성 버튼 -->
-        <v-btn variant="flat" class="write">글작성</v-btn>
+        <v-btn variant="flat" class="write" @click="() => router.push('/community/create/resale')"
+          >글작성</v-btn
+        >
       </div>
 
       <!-- 리스트 -->
