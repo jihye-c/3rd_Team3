@@ -56,6 +56,9 @@
 <script setup lang="ts">
   import {ref} from 'vue';
   import {useAuthStore} from '@/stores/auth';
+import { useRouter } from 'vue-router';
+
+  const router = useRouter();
   const idRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const idInput = ref('');
   const pwInput = ref('');
@@ -69,7 +72,13 @@
 
   const formsubmit = async () => {
     const authStore = useAuthStore();
-    await authStore.login(idInput.value, pwInput.value);
+    try{
+      await authStore.login(idInput.value, pwInput.value);
+      router.push('/')
+    }catch(e){
+      console.error(e);
+      alert('로그인 실패');
+    }
     console.log('user', authStore.user); // 로그인한 유저 정보
     console.log('authen', authStore.isAuthenticated); // 로그인 상태 (true/false)
   };
