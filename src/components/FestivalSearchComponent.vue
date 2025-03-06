@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, defineEmits} from 'vue';
+import { ref, defineEmits, onMounted, watch } from "vue";
+import { useCultureStore } from "@/stores/cultureStore"; // ✅ Pinia 스토어 가져오기
 
 const emit = defineEmits(["filterChanged"]);
+const cultureStore = useCultureStore(); // ✅ 상태 저장소 사용
 
 // 행사 분류 (축제 / 공연·행사)
 const categories = [
@@ -54,22 +56,52 @@ const resetFilters = () => {
   selectedLocation.value = "전체";
   selectedPeriod.value = null;
   searchKeyword.value = "";
+
+  cultureStore.setFilters({
+    category: "",
+    subCategory: "",
+    location: "전체",
+    keyword: "",
+    period: null
+  });
+
   emit("filterChanged", { category: "", subCategory: "", location: "전체", keyword: "", period: null });
 };
 
 const applyFilters = () => {
-  console.log("📌 선택한 지역:", selectedLocation.value);
-  console.log("📌 선택한 기간:", selectedPeriod.value ? `${selectedPeriod.value}개월` : "설정 안됨");
-  console.log("📌 검색 키워드:", searchKeyword.value); // 🔹 최신 키워드 값 확인
-  
-  emit("filterChanged", {
+  const filters = {
     category: selectedCategory.value,
     subCategory: selectedSubCategory.value,
     keyword: searchKeyword.value,
     location: selectedLocation.value,
     period: selectedPeriod.value
-  });
+  };
+
+  // ✅ Pinia에 필터 상태 저장
+  cultureStore.setFilters(filters);
+  
+  emit("filterChanged", filters);
 };
+
+// ✅ 뒤로 가기 시, Pinia에서 저장된 필터를 불러와 적용
+onMounted(() => {
+  console.log("📌 Pinia에서 필터 불러오기:", cultureStore.selectedFilters);
+  selectedCategory.value = cultureStore.selectedFilters.category || "";
+  selectedSubCategory.value = cultureStore.selectedFilters.subCategory || "";
+  selectedLocation.value = cultureStore.selectedFilters.location || "전체";
+  selectedPeriod.value = cultureStore.selectedFilters.period || null;
+  searchKeyword.value = cultureStore.selectedFilters.keyword || "";
+});
+
+// ✅ Pinia 상태가 변경되면 반영
+watch(() => cultureStore.selectedFilters, (newFilters) => {
+  selectedCategory.value = newFilters.category || "";
+  selectedSubCategory.value = newFilters.subCategory || "";
+  selectedLocation.value = newFilters.location || "전체";
+  selectedPeriod.value = newFilters.period || null;
+  searchKeyword.value = newFilters.keyword || "";
+}, { deep: true });
+
 </script>
 
 <template>
