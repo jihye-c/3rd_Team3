@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import {computed, ref} from 'vue';
+  import {computed, onMounted, ref} from 'vue';
 
   import HospitalPostList from '@/components/hospital/HospitalPostList.vue';
   import HospitalDetailCard from '@/components/hospital/HospitalDetailCard.vue';
@@ -19,7 +19,7 @@
   //-----------------------------화면 제어 관련-----------------------------//
   const isDetailPageShow = ref(false); // 상세페이지 표시 여부
   const isSymptomButtonShow = ref(true); // 증상 선택 버튼 표시 여부
-  const hospitalList = ref<FullHospitalRes>({length:0, data:null});
+  const hospitalList = ref<FullHospitalRes>({length: 0, data: null});
 
   // 아이콘 데이터 배열 정의
   const hospitalIcons = [
@@ -254,11 +254,27 @@
   const selectedHospitalType = ref('clinic'); // 선택된 병원 종류, default 의원
 
   const loadHospital = async () => {
+    mapData.value = {
+      bounds: {
+        bottom: 37.51254184968482,
+        left: 127.04358072020108,
+        right: 127.05100697248893,
+        top: 37.52184624143815,
+      },
+      lng: 127.04729361574341,
+      lat: 37.51719410591982,
+      level: 3,
+    };
     const res = await Supabase.getFullHospitalData(mapData.value, nowPage.value);
     if (res) {
+      console.log(res);
       hospitalList.value = res;
     }
   };
+  //카카오맵 끄고 개발용
+  onMounted(() => {
+    loadHospital();
+  });
 </script>
 
 <template>
@@ -335,16 +351,11 @@
             </div>
 
             <!-- 리스트 -->
-            <div class="pt-6 px-6 pb-34">
-              <p class="text-right text-mono-300">전체 : {{ hospitalList?.length }}개</p>
-              <div class="flex flex-col gap-6">
-                <template v-for="item in hospitalList?.data" :key="item.id">
-                  <HospitalPostList
-                    :name="item.name"
-                    :type="item.type"
-                    :addr="item.addr"
-                    @click="openDetail"
-                  />
+            <div class="pt-6 px-6 pb-34 relative">
+              <p class="text-right text-mono-300 absolute right-6">전체 : {{ hospitalList?.length }}개</p>
+              <div id="postList" class="flex flex-col ">
+                <template v-for="(item, idx) in hospitalList?.data" :key="item.id" >
+                  <HospitalPostList :class="{'border-t' : idx !== 0}" :data="item" @click="openDetail" />
                 </template>
                 <v-pagination
                   v-model="nowPage"
@@ -356,7 +367,6 @@
                   active-color="#f89a00"
                   density="comfortable"
                 ></v-pagination>
-                <!-- flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain' -->
               </div>
             </div>
           </div>
@@ -399,11 +409,11 @@
           />
         </div>
       </div>
-      <HospitalMap
+      <!-- <HospitalMap
         v-model:mapData="mapData"
         v-model:isMapChange="isMapChange"
         :loadHospital="loadHospital"
-      />
+      /> -->
     </div>
   </div>
 </template>

@@ -170,9 +170,8 @@ export default class Supabase {
     };
     reader.readAsText(file);
   }
-
-  
   static async getFullHospitalData(location:MapData, page: number, hospitalType?:string[], symptomsQuery?:string[]):Promise<FullHospitalRes>{
+
     const supabase = this.init();
     if (!supabase) return {length:0, data:null};
 
@@ -206,8 +205,8 @@ export default class Supabase {
     if(!totalCount || totalCount < 1){return {length:0, data:null}}
 
     const pageSize = 10;
-    const start = (page-1) * pageSize;
-    let end = start + pageSize + 1;
+    const start = (page - 1) * pageSize;
+    let end = start + pageSize - 1;
     end = Math.min(end, totalCount - 1);
   
     const {data: hospitals, count, error} = await dbQuery.range(start, end);;
