@@ -5,7 +5,7 @@
     RESALE_CHANNEL_ID,
     REVIEW_CHANNEL_ID,
   } from '@/constants/channelId';
-  import {ref, onMounted, nextTick, computed} from 'vue';
+  import {ref, onMounted, nextTick, computed, watch} from 'vue';
 
   interface Channel {
     name: string;
@@ -54,6 +54,11 @@
     }
   };
 
+  // 채널이 바뀌면 이전 태그값 없애주기
+  watch(selectedChannelId, () => {
+    selectedTag.value = '';
+  });
+
   // 페이지가 로드되면 기본 높이 조정
   onMounted(() => {
     nextTick(adjustTextareaHeight);
@@ -83,7 +88,7 @@
     <div class="mt-8 w-full max-w-[1000px]">
       <!-- 가격 선택 -->
       <div v-if="selectedChannelId === RESALE_CHANNEL_ID" class="flex flex-col gap-4">
-        <h2 class="text-[28px] font-regular text-mono-900">가격</h2>
+        <h2 class="text-[28px] font-medium text-mono-900">가격</h2>
         <input
           v-model="price"
           type="number"
@@ -94,26 +99,26 @@
       </div>
       <!-- 태그 선택 -->
       <div v-else class="flex flex-col gap-4">
-        <h2 class="text-[28px] font-regular text-mono-900">태그</h2>
+        <h2 class="text-[28px] font-medium text-mono-900">태그</h2>
         <div class="flex gap-4 flex-wrap">
-          <button
+          <label
             v-for="tag in availableTags"
             :key="tag"
-            @click="selectedTag = tag"
-            class="px-4 py-1 text-[20px] border rounded-lg"
+            class="px-4 py-1 text-[20px] border-1 rounded-lg cursor-pointer"
             :class="
               selectedTag === tag ? 'bg-main-300 text-white' : 'border-mono-300 text-mono-900'
             "
           >
+            <input type="radio" v-model="selectedTag" :value="tag" class="hidden" />
             {{ tag }}
-          </button>
+          </label>
         </div>
       </div>
     </div>
 
     <!-- 제목 입력 -->
     <div class="mt-8 w-full max-w-[1000px] flex flex-col gap-4">
-      <h2 class="text-[28px] font-regular text-mono-900">제목</h2>
+      <h2 class="text-[28px] font-medium text-mono-900">제목</h2>
       <input
         v-model="title"
         type="text"
@@ -125,7 +130,7 @@
 
     <!-- 내용 입력 -->
     <div class="mt-8 w-full max-w-[1000px] flex flex-col gap-4">
-      <h2 class="text-[28px] font-regular text-mono-900">내용</h2>
+      <h2 class="text-[28px] font-medium text-mono-900">내용</h2>
       <textarea
         v-model="content"
         ref="contentTextarea"
