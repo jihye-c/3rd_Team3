@@ -1,37 +1,65 @@
 <script setup lang="ts">
+  import {ref, onMounted} from 'vue';
+  import {useRoute} from 'vue-router';
+  import axios from 'axios';
   import BannerComponent from '@/components/BannerComponent.vue';
   import BookmarkButton from '@/components/BookmarkButton.vue';
   import ShareButton from '@/components/ShareButton.vue';
-  import {ref} from 'vue';
-  import {useRoute} from 'vue-router';
-  // Import Swiper Vue.js components
-  import {Swiper, SwiperSlide} from 'swiper/vue';
 
-  // Import Swiper styles
+  // Swiper 관련 라이브러리
+  import {Swiper, SwiperSlide} from 'swiper/vue';
   import 'swiper/css';
   import 'swiper/css/navigation';
-
-  // import required modules
   import {FreeMode, Navigation} from 'swiper/modules';
 
   const modules = [FreeMode, Navigation];
-
   const currentRoute = useRoute();
+
+  // API에서 가져온 데이터 저장
+  const postData = ref({
+    title: '',
+    date: '',
+    images: [] as string[],
+  });
 
   // 북마크 상태 관리
   const isBookmarked = ref(false);
-
   const toggleBookmark = () => {
     isBookmarked.value = !isBookmarked.value;
   };
 
-  // 댓글 내용 관리
+  // 댓글 관리
   const comment = ref('');
-
   const submitComment = () => {
     alert('작성된 댓글: ' + comment.value);
-    comment.value = ''; // 댓글 작성 후 입력 창 초기화
+    comment.value = '';
   };
+
+  // API에서 특정 게시글 데이터 가져오기
+  const fetchPostDetail = async () => {
+    try {
+      const postId = currentRoute.params.id;
+      const response = await axios.get(`http://13.125.143.126:5003/posts/${postId}`);
+      const post = response.data;
+
+      // title 필드 JSON 파싱
+      const parsedTitle = JSON.parse(post.title);
+      postData.value = {
+        title: parsedTitle.title,
+        date: new Date(post.createdAt).toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+        images: parsedTitle.images || [],
+      };
+    } catch (error) {
+      console.error('게시글 데이터 불러오기 실패:', error);
+    }
+  };
+
+  // 컴포넌트 마운트 시 API 호출
+  onMounted(fetchPostDetail);
 </script>
 
 <template>
@@ -56,9 +84,10 @@
       </div>
 
       <section class="w-270">
-        <div class="font-bold text-5xl mb-2">2024년 공공임대주택 및 토지 등 자산공개</div>
-        <div class="text-mono-500">2024년 02월 20일</div>
+        <div class="font-bold text-5xl mb-2">{{ postData.title }}</div>
+        <div class="text-mono-500">{{ postData.date }}</div>
 
+        <!-- Swiper에 API에서 가져온 이미지 적용 -->
         <div class="border-y-1 border-mono-200 mt-10 mb-6 py-12">
           <Swiper
             :modules="modules"
@@ -67,35 +96,8 @@
             :spaceBetween="10"
             class="mySwiper"
           >
-            <SwiperSlide>
-              <img
-                src="https://www.i-sh.co.kr/main/upload/bbs/KS070702/20241231011830647_bd8c40082aa74b779315ef054e59dace.jpg"
-                alt=""
-              />
-            </SwiperSlide>
-            <SwiperSlide>
-              <img
-                src="https://www.i-sh.co.kr/main/upload/bbs/KS070702/20241231011836740_f28b143cda9049fd8a6fc6eeb8112b85.jpg"
-                alt=""
-              />
-            </SwiperSlide>
-            <SwiperSlide>
-              <img
-                src="https://www.i-sh.co.kr/main/upload/bbs/KS070702/20241231011841323_234ec0b538e24392a76f6a60a60a79a7.jpg"
-                alt=""
-              />
-            </SwiperSlide>
-            <SwiperSlide>
-              <img
-                src="https://www.i-sh.co.kr/main/upload/bbs/KS070702/20241231011845316_f92b9f6f50d54300b2076a1329654dea.jpg"
-                alt=""
-              />
-            </SwiperSlide>
-            <SwiperSlide>
-              <img
-                src="https://www.i-sh.co.kr/main/upload/bbs/KS070702/20241231011848035_a38eefafab0548d6bca8c8a075b62347.jpg"
-                alt=""
-              />
+            <SwiperSlide v-for="(image, index) in postData.images" :key="index">
+              <img :src="image" alt="뉴스 이미지" />
             </SwiperSlide>
           </Swiper>
         </div>
@@ -132,12 +134,8 @@
             <div class="text-lg">닉네임</div>
           </div>
           <div>
-            정말로 심금을 울리는 입숨로렘이었습니다.정말로 심금을 울리는 입숨로렘이었습니다.정말로
-            심금을 울리는 입숨로렘이었습니다.정말로 심금을 울리는 입숨로렘이었습니다.정말로 심금을
-            울리는 입숨로렘이었습니다.정말로 심금을 울리는 입숨로렘이었습니다.정말로 심금을 울리는
-            입숨로렘이었습니다.정말로 심금을 울리는 입숨로렘이었습니다.정말로 심금을 울리는
-            입숨로렘이었습니다.정말로 심금을 울리는 입숨로렘이었습니다.정말로 심금을 울리는
-            입숨로렘이었습니다.정말로 심금을 울리는 입숨로렘이었습니다.
+            정말로 심금을 울리는 입숨로렘이었습니다. 정말로 심금을 울리는 입숨로렘이었습니다. 정말로
+            심금을 울리는 입숨로렘이었습니다. 정말로 심금을 울리는 입숨로렘이었습니다.
           </div>
           <div>2025.02</div>
         </div>
