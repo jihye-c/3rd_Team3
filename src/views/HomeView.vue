@@ -1,6 +1,7 @@
 <template>
   <div class="text-mono-900">
     <HeroSlide />
+    <CustomCursor/>
     <div class="container">
       <HomeSection>
         <HomeAddressSection />
@@ -32,6 +33,7 @@
   import HomeMedicalSection from '@/components/Home/HomeMedicalSection.vue';
   import HomeRecipeSection from '@/components/Home/HomeRecipeSection.vue';
   import HomeSubscriptionSection from '@/components/Home/HomeSubscriptionSection.vue';
+import CustomCursor from '@/components/Home/common/CustomCursor.vue';
   import HomeSection from '@/components/Home/common/HomeSection.vue';
 import { useSubscriptionStore } from '@/stores/subscriptionStore.ts';
   import {useUserStore} from '@/stores/userStore';

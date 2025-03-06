@@ -1,36 +1,29 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import RecipeCard from '@/components/community/RecipeCard.vue';
 import ResaleCard from '@/components/community/ResaleCard.vue';
 import CommunityPostList from '@/components/community/CommunityPostList.vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
+import { useUserStore } from '@/stores/userStore';
 
-const profileImage = ref<string | null>(null);
+const userStore = useUserStore()
+const userInfo = ref()
 const nickname = ref('도형');
 const userId = ref('lee123so');
 const followers = ref(125);
 const following = ref(125);
-const isEditing = ref(false); // 자기소개 편집 모드 여부
 const bio = ref(
-  `안녕하세요! 🏡 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다. 
-🍜 서울에서 혼자 살면서 요리, 청소, 생활 꿀팁을 공유하는 걸 좋아해요! 
-여러분과 자취 생활 꿀팁을 나누고 함께 성장하고 싶어요 😊 잘 부탁드립니다!`
+  `안녕하세요! 🏡 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
+  안녕하세요! 🏡 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
+  안녕하세요! 🏡 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
+  안녕하세요! 🏡 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
+🍜 `
 );
 
 const selectedTab = ref('동네리뷰'); // 기본 탭
 const currentPage = ref(1);
 const itemsPerPage = 12;
 
-const handleImageUpload = (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0];
-  if (file) {
-    profileImage.value = URL.createObjectURL(file);
-  }
-};
-
-const toggleEdit = () => {
-  isEditing.value = !isEditing.value;
-};
 
 // 🔹 동네 리뷰 게시글 데이터
 const communityPostList = ref([
@@ -158,46 +151,42 @@ const totalPages = computed(() => Math.ceil(recipeList.length / itemsPerPage));
 const handlePageChange = (page: number) => {
   currentPage.value = page;
 };
+
+onMounted( async()=>{
+  const id = localStorage.getItem('userId');
+  await userStore.getUser(id)
+  userInfo.value = userStore.userInfo
+  console.log(userInfo.value)
+})
 </script>
 
 
 
 <template>
-  <div class="w-full pt-24">
-    <div class="max-w-[1600px] mx-auto mt-4">
+  <div class="w-full container pt-24">
+    <div class=" mx-auto mt-4">
       <!-- 내 정보 박스 -->
-      <div class="w-full bg-white shadow-lg rounded-lg p-6 flex items-center justify-between relative">
+      <div class="w-full bg-white  rounded-lg p-6 flex items-center justify-between relative">
         <!-- 프로필 이미지 & 유저 정보 -->
-        <div class="flex items-center gap-6">
-          <div class="relative w-[280px] h-[280px] rounded-full overflow-hidden bg-gray-200 border border-mono-200">
-            <input 
-              type="file" 
-              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
-              @change="handleImageUpload" 
-            />
-            <img 
-              v-if="profileImage" 
-              :src="profileImage" 
-              alt="Profile" 
-              class="w-full h-full object-cover" 
+        <div class="flex items-center gap-12">
+          <div class="relative w-[300px] h-[300px] rounded-full overflow-hidden bg-gray-200 border border-mono-200">
+            <img
+            src="/public//images/mypage/mypage_default_img.png"
+              alt="Profile"
+              class="w-full h-full object-cover"
             />
           </div>
-          <div>
-            <p class="text-[28px] font-medium text-mono-900">{{ nickname }}님 안녕하세요</p>
-            <p class="text-[16px] text-mono-600">{{ userId }}</p>
-            <div class="flex items-center gap-4 mt-2 py-2 w-[280px] h-[48px]">
-              <span class="text-mono-900 font-medium">{{ followers }} 팔로워</span>
-              <span class="text-mono-900 font-medium">{{ following }} 팔로잉</span>
+          <div class="w-[800px]">
+            <p class="text-[28px] font-medium text-mono-900">{{ userInfo?.fullName.name }}님 안녕하세요</p>
+            <p class="text-[16px] text-mono-600">{{ userInfo?.email }}</p>
+            <div class="flex items-center gap-4 mt-2 py-2 ">
+              <div class="text-mono-900 font-medium flex items-center gap-2"><span class="text-2xl">{{ userInfo?.followers.length }}</span> <p class="text-mono-400 font-normal">팔로워</p> </div>
+              <div class="text-mono-900 font-medium flex items-center gap-2"><span class="text-2xl">{{ userInfo?.following.length }}</span> <p class="text-mono-400 font-normal">팔로잉</p></div>
             </div>
             <!-- 자기 소개 -->
             <div class="mt-4 w-full">
-              <textarea 
-                v-if="isEditing"
-                v-model="bio"
-                class="p-2 border border-mono-300 rounded-lg w-full h-[100px]"
-                placeholder="자기소개를 입력하세요."
-              />
-              <p v-else class="text-mono-600 text-[16px]">{{ bio }}</p>
+
+              <p  class="text-mono-600 text-wrap text-[16px]">{{ bio }}</p>
             </div>
           </div>
         </div>

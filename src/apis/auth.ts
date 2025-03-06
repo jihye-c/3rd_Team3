@@ -6,6 +6,7 @@ const apiRoot = import.meta.env.VITE_PROGRAMMERS_API_ROOT;
 const kakaoApi = import.meta.env.VITE_KAKAO_REST_BASE_API_URL
 const kakaoApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
 
+
 export async function userLogin(email: string, password: string): Promise<User> {
   const res = await axiosApi.post(`${apiRoot}/login`, {email, password});
   if (res.status !== 200) {
@@ -13,14 +14,15 @@ export async function userLogin(email: string, password: string): Promise<User> 
   }
   if (res.data?.token) {
     localStorage.setItem('token', res.data.token);
-    return res.data.user;
+    localStorage.setItem('userId', res.data.user._id);
+    return res.data;
   } else {
     throw new Error('로그인 에러 : 토큰이 존재하지 않습니다.');
   }
 }
 
 export async function getUserInfo(id:string):Promise<User>{ //return 어떻게 오는지 봐야함
-  const res = await axiosApi.post(`${apiRoot}/users/${id}`);
+  const res = await axiosApi.get(`${apiRoot}/users/${id}`);
   if(res.status !== 200){
     throw new Error('유저 정보를 가져오던 중 에러가 발생했습니다. : '+ res.status);
   }
@@ -30,6 +32,7 @@ export async function getUserInfo(id:string):Promise<User>{ //return 어떻게 �
 export async function userLogout(){
   await axiosApi.post(`${apiRoot}/logout`);
 }
+
 
 // 좌표를 주소로 받아오는 API
 export async function getGeolocationAddress(locations: { latitude: number; longitude: number; }){
@@ -47,3 +50,4 @@ export async function getGeolocationAddress(locations: { latitude: number; longi
   }
   return res.data
 }
+

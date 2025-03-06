@@ -2,7 +2,9 @@
   import {RouterLink} from 'vue-router';
   import {Motion, useScroll, useTransform} from 'motion-v';
   import AddressSelectBar from './Home/common/AddressSelectBar.vue';
+  import {useAuthStore} from '@/stores/auth';
 
+  const authStore = useAuthStore();
   const {scrollY} = useScroll();
   const background = useTransform(scrollY, [0, 100], ['rgba(0,0,0,0.0)', 'rgba(255,255,255,1)']);
   const height = useTransform(scrollY, [0, 100], [0, '100%']);
@@ -14,6 +16,15 @@
       default: false,
     },
   });
+  const links = [
+    {to: '/subscription', label: '청약'},
+    {to: '/recipe', label: '자취 레시피'},
+    {to: '/hospital', label: '인근 병원'},
+    {to: '/culture', label: '문화 생활'},
+  ];
+  const logoutHandler = () => {
+    authStore.logout();
+  };
 </script>
 
 <template>
@@ -36,11 +47,15 @@
                 >자수성가</RouterLink
               >
             </h1>
-            <div class="text-xl font-semibold bg flex items-center">
-              <RouterLink class="px-4" to="/subscription">청약</RouterLink>
-              <RouterLink class="px-4" to="/recipe">자취 레시피</RouterLink>
-              <RouterLink class="px-4" to="/hospital">인근 병원</RouterLink>
-              <RouterLink class="px-4" to="/culture">문화 생활</RouterLink>
+            <div class="text-xl font-semibold cursor-pointer  bg flex items-center">
+              <RouterLink
+                v-for="(link, index) in links"
+                :key="index"
+                :to="link.to"
+                class="px-4 relative before:content-[''] before:w-24 before:scale-x-0 before:origin-center before:absolute before:-bottom-4 before:left-1/2 before:-translate-x-1/2 before:h-1 before:bg-mono-200 before:transition-transform before:duration-300 hover:before:scale-x-100"
+              >
+                {{ link.label }}
+              </RouterLink>
               <RouterLink class="group/item relative px-6" to="/community/resale"
                 >커뮤니티
                 <div class="absolute w-full pt-6 left-0 top-7">
@@ -72,11 +87,11 @@
               </RouterLink>
             </div>
           </div>
-            <div class="flex items-center">
-              <AddressSelectBar />
+          <div class="flex items-center">
+            <AddressSelectBar />
 
             <!-- <RouterLink class="tw:flex tw:items-center" to="/mypage"> </RouterLink> -->
-            <v-badge content="5" color="var(--color-main-400)">
+            <v-badge v-if="authStore.isAuthenticated" content="5" color="var(--color-main-400)">
               <v-speed-dial scrim="true" location="bottom center" transition="fade-transition">
                 <template v-slot:activator="{props: activatorProps}">
                   <v-avatar
@@ -85,12 +100,43 @@
                   ></v-avatar>
                 </template>
 
-                <v-btn key="1" class="!shadow-none" icon="$success"></v-btn>
-                <v-btn key="2" class="!shadow-none" icon="$info"></v-btn>
-                <v-btn key="3" class="!shadow-none" icon="$warning"></v-btn>
-                <v-btn key="4" class="!shadow-none" icon="$error"></v-btn>
+                <v-tooltip location="end">
+                  <template v-slot:activator="{props}">
+                    <RouterLink to="/mypage">
+                      <v-btn icon v-bind="props">
+                        <v-icon color="grey-lighten-1"> mdi-account </v-icon>
+                      </v-btn>
+                    </RouterLink>
+                  </template>
+                  <span>마이페이지</span>
+                </v-tooltip>
+                <v-tooltip location="end">
+                  <template v-slot:activator="{props}">
+                    <v-btn icon v-bind="props">
+                      <v-icon color="grey-lighten-1"> mdi-bell </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>알림</span>
+                </v-tooltip>
+                <v-tooltip location="end">
+                  <template v-slot:activator="{props}">
+                    <v-btn @click="logoutHandler()" icon v-bind="props">
+                      <v-icon color="grey-lighten-1"> mdi-logout </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>로그아웃</span>
+                </v-tooltip>
+                <v-tooltip location="end">
+                  <template v-slot:activator="{props}">
+                    <v-btn v-bind="props" key="4" class="!shadow-none" icon="$error"></v-btn>
+                  </template>
+                  <span>닫기</span>
+                </v-tooltip>
               </v-speed-dial>
             </v-badge>
+            <div v-else>
+              <RouterLink to="/auth">로그인</RouterLink>
+            </div>
           </div>
         </nav>
       </div>
@@ -99,7 +145,7 @@
 </template>
 
 <style scoped>
-  #app:has(#hospitalContent) header{
+  #app:has(#hospitalContent) header {
     background: white !important;
     color: var(--color-mono-900);
     box-shadow: 0px 2px 8px rgba(0,0,0,.08);
