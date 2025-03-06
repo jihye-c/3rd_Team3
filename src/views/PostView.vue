@@ -30,12 +30,13 @@
     recipe: ['밥', '반찬', '국', '후식', '일품'],
   };
 
-  const selectedChannelId = ref<string | null>(REVIEW_CHANNEL_ID);
+  const selectedChannelId = ref<string>(REVIEW_CHANNEL_ID);
   const selectedTags = ref<string[]>([]);
   const price = ref<number>();
   const title = ref<string>('');
   const content = ref<string>('');
-  const selectedImage = ref<string | null>(null);
+  const selectedImage = ref<File | null>(null);
+  const imagePreview = ref<string | null>(null);
 
   const selectedChannel = computed(() => channels.find((c) => c.id === selectedChannelId.value));
   const availableTags = computed(() =>
@@ -55,7 +56,8 @@
   const handleImageUpload = (event: Event) => {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
-      selectedImage.value = URL.createObjectURL(file);
+      selectedImage.value = file; // 실제 파일 저장
+      imagePreview.value = URL.createObjectURL(file); // 미리 보기용 URL 생성
     }
   };
 
@@ -69,29 +71,40 @@
   };
 
   const handleSubmit = async () => {
-    console.log(token);
-    //   const response = await programmersApiInstance.post(
-    //     '/post/create',
-    //     {
-    //       title: JSON.stringify({
-    //         title: title.value,
-    //         content: content.value,
-    //         tags: selectedTags.value,
-    //         price: price.value,
-    //         available: true,
-    //         region: userLocation?.address,
-    //       }),
-    //       image: selectedImage.value,
-    //       channelId: selectedChannelId.value,
-    //     },
-    //     {
-    //       headers: {Authorization: `Bearer ${token}`},
-    //     },
-    //   );
-    //   if (response.status === 200 || response.status === 201) {
-    //     alert('작성 성공!');
-    //     router.push(`/community/${selectedChannel.value?.type}`);
-    //   }
+    try {
+      const formData = new FormData();
+
+      formData.append(
+        'title',
+        JSON.stringify({
+          title: title.value,
+          content: content.value,
+          tags: selectedTags.value,
+          price: price.value,
+          available: true,
+          region: userLocation?.address,
+        }),
+      );
+
+      if (selectedImage.value) {
+        formData.append('image', selectedImage.value);
+      }
+
+      formData.append('channelId', selectedChannelId.value);
+
+      const response = await programmersApiInstance.post('/posts/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200 || response.status === 201) {
+        alert('작성 성공!');
+        router.replace(`/community/${selectedChannel.value?.type}`);
+      }
+    } catch (error) {
+      console.error('게시글 생성 중 오류가 발생했습니다.', error);
+    }
   };
 
   // 채널이 바뀌면 이전 태그값 없애주기
@@ -193,8 +206,8 @@
         >
           <input type="file" class="hidden" @change="handleImageUpload" />
           <img
-            v-if="selectedImage"
-            :src="selectedImage"
+            v-if="imagePreview"
+            :src="imagePreview"
             width="100px"
             alt="Uploaded Image"
             class="w-full h-full object-cover object-center rounded-lg"
