@@ -1,5 +1,5 @@
 import type { MapData } from '@/types/kakao.d';
-import type {HospitalData, HospitalDetail, HospitalTraffic, HospitalTreatment} from '@/types/hospitalType';
+import type {FullHospitalRes, HospitalData, HospitalDetail, HospitalTraffic, HospitalTreatment} from '@/types/hospitalType';
 import {createClient, SupabaseClient} from '@supabase/supabase-js';
 import Papa from 'papaparse'; // PapaParse 라이브러리 사용
 type HospitalFullData = Partial<HospitalData & HospitalDetail> & {
@@ -171,9 +171,10 @@ export default class Supabase {
     reader.readAsText(file);
   }
 
-  static async getFullHospitalData(location:MapData, page: number, hospitalType?:string[], symptomsQuery?:string[]):Promise<HospitalData[]>{
+  
+  static async getFullHospitalData(location:MapData, page: number, hospitalType?:string[], symptomsQuery?:string[]):Promise<FullHospitalRes>{
     const supabase = this.init();
-    if (!supabase) return;
+    if (!supabase) return {length:0, data:null};
 
     if(page < 1) page = 1;//1부터 시작
 
@@ -185,26 +186,25 @@ export default class Supabase {
       // return된 set들 
       // const {data} = 
     } 
-    console.log(location.bounds)
     const dbQuery = supabase
       .from('hospital')
-      .select('*')
+      .select('*, hospital_detail(opentime_sun,closetime_sun,opentime_mon,closetime_mon,opentime_tue,closetime_tue,opentime_wed,closetime_wed,opentime_thu,closetime_thu,opentime_fri,closetime_fri,opentime_sat,closetime_sat)', {count:'exact'})
       .gte('mapx', location.bounds.left)
       .lte('mapx',location.bounds.right)
       .lte('mapy',location.bounds.top)
       .gte('mapy', location.bounds.bottom)
-      .range((page - 1) * 20, page * 20 - 1);
+      .range((page - 1) * 10, page * 10 - 1);
 
     if(hospitalType){
       dbQuery.in('type', hospitalType)
     }
-
-    const {data: hospitals, error} = await dbQuery;
-    if (error) {
+    
+    const {data: hospitals, count, error} = await dbQuery;
+    if (error || !count) {
       console.log('DB error : ', error);
-      return null;
+      return {length:0, data:null};
     }
-    return hospitals;
+    return {length:count, data:hospitals };
   }
 
   static async getDetailHospitalData(id: string): Promise<HospitalFullData | null> {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import {ref} from 'vue';
+  import {computed, ref} from 'vue';
 
   import HospitalPostList from '@/components/hospital/HospitalPostList.vue';
   import HospitalDetailCard from '@/components/hospital/HospitalDetailCard.vue';
@@ -14,13 +14,12 @@
   import HospitalMap from '@/components/hospital/HospitalMap.vue';
   import type {MapData} from '@/types/kakao';
   import Supabase from '@/apis/supabase';
-  import type {HospitalData} from '@/types/hospitalType';
+  import type {FullHospitalRes} from '@/types/hospitalType';
 
   //-----------------------------화면 제어 관련-----------------------------//
-  const selectedHospitalType = ref('clinic'); // 선택된 병원 종류, default 의원
   const isDetailPageShow = ref(false); // 상세페이지 표시 여부
   const isSymptomButtonShow = ref(true); // 증상 선택 버튼 표시 여부
-  const hospitalList = ref<HospitalData[]>([]);
+  const hospitalList = ref<FullHospitalRes>({length:0, data:null});
 
   // 아이콘 데이터 배열 정의
   const hospitalIcons = [
@@ -249,21 +248,16 @@
     lat: 37.576030700103,
     level: 3,
   });
-  const mapReady = ref(false);
   const isMapChange = ref(false);
+  const nowPage = ref(1);
+  const totalPage = computed(() => Math.ceil(hospitalList.value.length / 10));
+  const selectedHospitalType = ref('clinic'); // 선택된 병원 종류, default 의원
 
-  const loadHospital = async (
-    mapData: MapData,
-    page: number,
-    hospitalType?: string[],
-    symptomsQuery?: string[],
-  ) => {
-    //page는 1부터 시작
-    const data = await Supabase.getFullHospitalData(mapData, 0, hospitalType, symptomsQuery);
-    if (data) {
-      hospitalList.value = data;
+  const loadHospital = async () => {
+    const res = await Supabase.getFullHospitalData(mapData.value, nowPage.value);
+    if (res) {
+      hospitalList.value = res;
     }
-    console.log(data);
   };
 </script>
 
@@ -341,15 +335,29 @@
             </div>
 
             <!-- 리스트 -->
-            <div class="flex flex-col py-[24px]">
-              <template v-for="item in hospitalList" :key="item.id">
-                <HospitalPostList
-                  :name="item.name"
-                  :type="item.type"
-                  :addr="item.addr"
-                  @click="openDetail"
-                />
-              </template>
+            <div class="pt-6 px-6 pb-34">
+              <p class="text-right text-mono-300">전체 : {{ hospitalList?.length }}개</p>
+              <div class="flex flex-col gap-6">
+                <template v-for="item in hospitalList?.data" :key="item.id">
+                  <HospitalPostList
+                    :name="item.name"
+                    :type="item.type"
+                    :addr="item.addr"
+                    @click="openDetail"
+                  />
+                </template>
+                <v-pagination
+                  v-model="nowPage"
+                  @update:model-value="loadHospital"
+                  v-show="hospitalList?.length && hospitalList?.length > 10"
+                  :length="totalPage"
+                  next-icon="mdi-menu-right"
+                  prev-icon="mdi-menu-left"
+                  active-color="#f89a00"
+                  density="comfortable"
+                ></v-pagination>
+                <!-- flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain' -->
+              </div>
             </div>
           </div>
           <div

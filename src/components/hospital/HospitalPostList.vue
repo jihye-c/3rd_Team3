@@ -12,7 +12,7 @@
 </script>
 
 <template>
-  <div class="h-[148px] p-5 flex flex-col gap-2">
+  <div class="flex flex-col gap-2">
     <div class="text-[20px] text-mono-700 font-medium leading-[24px] line-clamp-1">
       {{ name }}
     </div>
