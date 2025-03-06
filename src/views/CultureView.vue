@@ -60,14 +60,6 @@ const selectedFilters = ref({
 const filterFestivals = () => {
   console.log("✅ 필터링 전 데이터 개수:", festivalData.value.length);
 
-<<<<<<< HEAD
-  if (!selectedFilters.value.category && !selectedFilters.value.subCategory &&
-    !selectedFilters.value.keyword && selectedFilters.value.location === "전체" &&
-    !selectedFilters.value.period) { // 🛠 기간 필터도 체크
-  filteredFestivals.value = festivalData.value;
-  return;
-}
-=======
   if (
     !selectedFilters.value.category && 
     !selectedFilters.value.subCategory && 
@@ -81,7 +73,6 @@ const filterFestivals = () => {
     }
     return;
   }
->>>>>>> feature/culture_detail
 
 
   const today = dayjs();
