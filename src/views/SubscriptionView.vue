@@ -1,10 +1,12 @@
 <script setup lang="ts">
   import CommunityLinkBanner from '@/components/Subscription/CommunityLinkBanner.vue';
   import MainBannerSection from '@/components/Subscription/MainBannerSection.vue';
-  import MonthlySubscriptionSection from '@/components/Subscription/MonthlySubscriptionSection.vue';
   import SubscriptionCategoryCard from '@/components/Subscription/SubscriptionCategoryCard.vue';
   import TodaySubscriptionSection from '@/components/Subscription/TodaySubscriptionSection.vue';
   import NewsCardComponent from '@/components/Subscription/NewsCardComponent.vue';
+  import HomeSubscriptionSection from '@/components/Home/HomeSubscriptionSection.vue';
+  import HomeSection from '@/components/Home/common/HomeSection.vue';
+  import SubscriptionMap from '@/components/Subscription/SubscriptionMap.vue';
 
   const SubscriptionCategoryData = [
     {
@@ -89,10 +91,17 @@
   <TodaySubscriptionSection />
 
   <!-- 이달의 청약 정보 -->
-  <MonthlySubscriptionSection />
-  <div class="container">
-    <div class="bg-main-300 h-136 rounded-2xl">지도</div>
-  </div>
+  <section class="container">
+    <div class="mt-48">
+      <HomeSection>
+        <HomeSubscriptionSection />
+      </HomeSection>
+      <SubscriptionMap
+        class="h-136 rounded-2xl border-2 border-main-400"
+        address="서울특별시 서초구 방배동 818-14번지"
+      />
+    </div>
+  </section>
 
   <!-- 청약카드뉴스 -->
   <section class="mt-26">
