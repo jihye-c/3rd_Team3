@@ -186,6 +186,8 @@ export default class Supabase {
       // return된 set들 
       // const {data} = 
     } 
+
+    //기본 쿼리
     const dbQuery = supabase
       .from('hospital')
       .select('*, hospital_detail(opentime_sun,closetime_sun,opentime_mon,closetime_mon,opentime_tue,closetime_tue,opentime_wed,closetime_wed,opentime_thu,closetime_thu,opentime_fri,closetime_fri,opentime_sat,closetime_sat)', {count:'exact'})
@@ -193,13 +195,22 @@ export default class Supabase {
       .lte('mapx',location.bounds.right)
       .lte('mapy',location.bounds.top)
       .gte('mapy', location.bounds.bottom)
-      .range((page - 1) * 10, page * 10 - 1);
 
+    //기타 조건부 쿼리들
     if(hospitalType){
       dbQuery.in('type', hospitalType)
     }
     
-    const {data: hospitals, count, error} = await dbQuery;
+    const {count : totalCount} = await dbQuery;
+
+    if(!totalCount || totalCount < 1){return {length:0, data:null}}
+
+    const pageSize = 10;
+    const start = (page-1) * pageSize;
+    let end = start + pageSize + 1;
+    end = Math.min(end, totalCount - 1);
+  
+    const {data: hospitals, count, error} = await dbQuery.range(start, end);;
     if (error || !count) {
       console.log('DB error : ', error);
       return {length:0, data:null};
