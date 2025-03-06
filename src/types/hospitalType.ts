@@ -12,6 +12,7 @@ export type HospitalData = {
   open_date: string | null;
   mapx: number;
   mapy: number;
+  HospitalDetail ?: HospitalDetail
 };
 
 export type HospitalDetail = {
@@ -71,6 +72,11 @@ export type Symptoms = {
   image: string;
   departments: [Department,...Department[]];
 };
+
+export interface FullHospitalRes{
+  length : number,
+  data : HospitalData[] | null
+}
 
 export type Department =
   | '치과'

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const recipeApiInstance = axios.create({
+export const recipeApiInstance = axios.create({
   baseURL: '/recipeAPI',
   params: {
     keyId: import.meta.env.VITE_RECIPE_API_KEY,
@@ -11,4 +11,10 @@ const recipeApiInstance = axios.create({
   },
 });
 
-export {recipeApiInstance};
+export const youtubeApiInstance = axios.create({
+  baseURL: 'https://www.googleapis.com/youtube/v3',
+  params: {
+    key: import.meta.env.VITE_YOUTUBE_API_KEY,
+    part: 'snippet', //part: youtube data api를 받을 때 매개변수 필수 속성
+  },
+});

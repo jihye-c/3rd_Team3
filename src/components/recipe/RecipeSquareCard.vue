@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import {useAttrs} from 'vue';
   interface Props {
     image: string;
     title: string;
@@ -7,10 +8,16 @@
   }
 
   defineProps<Props>();
+
+  defineOptions({inheritAttrs: false}); // 루트 요소에 attrs 자동 상속 비활성화
+  const attrs = useAttrs();
 </script>
 
 <template>
-  <div :style="{width: size + 'px', height: size + 'px'}" class="overflow-hidden rounded-[20px]">
+  <div
+    :style="{width: size + 'px', height: size + 'px'}"
+    class="overflow-hidden rounded-[20px] cursor-pointer"
+  >
     <div :style="{backgroundImage: `url(${image})`}" class="w-full h-full bg-cover bg-center">
       <div
         :class="
@@ -21,6 +28,7 @@
               : 'bg-linear-to-t from-mono-900/40 to-mono-900/0 to-[42%] px-[16px] py-[12px]'
         "
         class="w-full h-full text-mono-050 flex items-end"
+        v-bind="attrs"
       >
         <div class="flex flex-col gap-1">
           <div v-if="subtitle" class="text-[20px] leading-[24px] font-regular">

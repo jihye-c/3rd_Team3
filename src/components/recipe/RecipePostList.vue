@@ -10,7 +10,7 @@
 </script>
 
 <template>
-  <div class="flex h-[124px] w-full">
+  <div class="flex h-[124px] w-full cursor-pointer">
     <div class="min-w-[124px] w-[124px] rounded-[16px] overflow-hidden shrink-0">
       <div
         :style="{backgroundImage: `url(${props.image})`}"
