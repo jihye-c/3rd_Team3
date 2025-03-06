@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import CultureAPI from "@/apis/cultureApi";
 
 import { Swiper, SwiperSlide } from "swiper/vue";
@@ -8,10 +8,13 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
+import KakaoMap_festival from "@/components/KakaoMap_festival.vue";
 
+const router = useRouter();
 const route = useRoute();
 const festivalId = ref(route.params.id);
 const festivalImages = ref<string[]>([]);
+const festivalDetail = ref<any>(null);
 const categoryName = ref("");
 const title = ref("");
 const eventPeriod = ref("");
@@ -48,6 +51,8 @@ const getCategoryName = (code: string) => {
   return category ? category.name : "기타"; // 코드 매칭 안되면 '기타'로 표시
 };
 
+
+
 const fetchFestivalDetails = async () => {
   try {
     // 행사 세부 데이터 가져오기
@@ -56,6 +61,16 @@ const fetchFestivalDetails = async () => {
       console.error("❌ 행사 세부 정보가 없습니다.");
       return;
     }
+    // ✅ 좌표값 로그 확인
+    console.log("🌍 좌표값 확인:", festivalData.longitude, festivalData.latitude);
+
+    // ✅ festivalData에 값 설정 (좌표 값이 없으면 null 처리)
+    festivalDetail.value = {
+      ...festivalData,
+      longitude: festivalData.longitude || null,
+      latitude: festivalData.latitude || null,
+      address: festivalData.address || "주소 정보 없음",
+    };
 
     // 카테고리명
     categoryName.value = getCategoryName(festivalData.category3);
@@ -130,7 +145,16 @@ const formatWebsiteLinks = (text: string) => {
   });
 };
 
-onMounted(fetchFestivalDetails);
+const goBack = () => {
+  router.back(); // ✅ 브라우저의 뒤로 가기 기능과 동일
+};
+
+onMounted(() => {
+  console.log("🔑 Kakao API Key:", import.meta.env.VITE_KAKAO_MAP_KEY); // ✅ API 키 출력 확인
+  fetchFestivalDetails(); // ✅ 행사 정보 불러오기
+});
+
+
 
 </script>
 
@@ -231,10 +255,16 @@ onMounted(fetchFestivalDetails);
 
         <!-- 지도 -->
         <h2 class="text-[24px] font-semibold">위치</h2>
-        <img src="/images/festival/map1.png" alt="Map" class="w-full h-auto mt-4" />
-
+        <!-- festivalData가 있을 때만 KakaoMap 렌더링 -->
+        <KakaoMap_festival 
+          v-if="festivalDetail?.longitude && festivalDetail?.latitude" 
+          :mapx="Number(festivalDetail.longitude)" 
+          :mapy="Number(festivalDetail.latitude)" 
+          :title="festivalDetail.name" 
+        />
+        <p v-else class="text-red-500">⚠️ 지도 정보를 불러올 수 없습니다.</p>
         <!-- 목록 보기 버튼 -->
-        <button class="mt-6 px-6 py-3 bg-main-400 text-white text-lg font-semibold rounded-lg inline-block">목록 보기</button>
+        <button @click="goBack" class="mt-6 px-6 py-3 bg-main-400 text-mono-100 text-lg font-semibold rounded-lg inline-block cursor-pointer">목록 보기</button>
       </div>
     </div>
   </div>

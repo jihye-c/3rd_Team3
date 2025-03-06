@@ -39,6 +39,7 @@
     "motion-v": "^0.10.1",
     "papaparse": "^5.5.2",
     "pinia": "^3.0.1",
+    "pinia-plugin-persistedstate": "^4.2.0",
     "postcss": "^8.5.3",
     "swiper": "^11.2.4",
     "tailwind-merge": "^3.0.2",
