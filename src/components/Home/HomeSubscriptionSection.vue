@@ -60,7 +60,7 @@
   import type {HouseInfo} from '@/types/SubscriptionTypes';
 
   import {useSubscriptionStore} from '@/stores/subscriptionStore.ts';
-  import {getLocalDate} from '@/utils/dateFormat';
+  import {getLocalDate} from '@/utils/format';
   import HomeTitle from '@/components/Home/common/HomeTitle.vue';
   import SubscriptionSlideCard from '@/components/SubscriptionSlideCard.vue';
 

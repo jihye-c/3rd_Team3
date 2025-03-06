@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-1 items-center">
+  <div class="flex  gap-1 items-center">
     <h4>우리동네</h4>
     <v-select
       v-model="select"
