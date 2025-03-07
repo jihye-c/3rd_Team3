@@ -3,53 +3,60 @@
   import OrderRadioButton from '@/components/community/OrderRadioButton.vue';
   import ResaleCard from '@/components/community/ResaleCard.vue';
   import SearchBar from '@/components/community/SearchBar.vue';
-  import {ref} from 'vue';
+  import {RESALE_CHANNEL_ID} from '@/constants/channelId';
+  import type {Post} from '@/types/PostResponse';
+  import {programmersApiInstance} from '@/utils/axiosInstance';
+  import {ref, watch} from 'vue';
+  import {useRoute, useRouter} from 'vue-router';
 
   // 더미 데이터
-  const postList = [
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: false,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-  ];
+  // const postList = [
+  //   {
+  //     image: '/images/community/community_resale_dummy.jpg',
+  //     title: '상태 좋은 의자 판매합니다.',
+  //     price: '50000',
+  //     dong: '수유1동',
+  //     available: true,
+  //   },
+  //   {
+  //     image: '/images/community/community_resale_dummy.jpg',
+  //     title: '상태 좋은 의자 판매합니다.',
+  //     price: '50000',
+  //     dong: '수유1동',
+  //     available: true,
+  //   },
+  //   {
+  //     image: '/images/community/community_resale_dummy.jpg',
+  //     title: '상태 좋은 의자 판매합니다.',
+  //     price: '50000',
+  //     dong: '수유1동',
+  //     available: false,
+  //   },
+  //   {
+  //     image: '/images/community/community_resale_dummy.jpg',
+  //     title: '상태 좋은 의자 판매합니다.',
+  //     price: '50000',
+  //     dong: '수유1동',
+  //     available: true,
+  //   },
+  //   {
+  //     image: '/images/community/community_resale_dummy.jpg',
+  //     title: '상태 좋은 의자 판매합니다.',
+  //     price: '50000',
+  //     dong: '수유1동',
+  //     available: true,
+  //   },
+  //   {
+  //     image: '/images/community/community_resale_dummy.jpg',
+  //     title: '상태 좋은 의자 판매합니다.',
+  //     price: '50000',
+  //     dong: '수유1동',
+  //     available: true,
+  //   },
+  // ];
+
+  const route = useRoute();
+  const router = useRouter();
 
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
@@ -57,6 +64,28 @@
   const searchQuery = ref('');
   // 정렬기준
   const selectedOrder = ref('recent');
+
+  const postList = ref<Post[]>([]);
+  const isLoading = ref<boolean>(false);
+
+  watch(
+    () => JSON.stringify(route.query),
+    async (newQuery, oldQuery) => {
+      try {
+        isLoading.value = true;
+        const response = await programmersApiInstance.get<Post[]>(
+          `/posts/channel/${RESALE_CHANNEL_ID}`,
+        );
+        postList.value = response.data;
+        console.log(JSON.parse(response.data[0].title).title);
+      } catch (error) {
+        console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
+      } finally {
+        isLoading.value = false;
+      }
+    },
+    {immediate: true},
+  );
 </script>
 
 <template>
@@ -96,7 +125,9 @@
           <OrderRadioButton v-model="selectedOrder" value="available" label="판매완료 제외" />
         </div>
         <!-- 글작성 버튼 -->
-        <v-btn variant="flat" class="write">글작성</v-btn>
+        <v-btn variant="flat" class="write" @click="() => router.push('/community/create/resale')"
+          >글작성</v-btn
+        >
       </div>
 
       <!-- 리스트 -->
@@ -104,10 +135,10 @@
         <template v-for="item in postList">
           <ResaleCard
             :image="item.image"
-            :title="item.title"
-            :price="item.price"
-            :dong="item.dong"
-            :available="item.available"
+            :title="JSON.parse(item.title).title"
+            :price="JSON.parse(item.title).price"
+            :dong="JSON.parse(item.title).region"
+            :available="JSON.parse(item.title).available"
           />
         </template>
       </div>
