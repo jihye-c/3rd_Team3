@@ -12,7 +12,7 @@ export type HospitalData = {
   open_date: string | null;
   mapx: number;
   mapy: number;
-  HospitalDetail ?: HospitalDetail
+  hospital_detail ?: HospitalDetail
 };
 
 export type HospitalDetail = {

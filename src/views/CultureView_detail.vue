@@ -1,7 +1,12 @@
 <script setup lang="ts">
+<<<<<<< HEAD
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useCultureStore } from "../stores/cultureStore";
+=======
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+>>>>>>> main
 import CultureAPI from "@/apis/cultureApi";
 
 import { Swiper, SwiperSlide } from "swiper/vue";
@@ -10,8 +15,11 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import KakaoMap_festival from "@/components/KakaoMap_festival.vue";
+<<<<<<< HEAD
 import BookmarkButton from '@/components/BookmarkButton.vue';
 import ShareButton from '@/components/ShareButton.vue';
+=======
+>>>>>>> main
 
 const router = useRouter();
 const route = useRoute();
@@ -29,6 +37,7 @@ const sponsor1 = ref("");
 const sponsor2 = ref("");
 const phoneNumber = ref("");
 const website = ref("");
+<<<<<<< HEAD
 const cultureStore = useCultureStore();
 
 // ✅ 현재 상세 페이지의 이벤트가 북마크되었는지 확인
@@ -57,10 +66,36 @@ const toggleBookmark = () => {
     console.log("✅ 북마크 추가됨:", newBookmark);
     cultureStore.toggleBookmark(newBookmark);
   }
+=======
+
+// 서브카테고리 목록
+const subCategories = [
+  { name: "문화관광축제", code: "A02070100" },
+  { name: "일반축제", code: "A02070200" },
+  { name: "전통공연", code: "A02080100" },
+  { name: "연극", code: "A02080200" },
+  { name: "뮤지컬", code: "A02080300" },
+  { name: "오페라", code: "A02080400" },
+  { name: "전시회", code: "A02080500" },
+  { name: "박람회", code: "A02080600" },
+  { name: "무용", code: "A02080800" },
+  { name: "클래식음악회", code: "A02080900" },
+  { name: "대중콘서트", code: "A02081000" },
+  { name: "영화", code: "A02081100" },
+  { name: "스포츠경기", code: "A02081200" },
+  { name: "기타행사", code: "A02081300" },
+];
+
+// ✅ 서브카테고리 코드 → 한글 이름 변환 함수
+const getCategoryName = (code: string) => {
+  const category = subCategories.find((sub) => sub.code === code);
+  return category ? category.name : "기타"; // 코드 매칭 안되면 '기타'로 표시
+>>>>>>> main
 };
 
 
 
+<<<<<<< HEAD
 // 서브카테고리 목록
 const subCategories = [
   { name: "문화관광축제", code: "A02070100" },
@@ -87,6 +122,8 @@ const getCategoryName = (code: string) => {
 
 
 
+=======
+>>>>>>> main
 const fetchFestivalDetails = async () => {
   try {
     // 행사 세부 데이터 가져오기

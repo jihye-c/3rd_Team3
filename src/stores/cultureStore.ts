@@ -37,6 +37,7 @@ export const useCultureStore = defineStore("cultureStore", {
     setCurrentPage(page: number) {
       this.currentPage = page;
     },
+<<<<<<< HEAD
 
     toggleBookmark(festival: any) {
       const index = this.bookmarkedFestivals.findIndex((item) => item.content_id === festival.content_id);
@@ -46,6 +47,8 @@ export const useCultureStore = defineStore("cultureStore", {
         this.bookmarkedFestivals.push(festival); // 북마크 추가
       }
     },
+=======
+>>>>>>> main
   },
 
   // 🛠 **persist 활성화 (상태 유지)**
