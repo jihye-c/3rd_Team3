@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import {useUserStore} from '@/stores/userStore';
   import type {MapData} from '@/types/kakao';
-  import {onMounted, ref, nextTick} from 'vue';
+  import {onMounted, ref, nextTick, watch, watchEffect} from 'vue';
   const kakaoKey = import.meta.env.VITE_KAKAO_JS_KEY;
 
   //lat은 위도 (latitude), lng은 경도 (longtitude)
@@ -33,7 +33,7 @@
     level: 3,
   });
   const props = defineProps<{
-    loadHospital:() => void;
+    loadHospital: () => void;
   }>();
 
   const loadScript = () => {
@@ -102,7 +102,7 @@
     if (!window.kakao) {
       loadScript();
       props.loadHospital();
-          } else {
+    } else {
       loadMap();
     }
   });
@@ -114,6 +114,12 @@
       isMapChange.value = false;
     }, 800);
   };
+  watchEffect(()=>{
+    if (map.value && mapData.value) {
+        map.value.setCenter(new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng));
+      }
+  }
+  );
 </script>
 
 <template v-slot:actions>

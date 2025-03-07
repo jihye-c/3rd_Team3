@@ -12,14 +12,16 @@
 
   import hospitalIcons from '@/assets/data/hospitalIcons';
   import Supabase from '@/apis/supabase';
+  import {left} from '@popperjs/core';
 
   const router = useRouter();
   const route = useRoute();
 
   //-----------------------------화면 제어 관련-----------------------------//
   const isDetailPageShow = ref(false); // 상세페이지 표시 여부
-  const isSymptomButtonShow = ref(true); // 증상 선택 버튼 표시 여부
+  const isSymptomButtonShow = ref(false); // 증상 선택 버튼 표시 여부
   const hospitalList = ref<FullHospitalRes>({length: 0, data: null});
+  const searchKeyword = ref('');
 
   // 선택된 병원 데이터 (상세정보 보여줄 병원)
   const selectedHospital = {
@@ -157,8 +159,10 @@
   const selectedHospitalType = ref('clinic'); // 선택된 병원 종류, default 의원
 
   const loadHospital = async () => {
-    const nowHospital = hospitalIcons.find((type) => type.id === route.query.type);
+    const nowType = route.query.type || 'clinic'; // 기본값 설정
+    const nowHospital = hospitalIcons.find((type) => type.id === nowType);
     let nowSymtoms: string[] = [];
+
     if (route.query.sym && route.query.sym?.length > 0) {
       nowSymtoms = route.query.sym as string[];
     }
@@ -172,8 +176,41 @@
       hospitalList.value = res;
     }
   };
+
+  const searchSubmit = async () => {
+    hospitalList.value = {length: 0, data: null};
+    try {
+      const res = await Supabase.getFullHospitalSearchData(searchKeyword.value, nowPage.value);
+      if (res) {
+        hospitalList.value = res;
+        if (hospitalList.value.data) {
+          isSymptomButtonShow.value = false;
+          isDetailPageShow.value = false;
+          selectHospitalType('');
+          searchKeyword.value = '';
+          router.push({path: route.path, query: {}});
+          const firstData = hospitalList.value.data[0];
+          mapData.value = {
+            bounds: {
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+            },
+            lat: firstData.mapy,
+            lng: firstData.mapx,
+            level: 1,
+          };
+        }
+      }
+    } catch (err) {
+      console.log('키워드 검색 중 에러가 발생했습니다.',  err);
+    }
+  };
+
   onMounted(() => {
-    router.push({path:route.path, query:{type:'clinic'}})
+    router.replace({path: route.path, query: {type: 'clinic'}});
+    loadHospital();
   });
   watch(
     () => route.query,
@@ -218,9 +255,10 @@
           <!-- 검색 -->
           <div class="border-b-1 border-mono-300">
             <div class="w-full overflow-hidden">
-              <div class="wrap py-6 px-5">
+              <form class="wrap py-6 px-5" @submit.prevent="searchSubmit">
                 <div class="text-[20px] pb-3 w-full font-semibold text-mono-700">검색</div>
                 <v-text-field
+                  v-model="searchKeyword"
                   append-inner-icon="mdi-magnify"
                   placeholder="병원 이름 검색"
                   variant="outlined"
@@ -228,7 +266,7 @@
                   density="compact"
                   class="h-[40px] w-full text-[16px] font-normal text-mono-700"
                 ></v-text-field>
-              </div>
+              </form>
             </div>
             <div class="border-b border-mono-200 flex flex-col grow overflow-hidden">
               <div class="wrap pb-6 px-5">
@@ -240,7 +278,7 @@
                   <v-icon>{{ isSymptomButtonShow ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
                 </div>
                 <SymptomsFilter
-                  v-if="isSymptomButtonShow"
+                  v-show="isSymptomButtonShow"
                   :isSymptomButtonShow="isSymptomButtonShow"
                 />
               </div>
