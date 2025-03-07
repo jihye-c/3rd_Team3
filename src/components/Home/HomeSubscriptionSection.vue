@@ -41,7 +41,7 @@
         </SwiperComponent>
       </div>
       <div v-else class=" w-full h-full flex flex-col gap-10 items-center justify-center"  >
-        <img class="w-64" src="/public/home/main_subscription_no_post_back.png" alt="">
+        <img class="w-64" src="/home/main_subscription_no_post_back.png" alt="">
         <p class="text-md text-gray-600">아쉽게도 청약 일정이 없어요.</p>
       </div>
     </div>

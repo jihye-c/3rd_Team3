@@ -3,6 +3,8 @@
   import {Motion, useScroll, useTransform} from 'motion-v';
   import AddressSelectBar from './Home/common/AddressSelectBar.vue';
   import {useAuthStore} from '@/stores/auth';
+import { onBeforeMount, onMounted, ref, watchEffect } from 'vue';
+import { getUserInfo } from '@/apis/auth';
 
   const authStore = useAuthStore();
   const {scrollY} = useScroll();
@@ -10,6 +12,8 @@
   const height = useTransform(scrollY, [0, 100], [0, '100%']);
   const border = useTransform(scrollY, [0, 100], ['none', '1px solid #eee']);
   const color = useTransform(scrollY, [0, 100], ['#fff', '#000']);
+  const defaultImage = '/images/mypage/mypage_default_img.png'
+  const userData = ref({})
   const id = localStorage.getItem('userId')
   const props = defineProps({
     backgroundOpacity: {
@@ -26,6 +30,18 @@
   const logoutHandler = () => {
     authStore.logout();
   };
+  const getUserData =async () =>{
+    const id = localStorage.getItem('userId')
+    // console.log(user)
+     const data = await getUserInfo(id)
+     userData.value = data
+     console.log(data)
+  }
+  watchEffect(() => {
+  if (authStore.isAuthenticated) {
+    getUserData();
+  }
+});
 </script>
 
 <template>
@@ -97,7 +113,8 @@
                 <template v-slot:activator="{props: activatorProps}">
                   <v-avatar
                     v-bind="activatorProps"
-                    image="https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201608/04/htm_2016080484837486184.jpg"
+
+                    :image="userData?.image ?? defaultImage "
                   ></v-avatar>
                 </template>
 

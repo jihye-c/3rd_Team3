@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+const defaultImage = "/images/mypage/mypage_default_img.png";
+const router = useRouter()
+
+const props = defineProps<{
+  items: { email: string; fullName: { name: string }; image?: string,id:string }[];
+  title: string;
+}>();
+
+const { items, title } = props; // 이렇게 구조 분해하면 정상 작동함
+
+</script>
+
 <template>
   <v-card
     class="mx-auto w-[500px]"
@@ -19,6 +33,8 @@
         <v-list-item
           :subtitle="item.email"
           :title="item.fullName.name"
+          @click.stop="router.push(`/mypage/${item.id}`)"
+
         >
           <template v-slot:prepend>
           <div class="w-8 h-8 rounded-full flex items-center overflow-hidden object-cover justify-center mr-3 bg-main-400">
@@ -39,23 +55,6 @@
     <div v-else class="w-full h-[200px] flex items-center justify-center "> <p>정보가 없습니다.</p>  </div>
   </v-card>
 </template>
-
-<script setup lang="ts">
-  const defaultImage = "/public/images/mypage/mypage_default_img.png"
-
-
-const {items, title} = defineProps({
-  items: {
-    type: Array,
-    required: true,
-  },
-  title:{
-    type: String,
-    required: true,
-  }
-})
-</script>
-
 <style scoped>
 
 </style>

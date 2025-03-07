@@ -36,7 +36,7 @@
         </Motion>
       </div>
       <div>
-        <img src="/public/home/main_community_back.png" alt="" />
+        <img src="/home/main_community_back.png" alt="" />
       </div>
     </div>
     <div class="w-full mb-20 rounded-xl p-15  bg-mono-050">
@@ -47,33 +47,90 @@
             <v-icon>mdi-chevron-right</v-icon>
           </div>
         </div>
-        <div class="flex py-10 flex-col justify-around h-full">
-          <CommunityCard/>
-          <CommunityCard/>
-          <CommunityCard/>
-
-        </div>
+        <div v-if="selectedData.length" class="flex py-10 flex-col justify-around h-full">
+  <CommunityCard v-for="(item, index) in selectedData" :key="index" :item="item" />
+</div>
+<div v-else class="text-center text-gray-500 py-5">
+  데이터가 없습니다.
+</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import {ref} from 'vue';
-  import {Motion} from 'motion-v';
-  import HomeTitle from './common/HomeTitle.vue';
-  import HomeCommunityIcons from './common/HomeCommunityIcons.vue';
+import { onBeforeMount, ref, computed, onUpdated } from 'vue';
+import { Motion } from 'motion-v';
+import HomeTitle from './common/HomeTitle.vue';
+import HomeCommunityIcons from './common/HomeCommunityIcons.vue';
 import CommunityCard from './common/CommunityCard.vue';
-  const tabs = [
-    {name: '동네정보', icon: 'icon1'},
-    {name: 'Q&A', icon: 'icon2'},
-    {name: '나만의 레시피', icon: 'icon3'},
-    {name: '중고거래', icon: 'icon4'},
-  ];
+import { programmersApiInstance } from "@/utils/axiosInstance";
+import type { Post } from "@/types/PostResponse";
 
-  const duration = 0.3;
-  const selected = ref(0);
+const duration = 0.3;
+const selected = ref(0);
 
-  const selectTab = (i: number) => {
-    selected.value = i;
-  };
+const CHANNEL_IDS = {
+  REVIEW: "67bfdc45ff075444a9c22eb9",
+  QUESTION: "67bfdc27ff075444a9c22eb5",
+  RECIPE: "67bfd6f8ff075444a9c22ea8",
+  RESALE: "67bfd728ff075444a9c22eac",
+};
+
+const tabs = [
+  { name: '동네정보', icon: 'icon1', channelId: CHANNEL_IDS.REVIEW },
+  { name: 'Q&A', icon: 'icon2', channelId: CHANNEL_IDS.QUESTION },
+  { name: '나만의 레시피', icon: 'icon3', channelId: CHANNEL_IDS.RECIPE },
+  { name: '중고거래', icon: 'icon4', channelId: CHANNEL_IDS.RESALE },
+];
+
+const recipeCommunityData = ref<Post[]>([]);
+const questionData = ref<Post[]>([]);
+const reviewData = ref<Post[]>([]);
+const resaleData = ref<Post[]>([]);
+
+const channelDataRefs = {
+  [CHANNEL_IDS.RECIPE]: recipeCommunityData,
+  [CHANNEL_IDS.QUESTION]: questionData,
+  [CHANNEL_IDS.REVIEW]: reviewData,
+  [CHANNEL_IDS.RESALE]: resaleData,
+};
+
+// 선택된 탭의 데이터 가져오기
+const selectedData = computed(() => {
+  const selectedChannelId = tabs[selected.value].channelId;
+  return channelDataRefs[selectedChannelId]?.value || [];
+});
+
+async function fetchChannelData(channelId: string) {
+  try {
+    const response = await programmersApiInstance.get(`/posts/channel/${channelId}`);
+    return response.data.slice(0, 3).map((item: Post) => ({
+      ...item,
+      title: JSON.parse(item.title),
+      author: JSON.parse(item.author.fullName),
+    }));
+  } catch (error) {
+    console.error(`채널(${channelId}) 데이터를 불러오는 중 오류 발생:`, error);
+    return [];
+  }
+}
+onUpdated(()=>{
+  console.log(selectedData.value)
+})
+onBeforeMount(async () => {
+  try {
+    const channelIds = Object.keys(channelDataRefs);
+    const responses = await Promise.all(channelIds.map(fetchChannelData));
+
+    channelIds.forEach((channelId, index) => {
+      channelDataRefs[channelId].value = responses[index];
+    });
+  } catch (error) {
+    console.error("채널 데이터 로딩 중 오류 발생:", error);
+  }
+});
+
+const selectTab = (i: number) => {
+  selected.value = i;
+};
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import {ref, computed, onMounted} from 'vue';
+  import {ref, computed, onMounted, watchEffect} from 'vue';
   import RecipeCard from '@/components/community/RecipeCard.vue';
   import ResaleCard from '@/components/community/ResaleCard.vue';
   import CommunityPostList from '@/components/community/CommunityPostList.vue';
@@ -17,7 +17,7 @@
   const userInfo = ref();
   const userFollowerInfo = ref();
   const userFollowingInfo = ref();
-  const defaultImage = '/public/images/mypage/mypage_default_img.png';
+  const defaultImage = '/images/mypage/mypage_default_img.png';
   const id = localStorage.getItem('userId');
   const routeId =  route.params.id
   const bio = ref(
@@ -200,7 +200,7 @@
     currentPage.value = page;
   };
 
-  onMounted(async () => {
+  watchEffect(async () => {
 
     await userStore.getUser(routeId);
     userInfo.value = userStore.userInfo;

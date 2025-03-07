@@ -51,6 +51,7 @@ import { askForLocation } from '@/utils/location';
     }
       await subscriptionStore.getSubscription()
   });
+
 </script>
 
 <style scoped></style>

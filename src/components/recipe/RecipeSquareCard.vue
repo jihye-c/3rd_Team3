@@ -5,6 +5,7 @@
     title: string;
     subtitle?: string;
     size: number; // 한 변의 길이 (px)
+    font_class?: string;
   }
 
   defineProps<Props>();
@@ -35,13 +36,14 @@
             {{ subtitle }}
           </div>
           <div
-            :class="
-              size > 460
+            :class="`
+              ${size > 460
                 ? 'text-[32px] leading-[38px]'
                 : size >= 300
                   ? 'text-[36px] leading-[42px]'
-                  : 'text-[24px] leading-[28px]'
-            "
+                  : 'text-[24px] leading-[28px]'}
+                  ${font_class}
+            `"
             class="font-bold"
           >
             {{ title }}

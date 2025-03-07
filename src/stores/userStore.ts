@@ -39,7 +39,7 @@ export const useUserStore = defineStore('user', () => {
         for (const item of data.followers) {
           const userData = await getUserInfo(item.follower);
           const fullName = JSON.parse(data.fullName);
-          followerInfo.value.push({...userData, fullName});
+          followerInfo.value.push({...userData, fullName,id:userData._id});
           console.log(followerInfo.value);
         }
       }
@@ -48,7 +48,7 @@ export const useUserStore = defineStore('user', () => {
           const userData = await getUserInfo(item.follower);
           console.log(userData);
           const fullName = JSON.parse(data.fullName);
-          followingInfo.value.push({...userData, fullName});
+          followingInfo.value.push({...userData, fullName,id:userData._id});
         }
       }
       console.log(fullName);
