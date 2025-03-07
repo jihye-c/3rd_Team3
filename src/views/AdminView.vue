@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Supabase from "@/apis/supabase";
+import district from '@/assets/data/district.json'
+console.log(district["강남구"])
 
 const selectItems = ref([
   { value: "hospital", label: "전체 병원 리스트" },

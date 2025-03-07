@@ -1,102 +1,158 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import BannerComponent from '@/components/BannerComponent.vue';
+  import {onMounted, ref} from 'vue';
+  import BannerComponent from '@/components/BannerComponent.vue';
+  import {useRoute, useRouter} from 'vue-router';
+  import type {Post} from '@/types/PostResponse';
+  import {programmersApiInstance} from '@/utils/axiosInstance';
 
-const postTitle = ref('자취생이 가볍게 즐길 수 있는 문화생활?');
-const author = ref('자취생 A');
-const postDate = ref('2025년 03월 04일');
-const postContent = ref(`Lorem ipsum dolor sit amet consectetur. Sit odio id proin libero potenti cras. Sed est tristique nunc pulvinar scelerisque fermentum. Donec egestas vitae accumsan diam faucibus volutpat tortor urna erat. Id pharetra aenean nibh et. Sit vitae pellentesque urna ornare sagittis phasellus imperdiet posuere consequat. Eu adipiscing tortor enim placerat integer scelerisque. Sed mattis etiam risus lacus cursus adipiscing.
-Facilisis ipsum accumsan luctus sed fames eu. Nisl ac adipiscing morbi proin in turpis ac mauris. Orci imperdiet vel quam mattis ut. Augue feugiat molestie diam lectus ac. Posuere est pharetra lacus tortor est augue malesuada lorem donec. Elit odio ornare massa vestibulum luctus dui.
-A semper et dignissim maecenas integer integer. Cras quis vitae neque sapien. Ultrices vitae nisi eu tristique gravida lobortis magna. Leo integer ullamcorper metus id eget et duis gravida. Netus habitasse ipsum tristique dolor arcu.
-Nibh massa vulputate mattis morbi nibh sit gravida arcu. In justo egestas lacus sed. Vestibulum sed sed nec venenatis a eu. Turpis consequat placerat ultrices suscipit. Massa dui curabitur turpis at. Sociis cras egestas laoreet ut. Volutpat quam mus diam aliquet pharetra.
-Interdum convallis at non ante et. Molestie nec eu habitant mi ut. Lobortis sed pellentesque urna suscipit sed. Integer nibh platea commodo a ut tellus. Mauris habitant elit vulputate vel et lectus velit mauris tellus. Justo dui amet in leo in. Eget eget sit pharetra est enim egestas. Tristique eget urna orci id.
+  const communityChannels = {
+    question: {
+      name: '질문 게시판',
+      title: '질문 상세',
+      subtitle: '궁금한 건 무엇이든 질문하고, 함께 해결해요',
+    },
+    recipe: {
+      name: '나만의 레시피',
+      title: '나만의 레시피 상세',
+      subtitle: '이웃과 함께 나누는 나만의 레시피 이야기',
+    },
+    review: {
+      name: '동네 리뷰',
+      title: '동네 리뷰 상세',
+      subtitle: '이웃 주민과 동네의 소식을 공유해보세요',
+    },
+  };
 
-Lorem ipsum dolor sit amet consectetur. Sit odio id proin libero potenti cras. Sed est tristique nunc pulvinar scelerisque fermentum. Donec egestas vitae accumsan diam faucibus volutpat tortor urna erat. Id pharetra aenean nibh et. Sit vitae pellentesque urna ornare sagittis phasellus imperdiet posuere consequat. Eu adipiscing tortor enim placerat integer scelerisque. Sed mattis etiam risus lacus cursus adipiscing.
-Facilisis ipsum accumsan luctus sed fames eu. Nisl ac adipiscing morbi proin in turpis ac mauris. Orci imperdiet vel quam mattis ut. Augue feugiat molestie diam lectus ac. Posuere est pharetra lacus tortor est augue malesuada lorem donec. Elit odio ornare massa vestibulum luctus dui.
+  const route = useRoute();
+  const router = useRouter();
+  const CommunityType = route.params.type;
+  const PostId = route.params.id;
 
-A semper et dignissim maecenas integer integer. Cras quis vitae neque sapien. Ultrices vitae nisi eu tristique gravida lobortis magna. Leo integer ullamcorper metus id eget et duis gravida. Netus habitasse ipsum tristique dolor arcu.
-Nibh massa vulputate mattis morbi nibh sit gravida arcu. In justo egestas lacus sed. Vestibulum sed sed nec venenatis a eu. Turpis consequat placerat ultrices suscipit. Massa dui curabitur turpis at. Sociis cras egestas laoreet ut. Volutpat quam mus diam aliquet pharetra.
-Interdum convallis at non ante et. Molestie nec eu habitant mi ut. Lobortis sed pellentesque urna suscipit sed. Integer nibh platea commodo a ut tellus. Mauris habitant elit vulputate vel et lectus velit mauris tellus. Justo dui amet in leo in. Eget eget sit pharetra est enim egestas. Tristique eget urna orci id.`);
+  const comments = ref([
+    {author: '도형', content: '정말 흥미로운 주제네요!', date: '2025.02'},
+    {author: '현서', content: '좋은 정보 감사합니다.', date: '2025.02'},
+  ]);
 
-const previousPost = ref({ title: '자취생의 레시피 고민', link: '#' });
-const nextPost = ref({ title: '청약 정보 공유', link: '#' });
+  const isLoggedIn = ref(true); // 로그인 여부 체크 (예제)
+  const newComment = ref('');
 
-const comments = ref([
-  { author: '도형', content: '정말 흥미로운 주제네요!', date: '2025.02' },
-  { author: '현서', content: '좋은 정보 감사합니다.', date: '2025.02' }
-]);
+  const postData = ref<Post | null>();
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
 
-const isLoggedIn = ref(true); // 로그인 여부 체크 (예제)
-const newComment = ref('');
+  onMounted(async () => {
+    // api 호출
+    try {
+      isLoading.value = true;
+      // post 데이터 불러오기
+      const response = await programmersApiInstance.get(`/posts/${PostId}`);
+      postData.value = response.data;
+      // console.log(postData.value);
+    } catch (err) {
+      error.value = '데이터를 불러오는 중 오류가 발생했습니다.';
+    } finally {
+      isLoading.value = false;
+    }
+  });
 </script>
 
 <template>
   <!-- 배너 -->
   <BannerComponent
     background="#f89a00"
-    title="질문 상세"
-    subtitle="궁금한 건 무엇이든 질문하고, 함께 해결해요"
-    :breadcrumbs="[{title: '홈', href: '/'}, {title: '커뮤니티'}, {title: '질문게시판'}]"
-    ><img
-      src="/images/community/community_question.svg"
-      alt="illustration"
-      class="h-full"
-    />
+    :title="communityChannels[CommunityType as keyof typeof communityChannels].title"
+    :subtitle="communityChannels[CommunityType as keyof typeof communityChannels].subtitle"
+    :breadcrumbs="[
+      {title: '홈', href: '/'},
+      {title: '커뮤니티'},
+      {
+        title: communityChannels[CommunityType as keyof typeof communityChannels].name,
+        href: `/community/${CommunityType}`,
+      },
+      {title: '상세 페이지'},
+    ]"
+    ><img src="/images/community/community_question.svg" alt="illustration" class="h-full" />
   </BannerComponent>
   <div class="w-full flex justify-center pt-16">
     <div class="flex gap-8 max-w-[1600px] w-full px-6">
       <!-- 좌측 버튼 -->
       <div class="flex flex-col gap-4">
-        <button class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg">
+        <button
+          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
+        >
           <img src="/images/post/like.png" alt="Like" class="w-[20px] h-[20px]" />
         </button>
-        <button class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg">
+        <button
+          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
+        >
           <img src="/images/post/comment.png" alt="Comment" class="w-[20px] h-[20px]" />
         </button>
-        <button class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg">
+        <button
+          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
+        >
           <img src="/images/post/scrap.png" alt="Scrap" class="w-[20px] h-[20px]" />
         </button>
-        <button class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg">
+        <button
+          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
+        >
           <img src="/images/post/share.png" alt="Share" class="w-[20px] h-[20px]" />
         </button>
       </div>
 
       <!-- 게시물 상세 -->
-      <div class="flex-1 max-w-[1054px] mx-auto px-8">
+      <div v-if="postData" class="flex-1 max-w-[1054px] mx-auto px-8">
+        <!-- 목록 보기 버튼 -->
+        <v-btn
+          prepend-icon="mdi-chevron-left"
+          flat
+          color="#f89a00"
+          rounded="lg"
+          class="custom mb-10 cursor-pointer"
+          @click="router.push(`/community/${CommunityType}`)"
+        >
+          목록보기</v-btn
+        >
         <!-- 게시물 제목 -->
         <h1 class="text-[48px] font-bold text-mono-900">
-          {{ postTitle }}
+          {{ JSON.parse(postData.title).title }}
         </h1>
 
         <!-- 작성자 정보 -->
         <div class="flex items-center gap-4 mt-4">
-          <img src="/images/post/default.png" alt="Profile" class="w-[40px] h-[40px] rounded-full" />
-          <p class="text-[16px] text-mono-600">{{ author }} · {{ postDate }}</p>
+          <v-avatar
+            :image="
+              postData.author.image
+                ? postData.author.image
+                : '/images/mypage/mypage_default_img.png'
+            "
+            size="30"
+          ></v-avatar>
+          <p class="text-[16px] text-mono-600">
+            {{ JSON.parse(postData.author.fullName).nickname }}
+          </p>
+          <p class="text-[16px] text-mono-600">
+            {{ new Date(postData.createdAt).toLocaleString() }}
+          </p>
+          <div
+            v-for="tag in JSON.parse(postData.title).tags"
+            class="text-[18px] text-mono-600 leading-[20px] bg-mono-200 self-start py-1 px-3 rounded-[4px]"
+          >
+            {{ tag }}
+          </div>
         </div>
 
         <!-- 가로선 -->
         <div class="w-full h-[2px] bg-mono-200 my-6"></div>
 
         <!-- 게시물 내용 -->
-        <p class="text-[20px] text-mono-700 leading-8">
-          {{ postContent }}
+        <div v-if="postData.image" class="w-full h-[500px] overflow-hidden rounded-2xl mb-6">
+          <img :src="postData.image" alt="img" class="w-full h-full object-cover" />
+        </div>
+        <p class="content-text text-[20px] text-mono-700 leading-8">
+          {{ JSON.parse(postData.title).content }}
         </p>
 
         <!-- 가로선 -->
-        <div class="w-full h-[2px] bg-mono-200 my-6"></div>
-
-        <!-- 이전글 & 다음글 -->
-        <div class="w-full flex justify-between items-center bg-gray-100 p-4 rounded-lg">
-          <div class="flex flex-col">
-            <p class="text-[16px] font-medium text-mono-700">이전 글</p>
-            <p class="text-[20px] text-mono-900">{{ previousPost.title }}</p>
-          </div>
-          <div class="flex flex-col text-right">
-            <p class="text-[16px] font-medium text-mono-700">다음 글</p>
-            <p class="text-[20px] text-mono-900">{{ nextPost.title }}</p>
-          </div>
-        </div>
-
         <div class="w-full h-[2px] bg-mono-200 my-6"></div>
 
         <!-- 댓글 개수 -->
@@ -105,7 +161,11 @@ const newComment = ref('');
         <!-- 댓글 리스트 -->
         <div class="mt-6 space-y-6">
           <div v-for="(comment, index) in comments" :key="index" class="flex gap-4">
-            <img src="/images/post/default.png" alt="Profile" class="w-[24px] h-[24px] rounded-full" />
+            <img
+              src="/images/post/default.png"
+              alt="Profile"
+              class="w-[24px] h-[24px] rounded-full"
+            />
             <div>
               <p class="text-[18px] text-mono-900">{{ comment.author }}</p>
               <p class="text-[16px] text-mono-600">{{ comment.content }}</p>
@@ -129,3 +189,15 @@ const newComment = ref('');
     </div>
   </div>
 </template>
+
+<style scoped>
+  .content-text {
+    white-space: pre-line;
+  }
+  .custom :deep(.v-btn__content) {
+    color: var(--color-mono-050);
+  }
+  .custom :deep(.v-btn__prepend) {
+    color: var(--color-mono-050);
+  }
+</style>

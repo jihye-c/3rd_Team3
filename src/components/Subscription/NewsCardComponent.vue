@@ -4,6 +4,7 @@
     imageURL: string;
     title: string;
     date: string;
+    id: string;
   }
 
   const props = defineProps<{card: SubscriptionCardData}>();
@@ -21,7 +22,7 @@
       <div class="text-sm text-mono-400">{{ props.card.date }}</div>
     </div>
     <div class="bg-mono-200 h-10 rounded-lg mx-5 flex justify-center items-center">
-      <RouterLink to="/subscription/news/:id" class="font-bold text-mono-400">
+      <RouterLink :to="`/subscription/news/${props.card.id}`" class="font-bold text-mono-400">
         더 알아보기
       </RouterLink>
     </div>
