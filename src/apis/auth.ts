@@ -21,6 +21,7 @@ export async function userLogin(email: string, password: string): Promise<User> 
   }
 }
 
+
 export async function getUserInfo(id:string){ //return 어떻게 오는지 봐야함
   const res = await axiosApi.get(`${apiRoot}/users/${id}`);
   if(res.status !== 200){

@@ -18,3 +18,10 @@ export const youtubeApiInstance = axios.create({
     part: 'snippet', //part: youtube data api를 받을 때 매개변수 필수 속성
   },
 });
+
+export const programmersApiInstance = axios.create({
+  baseURL: import.meta.env.VITE_PROGRAMMERS_API_ROOT,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});

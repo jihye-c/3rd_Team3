@@ -30,7 +30,7 @@
       </div>
       <div v-else class="text-[28px] text-mono-700 font-bold leading-[30px]">판매완료</div>
     </div>
-    <div class="text-[20px] text-mono-400">수유1동</div>
+    <div class="text-[20px] text-mono-400">{{ dong }}</div>
   </div>
 </template>
 

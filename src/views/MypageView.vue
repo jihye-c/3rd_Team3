@@ -10,7 +10,6 @@
   import FollowComponent from '@/components/mypage/FollowComponent.vue';
 
   const route = useRoute<string>();
-
   const showModal = ref(false);
   const followCategory = ref();
   const userStore = useUserStore();
@@ -86,6 +85,7 @@
       comments: 5,
     },
   ]);
+
 
   const postList = [
     {
@@ -208,10 +208,12 @@
     userFollowingInfo.value = userStore.followingInfo;
     console.log(userInfo.value);
   });
+
 </script>
 
 <template>
   <div class="w-full container pt-24">
+
     <div class="mx-auto mt-4">
       <!-- 내 정보 박스 -->
       <div class="w-full bg-white rounded-lg p-6 flex items-center justify-between relative">
@@ -222,6 +224,7 @@
           >
             <img
               :src="userInfo?.image ?? defaultImage"
+
               alt="Profile"
               class="w-full h-full object-cover"
             />
@@ -250,6 +253,7 @@
             <!-- 자기 소개 -->
             <div class="mt-4 w-full">
               <p class="text-mono-600 text-wrap text-[16px]">{{ bio }}</p>
+
             </div>
           </div>
         </div>

@@ -7,10 +7,12 @@ import {ref} from 'vue';
 export const useUserStore = defineStore('user', () => {
   const storedAddress = localStorage.getItem('userAddress');
   const userLocation = ref<UserAddress | null>(storedAddress ? JSON.parse(storedAddress) : null);
+
   const userInfo = ref();
   const followerInfo = ref([]);
   const followingInfo = ref([]);
   const userProfileImage = ref<string>("")
+
   //유저 위치 정보 조회
   const getUserAddress = async (location: {latitude: number; longitude: number}) => {
     try {
@@ -67,6 +69,7 @@ export const useUserStore = defineStore('user', () => {
 
 
   };
+
 
   //유저 위치정보 업데이트
   const updateUserAddress = (newAddress: UserAddress | null) => {

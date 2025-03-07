@@ -1,10 +1,12 @@
 <script setup>
 import { ref, computed, defineEmits, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import VueCal from 'vue-cal';
 import 'vue-cal/dist/vuecal.css';
 import CultureAPI from '@/apis/cultureApi';
 
 const emit = defineEmits(['dateSelected']);
+const router = useRouter(); // ✅ 라우터 사용
 
 const selectedDate = ref(new Date());
 const currentDate = ref(new Date());
@@ -44,6 +46,7 @@ const fetchEvents = async () => {
     console.log("📌 받아온 데이터:", data);
     
     events.value = data.map(event => ({
+      contentId: event.content_id,
       start: event.event_start_date,
       end: event.event_end_date,
       title: event.name,
@@ -103,6 +106,17 @@ const formatDate = (dateString) => {
   return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
 };
 
+// ✅ 로컬 시간 기준으로 날짜 변환하는 함수
+const getFormattedDate = (date) => {
+  if (!date) return "날짜 미정";
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().split('T')[0].replace(/-/g, '');
+};
+
+const goToDetail = (contentId) => {
+  router.push(`/culture/${contentId}`); // ✅ 해당 축제 상세 페이지로 이동
+};
+
 </script>
 
 <template>
@@ -134,9 +148,17 @@ const formatDate = (dateString) => {
 
     <!-- ✅ 다가오는 일정 (CultureView.vue와 동일한 디자인 적용) -->
     <div class="p-6 border-t border-mono-300">
-      <h2 class="text-[32px] font-semibold text-mono-900 text-left">다가오는 일정</h2>
+      <h2 class="text-[32px] font-semibold text-mono-900 text-left">
+        {{ formatDate(getFormattedDate(selectedDate)) }}
+      </h2>
+
       <div class="grid grid-cols-2 gap-4 mt-4">
-        <div v-for="(event, index) in upcomingEvents" :key="index" class="bg-white p-4 rounded shadow">
+        <div 
+        v-for="(event, index) in upcomingEvents" 
+        :key="index" 
+        class="bg-white p-4 rounded shadow cursor-pointer hover:bg-gray-100 transition"
+        @click="goToDetail(event.contentId)" 
+        >
           <span class="bg-main-400 text-white text-sm px-2 py-1 rounded w-fit inline-block">
             {{ event.category }}
           </span>

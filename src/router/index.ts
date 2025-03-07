@@ -66,10 +66,10 @@ const router = createRouter({
     },
     {
       path: '/culture',
-      name: 'culture',
+      name: 'CultureView',
       component: CultureView,
     },
-    {path: '/culture/:id', name: 'culture-detail', component: CultureViewDetail},
+    {path: '/culture/:id', name: 'CultureViewDetail', component: CultureViewDetail},
     {
       path: '/community/resale',
       name: 'community-resale',
@@ -80,7 +80,8 @@ const router = createRouter({
       name: 'community-recipe',
       component: () => import('@/views/CommunityRecipeView.vue'),
     },
-    { path: '/community/review',
+    {
+      path: '/community/review',
       name: 'community-review',
       component: () => import('@/views/CommunityReviewView.vue'),
     },
@@ -99,9 +100,14 @@ const router = createRouter({
       name: 'used-post-detail',
       component: () => import('@/views/UsedPostDetailView.vue'),
     },
+    // {
+    //   path: '/community/post',
+    //   name: 'posting',
+    //   component: () => import('@/views/PostView.vue'),
+    // },
     {
-      path: '/community/post',
-      name: 'posting',
+      path: '/community/create/:type',
+      name: 'community-post-create',
       component: () => import('@/views/PostView.vue'),
     },
     {
@@ -136,5 +142,7 @@ const router = createRouter({
     },
   ],
 });
+
+
 
 export default router;
