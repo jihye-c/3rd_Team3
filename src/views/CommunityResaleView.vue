@@ -9,52 +9,6 @@
   import {ref, watch} from 'vue';
   import {useRoute, useRouter} from 'vue-router';
 
-  // 더미 데이터
-  // const postList = [
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: true,
-  //   },
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: true,
-  //   },
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: false,
-  //   },
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: true,
-  //   },
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: true,
-  //   },
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: true,
-  //   },
-  // ];
-
   const route = useRoute();
   const router = useRouter();
 
@@ -139,6 +93,12 @@
             :price="JSON.parse(item.title).price"
             :dong="JSON.parse(item.title).region"
             :available="JSON.parse(item.title).available"
+            @click="
+              router.push({
+                name: 'used-post-detail',
+                params: {id: item._id},
+              })
+            "
           />
         </template>
       </div>
