@@ -8,6 +8,7 @@ interface Comment {
   comment: string;
   author: {
     fullName: string;
+    image: string | null;
   };
   createdAt: string;
 }

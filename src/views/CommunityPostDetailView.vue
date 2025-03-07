@@ -4,6 +4,8 @@
   import {useRoute, useRouter} from 'vue-router';
   import type {Post} from '@/types/PostResponse';
   import {programmersApiInstance} from '@/utils/axiosInstance';
+  import {useAuthStore} from '@/stores/auth';
+  import {useCommentStore} from '@/stores/commentStore';
 
   const communityChannels = {
     question: {
@@ -26,28 +28,48 @@
   const route = useRoute();
   const router = useRouter();
   const CommunityType = route.params.type;
-  const PostId = route.params.id;
+  const postId = route.params.id;
 
-  const comments = ref([
-    {author: '도형', content: '정말 흥미로운 주제네요!', date: '2025.02'},
-    {author: '현서', content: '좋은 정보 감사합니다.', date: '2025.02'},
-  ]);
+  const authStore = useAuthStore();
+  const commentStore = useCommentStore();
 
-  const isLoggedIn = ref(true); // 로그인 여부 체크 (예제)
-  const newComment = ref('');
+  // const comments = ref([
+  //   {author: '도형', content: '정말 흥미로운 주제네요!', date: '2025.02'},
+  //   {author: '현서', content: '좋은 정보 감사합니다.', date: '2025.02'},
+  // ]);
+
+  // const isLoggedIn = ref(true); // 로그인 여부 체크 (예제)
+  // const newComment = ref('');
 
   const postData = ref<Post | null>();
   const isLoading = ref(false);
   const error = ref<string | null>(null);
+  const comment = ref('');
+
+  const submitComment = async () => {
+    if (!authStore.isAuthenticated) {
+      alert('로그인이 필요합니다.');
+      router.push('/auth');
+      return;
+    }
+
+    try {
+      await commentStore.addComment(comment.value, route.params.id as string);
+      comment.value = '';
+    } catch (error) {
+      console.error('Failed to submit comment:', error);
+    }
+  };
 
   onMounted(async () => {
     // api 호출
     try {
       isLoading.value = true;
       // post 데이터 불러오기
-      const response = await programmersApiInstance.get(`/posts/${PostId}`);
+      const response = await programmersApiInstance.get(`/posts/${postId}`);
       postData.value = response.data;
       // console.log(postData.value);
+      await commentStore.fetchComments(postId as string);
     } catch (err) {
       error.value = '데이터를 불러오는 중 오류가 발생했습니다.';
     } finally {
@@ -155,35 +177,62 @@
         <!-- 가로선 -->
         <div class="w-full h-[2px] bg-mono-200 my-6"></div>
 
-        <!-- 댓글 개수 -->
-        <p class="mt-8 text-[20px] font-semibold text-mono-900">댓글 {{ comments.length }}개</p>
-
-        <!-- 댓글 리스트 -->
-        <div class="mt-6 space-y-6">
-          <div v-for="(comment, index) in comments" :key="index" class="flex gap-4">
-            <img
-              src="/images/post/default.png"
-              alt="Profile"
-              class="w-[24px] h-[24px] rounded-full"
-            />
-            <div>
-              <p class="text-[18px] text-mono-900">{{ comment.author }}</p>
-              <p class="text-[16px] text-mono-600">{{ comment.content }}</p>
-              <p class="text-[16px] text-mono-400 mt-1">{{ comment.date }}</p>
-            </div>
-          </div>
+        <!-- 댓글 섹션 -->
+        <div class="flex font-medium text-[32px] pt-6 mt-6 mb-8">
+          <div class="mr-4">댓글</div>
+          <div class="text-main-400">{{ commentStore.comments.length }}</div>
+          <div>개</div>
         </div>
 
-        <!-- 댓글 작성 -->
-        <div class="mt-8 p-4 bg-gray-100 rounded-lg">
+        <div
+          v-for="(comment, index) in commentStore.comments"
+          :key="index"
+          class="flex flex-col gap-6 py-4 border-b-1 border-mono-200 text-mono-500"
+        >
+          <div class="flex items-center">
+            <v-avatar
+              size="24px"
+              :image="comment.author.image || '/images/mypage/mypage_default_img.png'"
+              class="mr-2"
+            ></v-avatar>
+            <div class="text-lg">{{ JSON.parse(comment.author.fullName).nickname }}</div>
+          </div>
+          <div>{{ comment.comment }}</div>
+          <div>
+            {{
+              new Date(comment.createdAt).toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            }}
+          </div>
+        </div>
+        <div class="my-12 min-h-43 border-1 border-mono-200 rounded-lg">
           <textarea
-            class="w-full h-[80px] p-2 border border-mono-300 rounded-lg"
-            v-model="newComment"
+            v-if="authStore.isAuthenticated"
+            v-model="comment"
+            class="min-h-22 w-[900px] my-4 mx-7"
             placeholder="댓글을 작성해보세요!"
           ></textarea>
-          <button class="mt-4 w-full py-2 bg-main-400 text-mono-050 font-semibold rounded-lg">
-            작성하기
-          </button>
+          <div
+            v-else
+            class="min-h-22 w-256 my-4 mx-7 cursor-pointer text-mono-500"
+            @click="router.push('/auth')"
+          >
+            <div class="flex">
+              <div class="font-bold text-main-400">로그인 후&nbsp;</div>
+              <div>댓글을 작성해보세요!</div>
+            </div>
+          </div>
+          <div class="h-13 border-t-1 border-mono-200 flex items-center justify-end">
+            <button
+              @click="submitComment"
+              class="bg-main-400 py-2 px-6 mr-4 rounded-lg text-mono-050"
+            >
+              작성하기
+            </button>
+          </div>
         </div>
       </div>
     </div>
