@@ -49,7 +49,7 @@
       background="#f89a00"
       title="나만의 레시피"
       subtitle="이웃과 함께 나누는 나만의 레시피 이야기"
-      :breadcrumbs="[{title: '홈', href: '/'}, {title: '커뮤니티'}, {title: '레시피'}]"
+      :breadcrumbs="[{title: '홈', href: '/'}, {title: '커뮤니티'}, {title: '나만의 레시피'}]"
       ><img
         src="/images/community/community_recipe_illustration.svg"
         alt="illustration"
