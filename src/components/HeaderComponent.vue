@@ -10,6 +10,7 @@
   const height = useTransform(scrollY, [0, 100], [0, '100%']);
   const border = useTransform(scrollY, [0, 100], ['none', '1px solid #eee']);
   const color = useTransform(scrollY, [0, 100], ['#fff', '#000']);
+  const id = localStorage.getItem('userId')
   const props = defineProps({
     backgroundOpacity: {
       type: Boolean,
@@ -102,7 +103,7 @@
 
                 <v-tooltip location="end">
                   <template v-slot:activator="{props}">
-                    <RouterLink to="/mypage">
+                    <RouterLink :to="`/mypage/${id}`">
                       <v-btn icon v-bind="props">
                         <v-icon color="grey-lighten-1"> mdi-account </v-icon>
                       </v-btn>

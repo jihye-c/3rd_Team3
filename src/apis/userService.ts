@@ -68,3 +68,16 @@ export async function getGeolocationAddress(locations: { latitude: number; longi
   });
   return res.data
 }
+export async function updateUserProfile(formData:FormData){
+  const response = await axios.post(`${apiRoot}/users/upload-photo`,formData,{
+    headers: {
+      'Content-Type':'multipart/form-data',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  console.log(response);
+  if (response.status !== 200) {
+    throw 'state : ' + response.status;
+  }
+  return response.data;
+}
