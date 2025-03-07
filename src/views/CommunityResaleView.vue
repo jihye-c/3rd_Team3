@@ -4,6 +4,7 @@
   import ResaleCard from '@/components/community/ResaleCard.vue';
   import SearchBar from '@/components/community/SearchBar.vue';
   import {RESALE_CHANNEL_ID} from '@/constants/channelId';
+  import {useAuthStore} from '@/stores/auth';
   import type {Post} from '@/types/PostResponse';
   import {programmersApiInstance} from '@/utils/axiosInstance';
   import {ref, watch} from 'vue';
@@ -11,6 +12,7 @@
 
   const route = useRoute();
   const router = useRouter();
+  const authStore = useAuthStore();
 
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
@@ -79,7 +81,11 @@
           <OrderRadioButton v-model="selectedOrder" value="available" label="판매완료 제외" />
         </div>
         <!-- 글작성 버튼 -->
-        <v-btn variant="flat" class="write" @click="() => router.push('/community/create/resale')"
+        <v-btn
+          v-if="authStore.isAuthenticated"
+          variant="flat"
+          class="write"
+          @click="() => router.push('/community/create/resale')"
           >글작성</v-btn
         >
       </div>
