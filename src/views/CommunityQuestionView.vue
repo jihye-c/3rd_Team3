@@ -102,6 +102,12 @@
             :bookmarks="item.likes.length"
             :comments="item.comments.length"
             :image="item.image"
+            @click="
+              router.push({
+                name: 'community-post-detail',
+                params: {type: 'question', id: item._id},
+              })
+            "
           />
         </template>
       </div>

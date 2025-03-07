@@ -91,7 +91,7 @@ const router = createRouter({
       component: () => import('@/views/CommunityQuestionView.vue'),
     },
     {
-      path: '/community/post/:id',
+      path: '/community/:type/post/:id',
       name: 'community-post-detail',
       component: () => import('@/views/CommunityPostDetailView.vue'),
     },
@@ -137,7 +137,5 @@ const router = createRouter({
     },
   ],
 });
-
-
 
 export default router;

@@ -9,39 +9,6 @@
   import {ref, watch} from 'vue';
   import {useRoute, useRouter} from 'vue-router';
 
-  // 더미 데이터
-  // const postList = [
-  //   {
-  //     image: '/recipe/recipe_popular2.webp',
-  //     title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
-  //     content:
-  //       '자취를 시작하고 나서 주말마다 너무 심심해요. 친구들이랑 시간을 보내기도 어렵고, 혼자서 뭔가 하려니 마땅한 게 없네요. 혼자서도 부담 없이 즐길 수 있는 문화생활이 뭐가 있을까요? 근처에서 열리는 전시회나 소극장 공연, 영화관 외에도 특별한 활동이 있으면 추천 부탁드려요.',
-  //     dong: '신림동',
-  //     tags: ['문화생활', '취미'],
-  //     bookmarks: 5,
-  //     comments: 4,
-  //   },
-  //   {
-  //     image: '/recipe/recipe_popular3.webp',
-  //     title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
-  //     content:
-  //       '자취를 시작하고 나서 주말마다 너무 심심해요. 친구들이랑 시간을 보내기도 어렵고, 혼자서 뭔가 하려니 마땅한 게 없네요. 혼자서도 부담 없이 즐길 수 있는 문화생활이 뭐가 있을까요? 근처에서 열리는 전시회나 소극장 공연, 영화관 외에도 특별한 활동이 있으면 추천 부탁드려요.',
-  //     dong: '신림동',
-  //     tags: ['문화생활', '취미', '여가'],
-  //     bookmarks: 5,
-  //     comments: 4,
-  //   },
-  //   {
-  //     title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
-  //     content:
-  //       '자취를 시작하고 나서 주말마다 너무 심심해요. 친구들이랑 시간을 보내기도 어렵고, 혼자서 뭔가 하려니 마땅한 게 없네요. 혼자서도 부담 없이 즐길 수 있는 문화생활이 뭐가 있을까요? 근처에서 열리는 전시회나 소극장 공연, 영화관 외에도 특별한 활동이 있으면 추천 부탁드려요.',
-  //     dong: '신림동',
-  //     tags: ['문화생활', '취미', '여가'],
-  //     bookmarks: 5,
-  //     comments: 4,
-  //   },
-  // ];
-
   const route = useRoute();
   const router = useRouter();
 
@@ -135,6 +102,12 @@
             :bookmarks="item.likes.length"
             :comments="item.comments.length"
             :image="item.image"
+            @click="
+              router.push({
+                name: 'community-post-detail',
+                params: {type: 'review', id: item._id},
+              })
+            "
           />
         </template>
       </div>
