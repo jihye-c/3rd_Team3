@@ -21,85 +21,6 @@
   const isSymptomButtonShow = ref(true); // 증상 선택 버튼 표시 여부
   const hospitalList = ref<FullHospitalRes>({length: 0, data: null});
 
-  // 지역 리스트 (임시, 내용 정확하지 않음)
-  const districts = [
-    {
-      gu: '강남구',
-      dong: [
-        '역삼동',
-        '선릉동',
-        '삼성동',
-        '청담동',
-        '개포동',
-        '일원동',
-        '대치동',
-        '도곡동',
-        '논현동',
-        '신사동',
-      ],
-    },
-    {
-      gu: '강동구',
-      dong: [
-        '천호동',
-        '강일동',
-        '길동',
-        '명일동',
-        '상일동',
-        '둔촌동',
-        '암사동',
-        '성내동',
-        '구천면로',
-        '고덕동',
-      ],
-    },
-    {
-      gu: '강서구',
-      dong: [
-        '화곡동',
-        '등촌동',
-        '가양동',
-        '염창동',
-        '오쇠동',
-        '공항동',
-        '내발산동',
-        '외발산동',
-        '방화동',
-        '구의동',
-      ],
-    },
-    {
-      gu: '관악구',
-      dong: [
-        '신림동',
-        '봉천동',
-        '서울대입구동',
-        '난향동',
-        '조원동',
-        '신사동',
-        '남현동',
-        '청림동',
-        '성현동',
-        '관악로',
-      ],
-    },
-    {
-      gu: '광진구',
-      dong: [
-        '자양동',
-        '구의동',
-        '광장동',
-        '군자동',
-        '화양동',
-        '능동',
-        '중곡동',
-        '선동',
-        '회기동',
-        '길동',
-      ],
-    },
-  ];
-
   // 선택된 병원 데이터 (상세정보 보여줄 병원)
   const selectedHospital = {
     addr: '서울특별시 종로구 대학로 101, (연건동)',
@@ -249,11 +170,16 @@
     //   level: 3,
     // };
     const nowHospital = hospitalIcons.find((type) => type.id === route.query.type);
-    let nowSymtoms:string[] = [];
-    if(route.query.sym && route.query.sym?.length > 0){
+    let nowSymtoms: string[] = [];
+    if (route.query.sym && route.query.sym?.length > 0) {
       nowSymtoms = route.query.sym as string[];
     }
-    const res = await Supabase.getFullHospitalData(mapData.value, nowPage.value, nowHospital?.searchType, nowSymtoms);
+    const res = await Supabase.getFullHospitalData(
+      mapData.value,
+      nowPage.value,
+      nowHospital?.searchType,
+      nowSymtoms,
+    );
     if (res) {
       hospitalList.value = res;
     }
@@ -263,9 +189,12 @@
   //   router.push({path:route.path, query:{type:'clinic'}})
   //   loadHospital();
   // });
-  watch(()=>route.query,()=>{
-    loadHospital();
-  })
+  watch(
+    () => route.query,
+    () => {
+      loadHospital();
+    },
+  );
 </script>
 
 <template>
@@ -297,58 +226,43 @@
         </div>
         <!-- 검색 & 리스트 -->
         <div
-          class="shadow-[4px_0_10px_rgba(0,0,0,0.1)] z-10 h-full relative"
+          class="shadow-[4px_0_10px_rgba(0,0,0,0.1)] z-10 h-full relative flex flex-col"
           :style="{width: resizable[0].width + 'px'}"
         >
           <!-- 검색 -->
-          <div class="border-b-1 border-mono-300 overflow-hidden">
-            <div class="flex flex-wrap py-6 px-5 gap-2 w-full">
-              <div class="text-[20px] w-full font-semibold text-mono-700">카테고리 검색</div>
-              <div class="flex gap-2 w-full">
-                <v-select
-                  class="w-1/2"
-                  label="구 선택"
-                  :items="districts.map((district) => district.gu)"
+          <div class="border-b-1 border-mono-300">
+            <div class="w-full overflow-hidden">
+              <div class="wrap py-6 px-5">
+                <div class="text-[20px] pb-3 w-full font-semibold text-mono-700">검색</div>
+                <v-text-field
+                  append-inner-icon="mdi-magnify"
+                  placeholder="병원 이름 검색"
                   variant="outlined"
                   rounded="lg"
                   density="compact"
-                ></v-select>
-                <v-select
-                  class="w-1/2"
-                  label="동 선택"
-                  variant="outlined"
-                  rounded="lg"
-                  density="compact"
-                ></v-select>
+                  class="h-[40px] w-full text-[16px] font-normal text-mono-700"
+                ></v-text-field>
               </div>
-              <v-text-field
-                append-inner-icon="mdi-magnify"
-                placeholder="병원 이름 검색"
-                variant="outlined"
-                rounded="lg"
-                density="compact"
-                class="h-[40px] w-full text-[16px] font-normal text-mono-700"
-              ></v-text-field>
+            </div>
+            <div class="border-b border-mono-200 flex flex-col grow overflow-hidden">
+              <div class="wrap pb-6 px-5">
+                <div
+                  class="text-[20px] font-semibold text-mono-700 cursor-pointer"
+                  @click="isSymptomButtonShow = !isSymptomButtonShow"
+                >
+                  증상 선택
+                  <v-icon>{{ isSymptomButtonShow ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                </div>
+                <SymptomsFilter
+                  v-if="isSymptomButtonShow"
+                  :isSymptomButtonShow="isSymptomButtonShow"
+                />
+              </div>
             </div>
           </div>
-          <div class="h-full pb-[60px] overflow-y-auto scrollbar">
-            <!-- 증상 필터 -->
-            <div class="flex flex-col gap-4 py-6 px-5 border-b border-mono-200">
-              <div
-                class="text-[20px] font-semibold text-mono-700 cursor-pointer"
-                @click="isSymptomButtonShow = !isSymptomButtonShow"
-              >
-                증상 선택
-                <v-icon>{{ isSymptomButtonShow ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-              </div>
-              <SymptomsFilter
-                v-if="isSymptomButtonShow"
-                :isSymptomButtonShow="isSymptomButtonShow"
-              />
-            </div>
-
+          <div class="h-full grow shrink overflow-y-auto scrollbar">
             <!-- 리스트 -->
-            <div class="pt-6 px-6 pb-34 relative">
+            <div class="pt-6 px-6 relative">
               <p class="text-right text-mono-300 absolute right-6">
                 전체 : {{ hospitalList?.length }}개
               </p>
