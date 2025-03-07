@@ -19,7 +19,7 @@
   const postData = ref({
     title: '',
     date: '',
-    images: [] as string[],
+    images: [],
   });
 
   // 북마크 상태 관리
@@ -58,7 +58,6 @@
     }
   };
 
-  // 컴포넌트 마운트 시 API 호출
   onMounted(fetchPostDetail);
 </script>
 
@@ -84,6 +83,13 @@
       </div>
 
       <section class="w-270">
+        <RouterLink
+          to="/subscription/news"
+          class="inline-flex rounded-lg text-mono-050 bg-main-400 text-xl pr-4 pl-1 py-1 items-center mb-5"
+        >
+          <v-icon>mdi-chevron-left</v-icon>
+          <div>목록 보기</div>
+        </RouterLink>
         <div class="font-bold text-5xl mb-2">{{ postData.title }}</div>
         <div class="text-mono-500">{{ postData.date }}</div>
 
@@ -102,23 +108,7 @@
           </Swiper>
         </div>
 
-        <div class="flex justify-between">
-          <div class="mr-10">
-            <div class="text-mono-400">이전 글</div>
-            <div class="w-125 text-xl overflow-hidden whitespace-nowrap text-ellipsis">
-              제목제목제목
-            </div>
-          </div>
-          <div class="border-1 border-mono-200"></div>
-          <div class="text-right ml-10">
-            <div class="text-mono-400">다음 글</div>
-            <div class="w-125 text-xl overflow-hidden whitespace-nowrap text-ellipsis">
-              가나다라마바사가나다라마바사가나다라마바사가나다라마바사가나다라마바사가나다라마바사가나다라마바사가나다라마바사가나다라마바사
-            </div>
-          </div>
-        </div>
-
-        <div class="flex font-medium text-[32px] pt-6 mt-6 mb-8 border-t-1 border-mono-200">
+        <div class="flex font-medium text-[32px] pt-6 mt-6 mb-8">
           <div class="mr-4">댓글</div>
           <div class="text-main-400">N</div>
           <div>개</div>
