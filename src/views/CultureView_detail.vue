@@ -1,6 +1,12 @@
 <script setup lang="ts">
+<<<<<<< HEAD
+import { ref, onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useCultureStore } from "../stores/cultureStore";
+=======
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+>>>>>>> main
 import CultureAPI from "@/apis/cultureApi";
 
 import { Swiper, SwiperSlide } from "swiper/vue";
@@ -9,6 +15,11 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import KakaoMap_festival from "@/components/KakaoMap_festival.vue";
+<<<<<<< HEAD
+import BookmarkButton from '@/components/BookmarkButton.vue';
+import ShareButton from '@/components/ShareButton.vue';
+=======
+>>>>>>> main
 
 const router = useRouter();
 const route = useRoute();
@@ -26,7 +37,65 @@ const sponsor1 = ref("");
 const sponsor2 = ref("");
 const phoneNumber = ref("");
 const website = ref("");
+<<<<<<< HEAD
+const cultureStore = useCultureStore();
 
+// ✅ 현재 상세 페이지의 이벤트가 북마크되었는지 확인
+const isBookmarked = computed(() => {
+  return cultureStore.bookmarkedFestivals.some(festival => festival.content_id === festivalId.value);
+});
+
+// ✅ 북마크 버튼 클릭 핸들러
+const toggleBookmark = () => {
+  if (festivalDetail.value) {
+    const newBookmark = {
+      content_id: festivalDetail.value.content_id,
+      name: festivalDetail.value.name,
+      category3: festivalDetail.value.category3,
+      homepage: festivalImages.value.length > 0 ? festivalImages.value[0] : "/images/default-image.jpg", // ✅ 첫 번째 이미지 저장
+      overview: festivalDetail.value.overview || "설명 없음",
+      event_start_date: eventIntro.value.event_start_date && eventIntro.value.event_start_date !== "날짜 미정"
+        ? eventIntro.value.event_start_date
+        : "날짜 미정",
+      event_end_date: eventIntro.value.event_end_date && eventIntro.value.event_end_date !== "날짜 미정"
+        ? eventIntro.value.event_end_date
+        : "날짜 미정",
+      gu_name: festivalDetail.value.address || "주소 정보 없음",
+    };
+
+    console.log("✅ 북마크 추가됨:", newBookmark);
+    cultureStore.toggleBookmark(newBookmark);
+  }
+=======
+
+// 서브카테고리 목록
+const subCategories = [
+  { name: "문화관광축제", code: "A02070100" },
+  { name: "일반축제", code: "A02070200" },
+  { name: "전통공연", code: "A02080100" },
+  { name: "연극", code: "A02080200" },
+  { name: "뮤지컬", code: "A02080300" },
+  { name: "오페라", code: "A02080400" },
+  { name: "전시회", code: "A02080500" },
+  { name: "박람회", code: "A02080600" },
+  { name: "무용", code: "A02080800" },
+  { name: "클래식음악회", code: "A02080900" },
+  { name: "대중콘서트", code: "A02081000" },
+  { name: "영화", code: "A02081100" },
+  { name: "스포츠경기", code: "A02081200" },
+  { name: "기타행사", code: "A02081300" },
+];
+
+// ✅ 서브카테고리 코드 → 한글 이름 변환 함수
+const getCategoryName = (code: string) => {
+  const category = subCategories.find((sub) => sub.code === code);
+  return category ? category.name : "기타"; // 코드 매칭 안되면 '기타'로 표시
+>>>>>>> main
+};
+
+
+
+<<<<<<< HEAD
 // 서브카테고리 목록
 const subCategories = [
   { name: "문화관광축제", code: "A02070100" },
@@ -53,6 +122,8 @@ const getCategoryName = (code: string) => {
 
 
 
+=======
+>>>>>>> main
 const fetchFestivalDetails = async () => {
   try {
     // 행사 세부 데이터 가져오기
@@ -80,7 +151,15 @@ const fetchFestivalDetails = async () => {
 
     // 행사 소개
     const eventIntroData = await CultureAPI.getEventIntro(festivalId.value, festivalData.content_type_id);
-    eventIntro.value = eventIntroData ? eventIntroData.event_intro || "행사 소개가 없습니다." : "행사 소개를 불러오는 데 실패했습니다.";
+    eventIntro.value = {
+      event_start_date: eventIntroData?.event_start_date && eventIntroData.event_start_date.length === 8
+        ? eventIntroData.event_start_date
+        : "날짜 미정",
+      event_end_date: eventIntroData?.event_end_date && eventIntroData.event_end_date.length === 8
+        ? eventIntroData.event_end_date
+        : "날짜 미정",
+      event_intro: eventIntroData?.event_intro || "행사 소개가 없습니다."
+    };
 
     // 행사 기간 (예: 2025.04.30 ~ 2025.05.06)
     eventPeriod.value = `${formatDate(eventIntroData.event_start_date)} ~ ${formatDate(eventIntroData.event_end_date)}`;
@@ -179,13 +258,10 @@ onMounted(() => {
     <!-- 컨텐츠 영역 -->
     <div class="max-w-[1600px] mx-auto flex mt-10 gap-10">
       <!-- 좌측 버튼들 -->
-      <div class="flex flex-col items-center space-y-4">
-        <button class="w-[52px] h-[52px] bg-gray-200 rounded-full flex items-center justify-center">
-          <img src="/images/festival/scrap.png" alt="Scrap" class="w-6 h-6" />
-        </button>
-        <button class="w-[52px] h-[52px] bg-gray-200 rounded-full flex items-center justify-center">
-          <img src="/images/festival/share.png" alt="Share" class="w-6 h-6" />
-        </button>
+      <div class="border-mono-200 w-[52px] h-[104px] flex flex-col gap-[12px]">
+        <!-- 스크랩, 공유 버튼 -->
+        <BookmarkButton :isBookmarked="isBookmarked" @toggle="toggleBookmark"/>
+        <ShareButton />
       </div>
 
       <!-- 축제 이미지 스와이퍼 -->
