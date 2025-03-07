@@ -1,36 +1,25 @@
 <script setup lang="ts">
-  import {computed, ref} from 'vue';
+  import {computed, onMounted, ref, watch} from 'vue';
+  import {useRoute, useRouter} from 'vue-router';
+
+  import type {MapData} from '@/types/kakao';
+  import type {FullHospitalRes} from '@/types/hospitalType';
 
   import HospitalPostList from '@/components/hospital/HospitalPostList.vue';
   import HospitalDetailCard from '@/components/hospital/HospitalDetailCard.vue';
-  import ClinicIcon from '@/assets/icons/clinic.svg';
-  import TertiaryHospitalIcon from '@/assets/icons/tertiaryHospital.svg';
-  import GeneralHospitalIcon from '@/assets/icons/generalHospital.svg';
-  import HospitalIcon from '@/assets/icons/hospital.svg';
-  import PublicHealthCenterIcon from '@/assets/icons/publicHealthCenter.svg';
-  import OrientalMedicineClinicIcon from '@/assets/icons/orientalMedicineClinic.svg';
-  import DentalClinicIcon from '@/assets/icons/dentalClinic.svg';
   import SymptomsFilter from '@/components/hospital/SymptomsFilter.vue';
   import HospitalMap from '@/components/hospital/HospitalMap.vue';
-  import type {MapData} from '@/types/kakao';
+
+  import hospitalIcons from '@/assets/data/hospitalIcons';
   import Supabase from '@/apis/supabase';
-  import type {FullHospitalRes} from '@/types/hospitalType';
+
+  const router = useRouter();
+  const route = useRoute();
 
   //-----------------------------화면 제어 관련-----------------------------//
   const isDetailPageShow = ref(false); // 상세페이지 표시 여부
   const isSymptomButtonShow = ref(true); // 증상 선택 버튼 표시 여부
-  const hospitalList = ref<FullHospitalRes>({length:0, data:null});
-
-  // 아이콘 데이터 배열 정의
-  const hospitalIcons = [
-    {id: 'clinic', name: '동네 병원 (의원)', component: ClinicIcon},
-    {id: 'tertiaryHospital', name: '상급종합', component: TertiaryHospitalIcon},
-    {id: 'generalHospital', name: '종합병원', component: GeneralHospitalIcon},
-    {id: 'hospital', name: '병원', component: HospitalIcon},
-    {id: 'publicHealthCenter', name: '보건기관', component: PublicHealthCenterIcon},
-    {id: 'orientalMedicineClinic', name: '한의원', component: OrientalMedicineClinicIcon},
-    {id: 'dentalClinic', name: '치과', component: DentalClinicIcon},
-  ];
+  const hospitalList = ref<FullHospitalRes>({length: 0, data: null});
 
   // 지역 리스트 (임시, 내용 정확하지 않음)
   const districts = [
@@ -164,29 +153,22 @@
 
   // 병원 종류 선택하기
   const selectHospitalType = (type: string) => {
+    if (selectedHospitalType.value == type) return;
+    router.push({path: route.path, query: {type: type}});
     selectedHospitalType.value = type;
-    // 임시로 동네병원일 때만 증상 선택할 수 있게 함
     if (type === 'clinic') {
       isSymptomButtonShow.value = true;
     } else {
       isSymptomButtonShow.value = false;
     }
-    // 병원 종류 바뀌면 열려있던 상세 페이지 닫기
     isDetailPageShow.value = false;
   };
 
-  // 상세페이지 열기
   const openDetail = () => {
     isDetailPageShow.value = true;
   };
-
-  // 상세페이지 닫기
   const closeDetail = () => {
     isDetailPageShow.value = false;
-  };
-
-  const onDistrictChange = () => {
-    // 구에 따라 동 바꾸는 로직 추가하기
   };
 
   //----------------------------- 리사이징 함수 -----------------------------//
@@ -254,11 +236,36 @@
   const selectedHospitalType = ref('clinic'); // 선택된 병원 종류, default 의원
 
   const loadHospital = async () => {
-    const res = await Supabase.getFullHospitalData(mapData.value, nowPage.value);
+    ////개발용 세팅
+    // mapData.value = {
+    //   bounds: {
+    //     bottom: 37.51254184968482,
+    //     left: 127.04358072020108,
+    //     right: 127.05100697248893,
+    //     top: 37.52184624143815,
+    //   },
+    //   lng: 127.04729361574341,
+    //   lat: 37.51719410591982,
+    //   level: 3,
+    // };
+    const nowHospital = hospitalIcons.find((type) => type.id === route.query.type);
+    let nowSymtoms:string[] = [];
+    if(route.query.sym && route.query.sym?.length > 0){
+      nowSymtoms = route.query.sym as string[];
+    }
+    const res = await Supabase.getFullHospitalData(mapData.value, nowPage.value, nowHospital?.searchType, nowSymtoms);
     if (res) {
       hospitalList.value = res;
     }
   };
+  //카카오맵 끄고 개발용
+  // onMounted(() => {
+  //   router.push({path:route.path, query:{type:'clinic'}})
+  //   loadHospital();
+  // });
+  watch(()=>route.query,()=>{
+    loadHospital();
+  })
 </script>
 
 <template>
@@ -326,23 +333,30 @@
           </div>
           <div class="h-full pb-[60px] overflow-y-auto scrollbar">
             <!-- 증상 필터 -->
-            <div
-              class="flex flex-col gap-4 py-6 px-5 border-b-1 border-mono-200"
-              v-if="isSymptomButtonShow"
-            >
-              <div class="text-[20px] font-semibold text-mono-700">증상 선택</div>
-              <SymptomsFilter />
+            <div class="flex flex-col gap-4 py-6 px-5 border-b border-mono-200">
+              <div
+                class="text-[20px] font-semibold text-mono-700 cursor-pointer"
+                @click="isSymptomButtonShow = !isSymptomButtonShow"
+              >
+                증상 선택
+                <v-icon>{{ isSymptomButtonShow ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+              </div>
+              <SymptomsFilter
+                v-if="isSymptomButtonShow"
+                :isSymptomButtonShow="isSymptomButtonShow"
+              />
             </div>
 
             <!-- 리스트 -->
-            <div class="pt-6 px-6 pb-34">
-              <p class="text-right text-mono-300">전체 : {{ hospitalList?.length }}개</p>
-              <div class="flex flex-col gap-6">
-                <template v-for="item in hospitalList?.data" :key="item.id">
+            <div class="pt-6 px-6 pb-34 relative">
+              <p class="text-right text-mono-300 absolute right-6">
+                전체 : {{ hospitalList?.length }}개
+              </p>
+              <div id="postList" class="flex flex-col">
+                <template v-for="(item, idx) in hospitalList?.data" :key="item.id">
                   <HospitalPostList
-                    :name="item.name"
-                    :type="item.type"
-                    :addr="item.addr"
+                    :class="{'border-t': idx !== 0}"
+                    :data="item"
                     @click="openDetail"
                   />
                 </template>
@@ -356,7 +370,6 @@
                   active-color="#f89a00"
                   density="comfortable"
                 ></v-pagination>
-                <!-- flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain' -->
               </div>
             </div>
           </div>

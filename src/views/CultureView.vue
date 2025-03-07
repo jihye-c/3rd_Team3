@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import dayjs from "dayjs";
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import CultureAPI from "@/apis/cultureApi"; // ✅ API 가져오기
+import { useCultureStore } from "../stores/cultureStore";
+ // ✅ Pinia 상태 관리
+
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -10,8 +14,9 @@ import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import CalendarComponent from "@/components/CalendarComponent.vue";
 import FestivalSearchComponent from "@/components/FestivalSearchComponent.vue";
 import PaginationComponent from "@/components/PaginationComponent.vue";
-import CultureAPI from "@/apis/cultureApi"; // ✅ API 가져오기
 
+const router = useRouter();
+const cultureStore = useCultureStore(); // ✅ 상태 저장소 사용
 
 // ✅ API 데이터 저장할 곳
 const festivalData = ref<any[]>([]);
@@ -55,12 +60,19 @@ const selectedFilters = ref({
 const filterFestivals = () => {
   console.log("✅ 필터링 전 데이터 개수:", festivalData.value.length);
 
-  if (!selectedFilters.value.category && !selectedFilters.value.subCategory &&
-    !selectedFilters.value.keyword && selectedFilters.value.location === "전체" &&
-    !selectedFilters.value.period) { // 🛠 기간 필터도 체크
-  filteredFestivals.value = festivalData.value;
-  return;
-}
+  if (
+    !selectedFilters.value.category && 
+    !selectedFilters.value.subCategory && 
+    !selectedFilters.value.keyword && 
+    selectedFilters.value.location === "전체" &&
+    !selectedFilters.value.period
+  ) { 
+    if (festivalData.value.length > 0) {
+      filteredFestivals.value = festivalData.value;
+      cultureStore.setFilteredFestivals(festivalData.value);
+    }
+    return;
+  }
 
 
   const today = dayjs();
@@ -109,8 +121,14 @@ const filterFestivals = () => {
   // ✅ 필터링 결과가 있을 경우 업데이트, 없으면 기존 리스트 유지 & 팝업 표시
   if (newFilteredFestivals.length > 0) {
     filteredFestivals.value = newFilteredFestivals;
+    cultureStore.setFilteredFestivals(newFilteredFestivals);
+  }
+
+  // ✅ 사용자가 필터를 변경한 경우에만 팝업을 띄움
+  if (newFilteredFestivals.length === 0 && festivalData.value.length > 0) {
+    showPopup.value = true; 
   } else {
-    showPopup.value = true; // ✅ 팝업 표시
+    showPopup.value = false;
   }
 };
 
@@ -136,6 +154,18 @@ const handleFilterChange = (filters: { category: string; subCategory: string; lo
 // ✅ API에서 데이터 가져오기
 const fetchFestivals = async () => {
   try {
+
+      // ✅ 기존 데이터가 있으면 API 호출을 생략
+      if (cultureStore.festivals.length > 0) {
+      console.log("✅ 기존 데이터가 존재하여 API 요청 생략");
+      festivalData.value = [...cultureStore.festivals];
+      filteredFestivals.value = cultureStore.filteredFestivals.length > 0 
+        ? [...cultureStore.filteredFestivals]
+        : [...cultureStore.festivals];
+      currentPage.value = cultureStore.currentPage;
+      selectedFilters.value = { ...cultureStore.selectedFilters };
+      return;
+    }
     console.log("🎯 API 요청 시작...");
     const data = await CultureAPI.getSeoulFestivalsAndEvents();
     console.log("📌 받아온 데이터:", data);
@@ -173,15 +203,16 @@ const fetchFestivals = async () => {
         })
       );
       console.log("📌 상세 정보 포함된 데이터:", detailedData);
+
+      cultureStore.setFestivals(detailedData);
+      cultureStore.setFilteredFestivals(detailedData);
+
       festivalData.value = detailedData;
-      filteredFestivals.value = detailedData; // 초기에는 전체 데이터를 표시
-      // ✅ 콘솔에서 gu_name 값을 확인하기 위한 로그 추가
-      console.log(
-        "📌 API에서 받아온 데이터 (지역 확인용):",
-        festivalData.value.map(festival => ({ name: festival.name, gu_name: festival.gu_name }))
-      );
+      filteredFestivals.value = detailedData; 
+      
     } else {
       console.warn("⚠️ 받아온 데이터가 없음");
+      filteredFestivals.value = [];
     }
   } catch (error) {
     console.error("❌ API 요청 오류:", error);
@@ -195,6 +226,7 @@ const totalPages = computed(() => Math.ceil(filteredFestivals.value.length / 9))
 // 🔹 페이지 변경 핸들러
 const handlePageChange = (page: number) => {
   currentPage.value = page;
+  cultureStore.setCurrentPage(page);
 };
 
 // 🔹 현재 페이지 데이터만 필터링
@@ -214,8 +246,36 @@ const updateUpcomingEvents = (events: any[]) => {
   upcomingEvents.value = events;
 };
 
-// ✅ 마운트 시 데이터 가져오기
-onMounted(fetchFestivals);
+const goToDetail = (contentId) => {
+  console.log("✅ 현재 상태 저장", {
+    filters: selectedFilters.value,
+    page: currentPage.value,
+    filteredData: filteredFestivals.value.length,
+  });
+
+  // ✅ 현재 필터 & 페이지 상태를 Pinia에 저장
+  cultureStore.setCurrentPage(currentPage.value);
+  cultureStore.setFilters(selectedFilters.value);
+  cultureStore.setFilteredFestivals(filteredFestivals.value);
+
+  // ✅ 상세 페이지로 이동
+  router.push(`/culture/${contentId}`);
+};
+
+
+onMounted(() => {
+  console.log("📌 기존 저장된 상태 확인", {
+    festivals: cultureStore.festivals,
+    filteredFestivals: cultureStore.filteredFestivals,
+    selectedFilters: cultureStore.selectedFilters,
+    currentPage: cultureStore.currentPage,
+  });
+  showPopup.value = false;
+  fetchFestivals();
+  filterFestivals();
+  currentPage.value = cultureStore.currentPage || 1;
+});
+
 </script>
 
 <template>
@@ -265,25 +325,22 @@ onMounted(fetchFestivals);
 
           <!-- 카드 리스트 -->
           <div class="grid grid-cols-3 gap-4 w-full">
-            <div v-for="(festival, index) in paginatedFestivals" :key="index" class="p-4 rounded-lg shadow border border-mono-300">
-
-              <!-- ✅ 서브카테고리 태그 (마커 + 텍스트) -->
+            <div 
+              v-for="(festival, index) in paginatedFestivals"
+              :key="index"
+              class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer"
+              @click="goToDetail(festival.content_id)"
+            >
               <p class="text-sm text-mono-600 flex items-center mb-4">
                 <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>{{ getCategoryName(festival.category3) }}
               </p>
-
-              <!-- ✅ 이미지 -->
               <img :src="festival.homepage || '/images/default-image.jpg'" class="h-[340px] w-full object-cover rounded-lg" />
-
-              <!-- ✅ 텍스트 정보 -->
               <div class="mt-4">
                 <p class="font-bold text-mono-900">{{ festival.name }}</p>
                 <p class="text-mono-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[90%]">
                   {{ festival.overview.split('.')[0] }}.
                 </p>
-
               </div>
-              <!-- ✅ 행사 기간 별도 박스 -->
               <div class="mt-4 text-[12px] text-mono-600">
                 {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}
                 <br />
@@ -291,6 +348,7 @@ onMounted(fetchFestivals);
               </div>
             </div>
           </div>
+
           <PaginationComponent
             :totalPages="totalPages"
             :currentPage="currentPage"

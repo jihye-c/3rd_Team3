@@ -1,7 +1,8 @@
 <script setup lang="ts">
   import {useUserStore} from '@/stores/userStore';
   import type {MapData} from '@/types/kakao';
-  import {onMounted, defineModel, ref, nextTick} from 'vue';
+  import {onMounted, ref, nextTick} from 'vue';
+  const kakaoKey = import.meta.env.VITE_KAKAO_JS_KEY;
 
   //lat은 위도 (latitude), lng은 경도 (longtitude)
   const mapData = defineModel<MapData>('mapData', {
@@ -42,7 +43,7 @@
 
   const loadScript = () => {
     const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=a2c050fda93b27dcfcc9c1f03048fb11&autoload=false`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false`;
     script.onload = () => {
       window.kakao.maps.load(loadMap);
     };

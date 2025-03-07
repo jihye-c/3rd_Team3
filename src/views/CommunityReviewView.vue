@@ -3,40 +3,47 @@
   import CommunityPostList from '@/components/community/CommunityPostList.vue';
   import OrderRadioButton from '@/components/community/OrderRadioButton.vue';
   import SearchBar from '@/components/community/SearchBar.vue';
-  import {ref} from 'vue';
+  import {REVIEW_CHANNEL_ID} from '@/constants/channelId';
+  import type {Post} from '@/types/PostResponse';
+  import {programmersApiInstance} from '@/utils/axiosInstance';
+  import {ref, watch} from 'vue';
+  import {useRoute, useRouter} from 'vue-router';
 
   // 더미 데이터
-  const postList = [
-    {
-      image: '/recipe/recipe_popular2.webp',
-      title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
-      content:
-        '자취를 시작하고 나서 주말마다 너무 심심해요. 친구들이랑 시간을 보내기도 어렵고, 혼자서 뭔가 하려니 마땅한 게 없네요. 혼자서도 부담 없이 즐길 수 있는 문화생활이 뭐가 있을까요? 근처에서 열리는 전시회나 소극장 공연, 영화관 외에도 특별한 활동이 있으면 추천 부탁드려요.',
-      dong: '신림동',
-      tags: ['문화생활', '취미'],
-      bookmarks: 5,
-      comments: 4,
-    },
-    {
-      image: '/recipe/recipe_popular3.webp',
-      title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
-      content:
-        '자취를 시작하고 나서 주말마다 너무 심심해요. 친구들이랑 시간을 보내기도 어렵고, 혼자서 뭔가 하려니 마땅한 게 없네요. 혼자서도 부담 없이 즐길 수 있는 문화생활이 뭐가 있을까요? 근처에서 열리는 전시회나 소극장 공연, 영화관 외에도 특별한 활동이 있으면 추천 부탁드려요.',
-      dong: '신림동',
-      tags: ['문화생활', '취미', '여가'],
-      bookmarks: 5,
-      comments: 4,
-    },
-    {
-      title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
-      content:
-        '자취를 시작하고 나서 주말마다 너무 심심해요. 친구들이랑 시간을 보내기도 어렵고, 혼자서 뭔가 하려니 마땅한 게 없네요. 혼자서도 부담 없이 즐길 수 있는 문화생활이 뭐가 있을까요? 근처에서 열리는 전시회나 소극장 공연, 영화관 외에도 특별한 활동이 있으면 추천 부탁드려요.',
-      dong: '신림동',
-      tags: ['문화생활', '취미', '여가'],
-      bookmarks: 5,
-      comments: 4,
-    },
-  ];
+  // const postList = [
+  //   {
+  //     image: '/recipe/recipe_popular2.webp',
+  //     title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
+  //     content:
+  //       '자취를 시작하고 나서 주말마다 너무 심심해요. 친구들이랑 시간을 보내기도 어렵고, 혼자서 뭔가 하려니 마땅한 게 없네요. 혼자서도 부담 없이 즐길 수 있는 문화생활이 뭐가 있을까요? 근처에서 열리는 전시회나 소극장 공연, 영화관 외에도 특별한 활동이 있으면 추천 부탁드려요.',
+  //     dong: '신림동',
+  //     tags: ['문화생활', '취미'],
+  //     bookmarks: 5,
+  //     comments: 4,
+  //   },
+  //   {
+  //     image: '/recipe/recipe_popular3.webp',
+  //     title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
+  //     content:
+  //       '자취를 시작하고 나서 주말마다 너무 심심해요. 친구들이랑 시간을 보내기도 어렵고, 혼자서 뭔가 하려니 마땅한 게 없네요. 혼자서도 부담 없이 즐길 수 있는 문화생활이 뭐가 있을까요? 근처에서 열리는 전시회나 소극장 공연, 영화관 외에도 특별한 활동이 있으면 추천 부탁드려요.',
+  //     dong: '신림동',
+  //     tags: ['문화생활', '취미', '여가'],
+  //     bookmarks: 5,
+  //     comments: 4,
+  //   },
+  //   {
+  //     title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
+  //     content:
+  //       '자취를 시작하고 나서 주말마다 너무 심심해요. 친구들이랑 시간을 보내기도 어렵고, 혼자서 뭔가 하려니 마땅한 게 없네요. 혼자서도 부담 없이 즐길 수 있는 문화생활이 뭐가 있을까요? 근처에서 열리는 전시회나 소극장 공연, 영화관 외에도 특별한 활동이 있으면 추천 부탁드려요.',
+  //     dong: '신림동',
+  //     tags: ['문화생활', '취미', '여가'],
+  //     bookmarks: 5,
+  //     comments: 4,
+  //   },
+  // ];
+
+  const route = useRoute();
+  const router = useRouter();
 
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
@@ -44,6 +51,28 @@
   const searchQuery = ref('');
   // 정렬기준
   const selectedOrder = ref('recent');
+
+  const postList = ref<Post[]>([]);
+  const isLoading = ref<boolean>(false);
+
+  watch(
+    () => JSON.stringify(route.query),
+    async (newQuery, oldQuery) => {
+      try {
+        isLoading.value = true;
+        const response = await programmersApiInstance.get<Post[]>(
+          `/posts/channel/${REVIEW_CHANNEL_ID}`,
+        );
+        postList.value = response.data;
+        console.log(JSON.parse(response.data[0].title).title);
+      } catch (error) {
+        console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
+      } finally {
+        isLoading.value = false;
+      }
+    },
+    {immediate: true},
+  );
 </script>
 
 <template>
@@ -90,19 +119,21 @@
           <OrderRadioButton v-model="selectedOrder" value="popular" label="인기순" />
         </div>
         <!-- 글작성 버튼 -->
-        <v-btn variant="flat" class="write">글작성</v-btn>
+        <v-btn variant="flat" class="write" @click="() => router.push('/community/create/review')"
+          >글작성</v-btn
+        >
       </div>
 
       <!-- 리스트 -->
       <div class="flex flex-col gap-[28px] pt-[28px] pb-[100px] leading-[32px]">
         <template v-for="item in postList">
           <CommunityPostList
-            :title="item.title"
-            :content="item.content"
-            :dong="item.dong"
-            :tags="item.tags"
-            :bookmarks="item.bookmarks"
-            :comments="item.comments"
+            :title="JSON.parse(item.title).title"
+            :content="JSON.parse(item.title).content"
+            :dong="JSON.parse(item.title).region"
+            :tags="JSON.parse(item.title).tags"
+            :bookmarks="item.likes.length"
+            :comments="item.comments.length"
             :image="item.image"
           />
         </template>

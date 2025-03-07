@@ -1,13 +1,47 @@
 <script setup lang="ts">
-  import {ref} from 'vue';
+  import {ref, watch} from 'vue';
   import type {Symptoms} from '@/types/hospitalType.ts';
   import symptomsData from '@/assets/data/symptoms.json';
-  const symptoms: Symptoms[] = symptomsData as Symptoms[];
+  import {useRoute, useRouter} from 'vue-router';
 
+  const props = defineProps({
+    isSymptomButtonShow: Boolean,
+  });
+
+  const router = useRouter();
+  const route = useRoute();
+
+  const symptoms: Symptoms[] = symptomsData as Symptoms[];
   const checkedSymptoms = ref([]);
   const handleChange = () => {
-    console.log(checkedSymptoms.value);
+    if(checkedSymptoms.value.length){
+      const query = {...route.query, sym: checkedSymptoms.value};
+      router.push({path: route.path, query});
+    }else{
+      router.push({
+          query: (() => {
+            const newQuery = {...route.query};
+            delete newQuery.sym;
+            return newQuery;
+          })(),
+        });
+    }
   };
+  watch(
+    () => props.isSymptomButtonShow,
+    (newVal) => {
+      if (!newVal) {
+        checkedSymptoms.value = [];
+        router.push({
+          query: (() => {
+            const newQuery = {...route.query};
+            delete newQuery.sym;
+            return newQuery;
+          })(),
+        });
+      }
+    },
+  );
 </script>
 
 <template>
@@ -17,7 +51,7 @@
         type="checkbox"
         class="hidden"
         :id="'checkbox-' + item.id"
-        :value="item.name"
+        :value="item.id"
         v-model="checkedSymptoms"
         @change="handleChange"
       />
