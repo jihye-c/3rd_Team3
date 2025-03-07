@@ -84,7 +84,7 @@
   <div class="flex flex-col gap-[100px] pb-[100px]">
     <!-- 배너 -->
     <BannerComponent
-      background="/recipe/recipe_search_banner.webp"
+      background="/images/recipe/recipe_search_banner.webp"
       title="레시피 상세"
       subtitle="간편하게 따라하는 오늘의 한끼"
       :breadcrumbs="[

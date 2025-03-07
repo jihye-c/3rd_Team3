@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import {useUserStore} from '@/stores/userStore';
   import type {MapData} from '@/types/kakao';
-  import {onMounted, ref, nextTick} from 'vue';
+  import {onMounted, ref, nextTick, watch, watchEffect} from 'vue';
   const kakaoKey = import.meta.env.VITE_KAKAO_JS_KEY;
 
   //lat은 위도 (latitude), lng은 경도 (longtitude)
@@ -33,12 +33,7 @@
     level: 3,
   });
   const props = defineProps<{
-    loadHospital: (
-      mapData: MapData,
-      page: number, //1부터 시작
-      hospitalType?: string[],
-      symptomsQuery?: string[],
-    ) => void;
+    loadHospital: () => void;
   }>();
 
   const loadScript = () => {
@@ -64,9 +59,6 @@
         };
         map.value = new window.kakao.maps.Map(container, options); // 지도 생성
         changeMapData(map.value);
-        nextTick(() => {
-          props.loadHospital(mapData.value, 1);
-        });
         container.addEventListener('mousedown', () => {
           prevMapData.value = mapData.value;
         });
@@ -109,18 +101,25 @@
   onMounted(() => {
     if (!window.kakao) {
       loadScript();
+      props.loadHospital();
     } else {
       loadMap();
     }
   });
   const listLoad = () => {
     loading.value = true;
-    props.loadHospital(mapData.value, 1);
+    props.loadHospital();
     setTimeout(() => {
       loading.value = false;
       isMapChange.value = false;
     }, 800);
   };
+  watchEffect(()=>{
+    if (map.value && mapData.value) {
+        map.value.setCenter(new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng));
+      }
+  }
+  );
 </script>
 
 <template v-slot:actions>
