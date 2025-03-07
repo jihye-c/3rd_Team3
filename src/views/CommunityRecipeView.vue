@@ -99,6 +99,12 @@
             :image="item.image"
             :title="JSON.parse(item.title).title"
             :tags="JSON.parse(item.title).tags"
+            @click="
+              router.push({
+                name: 'community-post-detail',
+                params: {type: 'recipe', id: item._id},
+              })
+            "
           />
         </template>
       </div>
