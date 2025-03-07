@@ -201,7 +201,7 @@
         </svg>
         <div class="flex-1 text-main-500 flex flex-col justify-center text-right">
           <div class="font-bold text-5xl mb-2">자취생들의 청약 고민이 궁금하다면?</div>
-          <RouterLink to="/community" class="flex items-center justify-end mt-2">
+          <RouterLink to="/community/question" class="flex items-center justify-end mt-2">
             <div class="text-2xl">질문 커뮤니티 바로가기</div>
             <svg
               class="ml-2"
