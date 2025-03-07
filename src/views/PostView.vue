@@ -124,7 +124,7 @@
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center pt-40 pb-12">
+  <div id="communityCreateContent" class="w-full flex flex-col items-center pt-40 pb-12">
     <!-- 페이지 제목 -->
     <h1 class="text-[48px] font-medium text-mono-900">글 작성하기</h1>
     <form class="w-full flex flex-col items-center" @submit.prevent="handleSubmit">

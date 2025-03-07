@@ -172,6 +172,11 @@ import { getUserInfo } from '@/apis/auth';
     color: var(--color-mono-900);
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
   }
+  #app:has(#communityCreateContent) header {
+    background: white !important;
+    color: var(--color-mono-900);
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
+  }
   header :deep(.v-field__outline) {
     display: none;
   }
