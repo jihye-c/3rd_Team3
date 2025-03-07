@@ -7,6 +7,7 @@ import PaginationComponent from '@/components/PaginationComponent.vue';
 import { useUserStore } from '@/stores/userStore';
 import { useRouter } from 'vue-router';
 import { useCultureStore } from "../stores/cultureStore";
+import { getUserScrapList } from "@/apis/userService"; // ✅ 유저별 스크랩 목록 불러오기 함수 추가
 
 const router = useRouter();
 const cultureStore = useCultureStore();
@@ -202,25 +203,39 @@ const paginatedRecipes = computed(() => {
   return recipeList.slice(start, start + itemsPerPage);
 });
 const totalCulturePages = computed(() => {
-  return Math.ceil(cultureStore.bookmarkedFestivals.length / itemsPerPage);
+  console.log("📝 현재 스크랩된 문화생활 개수:", cultureStore.bookmarkedFestivals?.length);
+  return Math.ceil((cultureStore.bookmarkedFestivals?.length || 0) / itemsPerPage);
 });
 const paginatedFestivals = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
-  return cultureStore.bookmarkedFestivals.slice(start, start + itemsPerPage);
+  return (cultureStore.bookmarkedFestivals ?? []).slice(start, start + itemsPerPage);
 });
+
 
 const totalPages = computed(() => Math.ceil(recipeList.length / itemsPerPage));
 
 const handlePageChange = (page: number) => {
+  console.log("📌 페이지 변경 요청:", page);
   currentPage.value = page;
+  console.log("✅ 변경된 현재 페이지:", currentPage.value);
 };
 
-onMounted( async()=>{
-  const id = localStorage.getItem('userId');
-  await userStore.getUser(id)
-  userInfo.value = userStore.userInfo
-  console.log(userInfo.value)
-})
+
+onMounted(async () => {
+  const id = localStorage.getItem("userId");
+  if (id) {
+    await userStore.getUser(id);
+    userInfo.value = { ...userStore.userInfo };
+    console.log("✅ 유저 정보 불러오기 완료:", userInfo.value);
+
+    // ✅ 유저별 스크랩 목록 가져오기
+    const scrapList = await getUserScrapList(id);
+    cultureStore.bookmarkedFestivals = scrapList;
+    console.log("✅ [유저별] 북마크 불러오기 완료:", cultureStore.bookmarkedFestivals);
+  }
+});
+
+
 </script>
 
 
@@ -336,7 +351,6 @@ onMounted( async()=>{
               :tag="recipe.tag"
             />
           </div>
-
           <div class="mt-6">
             <!-- ✅ 문화생활 탭 추가 -->
             <div v-if="selectedTab === '문화생활'" class="grid grid-cols-3 gap-4 w-full">
@@ -350,15 +364,13 @@ onMounted( async()=>{
                   <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>{{ getCategoryName(festival.category3) }}
                 </p>
                 <img 
-                  :src="festival.homepage.startsWith('http') ? festival.homepage : '/images/default-image.jpg'" 
+                  :src="festival.homepage && typeof festival.homepage === 'string' && festival.homepage.startsWith('http') 
+                          ? festival.homepage 
+                          : '/images/default-image.jpg'" 
                   class="h-[340px] w-full object-cover rounded-lg"
                 />
-
                 <div class="mt-4">
                   <p class="font-bold text-mono-900">{{ festival.name }}</p>
-                  <p class="text-mono-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[90%]">
-                    {{ festival.overview.split('.')[0] }}.
-                  </p>
                 </div>
                 <div class="mt-4 text-[12px] text-mono-600">
                   {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}
@@ -368,8 +380,6 @@ onMounted( async()=>{
               </div>
             </div>
           </div>
-
-
           <!-- 페이지네이션 추가 -->
           <PaginationComponent 
             :totalPages="totalCulturePages" 

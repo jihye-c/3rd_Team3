@@ -4,6 +4,7 @@
   import RecipeCard from '@/components/community/RecipeCard.vue';
   import SearchBar from '@/components/community/SearchBar.vue';
   import {RECIPE_CHANNEL_ID} from '@/constants/channelId';
+  import {useAuthStore} from '@/stores/auth';
   import type {Post} from '@/types/PostResponse';
   import {programmersApiInstance} from '@/utils/axiosInstance';
   import {ref, watch} from 'vue';
@@ -11,6 +12,7 @@
 
   const route = useRoute();
   const router = useRouter();
+  const authStore = useAuthStore();
 
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
@@ -49,7 +51,7 @@
       background="#f89a00"
       title="나만의 레시피"
       subtitle="이웃과 함께 나누는 나만의 레시피 이야기"
-      :breadcrumbs="[{title: '홈', href: '/'}, {title: '커뮤니티'}, {title: '레시피'}]"
+      :breadcrumbs="[{title: '홈', href: '/'}, {title: '커뮤니티'}, {title: '나만의 레시피'}]"
       ><img
         src="/images/community/community_recipe_illustration.svg"
         alt="illustration"
@@ -86,7 +88,11 @@
           <OrderRadioButton v-model="selectedOrder" value="popular" label="인기순" />
         </div>
         <!-- 글작성 버튼 -->
-        <v-btn variant="flat" class="write" @click="() => router.push('/community/create/recipe')"
+        <v-btn
+          v-if="authStore.isAuthenticated"
+          variant="flat"
+          class="write"
+          @click="() => router.push('/community/create/recipe')"
           >글작성</v-btn
         >
       </div>
