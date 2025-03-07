@@ -33,12 +33,7 @@
     level: 3,
   });
   const props = defineProps<{
-    loadHospital: (
-      mapData: MapData,
-      page: number, //1부터 시작
-      hospitalType?: string[],
-      symptomsQuery?: string[],
-    ) => void;
+    loadHospital:() => void;
   }>();
 
   const loadScript = () => {
@@ -64,9 +59,6 @@
         };
         map.value = new window.kakao.maps.Map(container, options); // 지도 생성
         changeMapData(map.value);
-        nextTick(() => {
-          props.loadHospital(mapData.value, 1);
-        });
         container.addEventListener('mousedown', () => {
           prevMapData.value = mapData.value;
         });
@@ -109,13 +101,14 @@
   onMounted(() => {
     if (!window.kakao) {
       loadScript();
-    } else {
+      props.loadHospital();
+          } else {
       loadMap();
     }
   });
   const listLoad = () => {
     loading.value = true;
-    props.loadHospital(mapData.value, 1);
+    props.loadHospital();
     setTimeout(() => {
       loading.value = false;
       isMapChange.value = false;

@@ -157,18 +157,6 @@
   const selectedHospitalType = ref('clinic'); // 선택된 병원 종류, default 의원
 
   const loadHospital = async () => {
-    ////개발용 세팅
-    // mapData.value = {
-    //   bounds: {
-    //     bottom: 37.51254184968482,
-    //     left: 127.04358072020108,
-    //     right: 127.05100697248893,
-    //     top: 37.52184624143815,
-    //   },
-    //   lng: 127.04729361574341,
-    //   lat: 37.51719410591982,
-    //   level: 3,
-    // };
     const nowHospital = hospitalIcons.find((type) => type.id === route.query.type);
     let nowSymtoms: string[] = [];
     if (route.query.sym && route.query.sym?.length > 0) {
@@ -184,11 +172,9 @@
       hospitalList.value = res;
     }
   };
-  //카카오맵 끄고 개발용
-  // onMounted(() => {
-  //   router.push({path:route.path, query:{type:'clinic'}})
-  //   loadHospital();
-  // });
+  onMounted(() => {
+    router.push({path:route.path, query:{type:'clinic'}})
+  });
   watch(
     () => route.query,
     () => {
