@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import {ref, computed, onMounted, watchEffect} from 'vue';
+  import {ref, computed, watchEffect} from 'vue';
   import RecipeCard from '@/components/community/RecipeCard.vue';
   import ResaleCard from '@/components/community/ResaleCard.vue';
   import CommunityPostList from '@/components/community/CommunityPostList.vue';
@@ -18,6 +18,7 @@
   const userFollowerInfo = ref();
   const userFollowingInfo = ref();
   const defaultImage = '/images/mypage/mypage_default_img.png';
+
   const id = localStorage.getItem('userId');
   const routeId =  route.params.id
   const bio = ref(
@@ -31,6 +32,23 @@
   const selectedTab = ref('동네리뷰'); // 기본 탭
   const currentPage = ref(1);
   const itemsPerPage = 12;
+
+  const subCategories = [
+  { name: "문화관광축제", code: "A02070100" },
+  { name: "일반축제", code: "A02070200" },
+  { name: "전통공연", code: "A02080100" },
+  { name: "연극", code: "A02080200" },
+  { name: "뮤지컬", code: "A02080300" },
+  { name: "오페라", code: "A02080400" },
+  { name: "전시회", code: "A02080500" },
+  { name: "박람회", code: "A02080600" },
+  { name: "무용", code: "A02080800" },
+  { name: "클래식음악회", code: "A02080900" },
+  { name: "대중콘서트", code: "A02081000" },
+  { name: "영화", code: "A02081100" },
+  { name: "스포츠경기", code: "A02081200" },
+  { name: "기타행사", code: "A02081300" },
+];
 
   // 🔹 동네 리뷰 게시글 데이터
   const communityPostList = ref([
@@ -177,7 +195,17 @@
       tag: '퓨전',
     },
   ];
-
+  const goToCultureDetail = (contentId) => {
+  router.push(`/culture/${contentId}`);
+};
+const formatDate = (dateString: string) => {
+  if (!dateString || dateString.length !== 8) return "날짜 미정"; // 예외 처리
+  return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
+};
+  const getCategoryName = (code: string) => {
+  const category = subCategories.find((sub) => sub.code === code);
+  return category ? category.name : "기타";
+};
   // 현재 페이지에 맞게 데이터 필터링
   const paginatedRecipes = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
@@ -276,21 +304,21 @@
 
       <!-- 나의 스크랩 -->
       <div class="mt-12">
-        <h2 v-if="routeId === id" class="text-[32px] font-semibold text-mono-900">나의 스크랩</h2>
-        <h2 v-else class="text-[32px] font-semibold text-mono-900">작성 게시물</h2>
-        <!-- 탭 -->
-        <div class="flex border-b border-mono-200 mt-6">
-          <button
-            v-for="tab in ['동네리뷰', '중고거래', '질문게시판', '나만의 레시피']"
-            :key="tab"
-            @click="selectedTab = tab"
-            class="px-6 py-3 text-[20px] font-medium text-mono-600 transition-colors duration-200"
-            :class="selectedTab === tab ? 'border-b-4 border-main-400 text-mono-900' : ''"
-          >
-            {{ tab }}
-          </button>
-        </div>
 
+        <h2 class="text-[32px] font-semibold text-mono-900">나의 스크랩</h2>
+
+      <!-- 기존 탭 -->
+      <div class="flex border-b border-mono-200 mt-6">
+        <button
+          v-for="tab in ['동네리뷰', '중고거래', '질문게시판', '나만의 레시피', '문화생활']"
+          :key="tab"
+          @click="selectedTab = tab"
+          class="px-6 py-3 text-[20px] font-medium text-mono-600 transition-colors duration-200"
+          :class="selectedTab === tab ? 'border-b-4 border-main-400 text-mono-900' : ''"
+        >
+          {{ tab }}
+        </button>
+      </div>
         <!-- 탭 컨텐츠 -->
         <div class="mt-6">
           <!-- 동네 리뷰 탭 -->
@@ -344,6 +372,39 @@
               :tag="recipe.tag"
             />
           </div>
+
+          <div class="mt-6">
+            <!-- ✅ 문화생활 탭 추가 -->
+            <div v-if="selectedTab === '문화생활'" class="grid grid-cols-3 gap-4 w-full">
+              <div
+                v-for="(festival, index) in paginatedFestivals"
+                :key="index"
+                class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer"
+                @click="goToCultureDetail(festival.content_id)"
+              >
+                <p class="text-sm text-mono-600 flex items-center mb-4">
+                  <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>{{ getCategoryName(festival.category3) }}
+                </p>
+                <img
+                  :src="festival.homepage.startsWith('http') ? festival.homepage : '/images/default-image.jpg'"
+                  class="h-[340px] w-full object-cover rounded-lg"
+                />
+
+                <div class="mt-4">
+                  <p class="font-bold text-mono-900">{{ festival.name }}</p>
+                  <p class="text-mono-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[90%]">
+                    {{ festival.overview.split('.')[0] }}.
+                  </p>
+                </div>
+                <div class="mt-4 text-[12px] text-mono-600">
+                  {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}
+                  <br />
+                  {{ festival.gu_name }}
+                </div>
+              </div>
+            </div>
+          </div>
+
 
           <!-- 페이지네이션 추가 -->
           <PaginationComponent :totalPages="totalPages" @pageChange="handlePageChange" />

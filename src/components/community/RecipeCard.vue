@@ -14,7 +14,7 @@
   <div class="flex flex-col gap-4">
     <div class="flex gap-3">
       <v-avatar
-        :image="author.image ? author.image : 'https://placehold.co/30x30?text=자수성가'"
+        :image="author.image ? author.image : '/images/mypage/mypage_default_img.png'"
         size="30"
       ></v-avatar>
       <div class="text-[20px] text-mono-500">

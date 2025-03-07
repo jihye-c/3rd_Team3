@@ -9,12 +9,12 @@
   import {useRoute, useRouter} from 'vue-router';
 
   const categoryList = [
-    {id: 'rice', label: '밥', image: '/recipe/recipe_icon_rice.svg'},
-    {id: 'side', label: '반찬', image: '/recipe/recipe_icon_side.svg'},
-    {id: 'soup', label: '국', image: '/recipe/recipe_icon_soup.svg'},
-    {id: 'one_dish', label: '일품', image: '/recipe/recipe_icon_one_dish.svg'},
-    {id: 'dessert', label: '후식', image: '/recipe/recipe_icon_dessert.svg'},
-    {id: 'etc', label: '기타', image: '/recipe/recipe_icon_all.svg'},
+    {id: 'rice', label: '밥', image: '/images/recipe/recipe_icon_rice.svg'},
+    {id: 'side', label: '반찬', image: '/images/recipe/recipe_icon_side.svg'},
+    {id: 'soup', label: '국', image: '/images/recipe/recipe_icon_soup.svg'},
+    {id: 'one_dish', label: '일품', image: '/images/recipe/recipe_icon_one_dish.svg'},
+    {id: 'dessert', label: '후식', image: '/images/recipe/recipe_icon_dessert.svg'},
+    {id: 'etc', label: '기타', image: '/images/recipe/recipe_icon_all.svg'},
   ];
   const POSTS_PER_PAGE = 20;
 
@@ -135,7 +135,7 @@
 <template>
   <!-- 배너 -->
   <BannerComponent
-    background="/recipe/recipe_search_banner.webp"
+    background="/images/recipe/recipe_search_banner.webp"
     title="레시피 검색"
     subtitle="간편하게 따라하는 오늘의 한끼"
     :breadcrumbs="[

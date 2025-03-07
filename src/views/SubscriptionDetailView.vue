@@ -2,10 +2,11 @@
   import BannerComponent from '@/components/BannerComponent.vue';
   import BookmarkButton from '@/components/BookmarkButton.vue';
   import ShareButton from '@/components/ShareButton.vue';
-  import {AptInfo, HouseInfo} from '@/types/SubscriptionTypes';
-  import {getAptData, getHouseData} from '@/apis/SubscriptionApi';
+  import type {AptInfo, HouseInfo} from '@/types/SubscriptionTypes';
+  import {getAptData, getHouseData} from '@/apis/subscriptionApi';
   import {ref, onMounted} from 'vue';
   import {useRoute} from 'vue-router';
+  import SubscriptionMap from '@/components/Subscription/SubscriptionMap.vue';
 
   // 북마크 상태 관리
   const isBookmarked = ref(false);
@@ -19,7 +20,7 @@
 
   const loading = ref(true);
   const error = ref<string | null>(null);
-  const detailData = ref<AptInfo | HouseInfo | null>(null);
+  const detailData = ref<AptInfo & HouseInfo>();
 
   const fetchData = async () => {
     try {
@@ -159,7 +160,10 @@
             </div>
 
             <div class="flex gap-6 h-125 mb-15">
-              <div class="bg-mono-300 h-full w-197 rounded-2xl">지도</div>
+              <SubscriptionMap
+                class="h-full w-197 rounded-2xl"
+                :address="detailData.HSSPLY_ADRES"
+              />
               <div class="w-129">
                 <div class="bg-main-400 h-60 rounded-[12px] text-[#ffffff] mb-5">
                   <div class="font-semibold text-[32px] pt-5 pl-7">당첨자 발표일</div>
@@ -175,7 +179,10 @@
                 <div class="bg-main-400 h-60 rounded-[12px] text-[#ffffff]">
                   <div class="font-semibold text-[32px] pt-5 pl-7">경쟁률</div>
                   <div class="flex items-center justify-between pl-7">
-                    <div class="font-semibold text-[80px] pt-12">1230:1</div>
+                    <div class="font-semibold text-[80px] pt-12">
+                      <!-- 임시 -->
+                      {{ detailData.TOT_SUPLY_HSHLDCO * 15 }}:1
+                    </div>
                     <v-icon color="#ffffff" size="140px" class="opacity-30 pt-12"
                       >mdi-clover-outline</v-icon
                     >
@@ -193,16 +200,15 @@
                 class="min-h-350"
               ></iframe>
             </div>
-
-            <RouterLink
-              to="/subscription/calendar"
-              class="inline-flex items-center border-1 border-mono-900 px-7 py-[10px]"
-            >
-              <v-icon size="24px">mdi-chevron-left</v-icon>
-              <div class="text-xl">캘린더로</div>
-            </RouterLink>
           </div>
         </div>
+        <RouterLink
+          to="/subscription/calendar"
+          class="inline-flex items-center border-1 border-mono-900 px-7 py-[10px]"
+        >
+          <v-icon size="24px">mdi-chevron-left</v-icon>
+          <div class="text-xl">캘린더로</div>
+        </RouterLink>
       </section>
     </div>
   </div>
