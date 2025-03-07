@@ -1,12 +1,12 @@
 <script setup lang="ts">
   import {ref, onMounted} from 'vue';
-  import {useRoute} from 'vue-router';
+  import {useRoute, useRouter} from 'vue-router';
+  import {useAuthStore} from '@/stores/auth';
+  import {useCommentStore} from '@/stores/commentStore';
   import axios from 'axios';
   import BannerComponent from '@/components/BannerComponent.vue';
   import BookmarkButton from '@/components/BookmarkButton.vue';
   import ShareButton from '@/components/ShareButton.vue';
-
-  // Swiper 관련 라이브러리
   import {Swiper, SwiperSlide} from 'swiper/vue';
   import 'swiper/css';
   import 'swiper/css/navigation';
@@ -14,35 +14,59 @@
 
   const modules = [FreeMode, Navigation];
   const currentRoute = useRoute();
+  const router = useRouter();
+  const authStore = useAuthStore();
+  const commentStore = useCommentStore();
 
-  // API에서 가져온 데이터 저장
-  const postData = ref({
+  interface PostData {
+    title: string;
+    date: string;
+    images: string[];
+  }
+
+  const postData = ref<PostData>({
     title: '',
     date: '',
     images: [],
   });
 
-  // 북마크 상태 관리
   const isBookmarked = ref(false);
+  const comment = ref('');
+
   const toggleBookmark = () => {
     isBookmarked.value = !isBookmarked.value;
   };
 
-  // 댓글 관리
-  const comment = ref('');
-  const submitComment = () => {
-    alert('작성된 댓글: ' + comment.value);
-    comment.value = '';
+  const submitComment = async () => {
+    if (!authStore.isAuthenticated) {
+      alert('로그인이 필요합니다.');
+      router.push('/auth');
+      return;
+    }
+
+    try {
+      await commentStore.addComment(comment.value, currentRoute.params.id as string);
+      comment.value = '';
+    } catch (error) {
+      console.error('Failed to submit comment:', error);
+    }
   };
 
-  // API에서 특정 게시글 데이터 가져오기
+  const parseNickname = (fullName: string) => {
+    try {
+      const parsed = JSON.parse(fullName);
+      return parsed.nickname || '';
+    } catch (error) {
+      console.error('Failed to parse fullName:', error);
+      return fullName;
+    }
+  };
+
   const fetchPostDetail = async () => {
     try {
       const postId = currentRoute.params.id;
       const response = await axios.get(`http://13.125.143.126:5003/posts/${postId}`);
       const post = response.data;
-
-      // title 필드 JSON 파싱
       const parsedTitle = JSON.parse(post.title);
       postData.value = {
         title: parsedTitle.title,
@@ -53,6 +77,7 @@
         }),
         images: parsedTitle.images || [],
       };
+      await commentStore.fetchComments(postId as string);
     } catch (error) {
       console.error('게시글 데이터 불러오기 실패:', error);
     }
@@ -77,7 +102,6 @@
   <div class="my-20">
     <div class="container flex gap-55">
       <div class="border-mono-200 w-[52px] h-[104px] flex flex-col gap-[12px]">
-        <!-- 스크랩, 공유 버튼 -->
         <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
         <ShareButton />
       </div>
@@ -93,7 +117,6 @@
         <div class="font-bold text-5xl mb-2">{{ postData.title }}</div>
         <div class="text-mono-500">{{ postData.date }}</div>
 
-        <!-- Swiper에 API에서 가져온 이미지 적용 -->
         <div class="border-y-1 border-mono-200 mt-10 mb-6 py-12">
           <Swiper
             :modules="modules"
@@ -110,32 +133,52 @@
 
         <div class="flex font-medium text-[32px] pt-6 mt-6 mb-8">
           <div class="mr-4">댓글</div>
-          <div class="text-main-400">N</div>
+          <div class="text-main-400">{{ commentStore.comments.length }}</div>
           <div>개</div>
         </div>
 
-        <div class="flex flex-col gap-6 py-4 border-b-1 border-mono-200 text-mono-500">
+        <div
+          v-for="(comment, index) in commentStore.comments"
+          :key="index"
+          class="flex flex-col gap-6 py-4 border-b-1 border-mono-200 text-mono-500"
+        >
           <div class="flex items-center">
             <v-avatar
               size="24px"
               image="https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201608/04/htm_2016080484837486184.jpg"
               class="mr-2"
             ></v-avatar>
-            <div class="text-lg">닉네임</div>
+            <div class="text-lg">{{ parseNickname(comment.author.fullName) }}</div>
           </div>
+          <div>{{ comment.comment }}</div>
           <div>
-            정말로 심금을 울리는 입숨로렘이었습니다. 정말로 심금을 울리는 입숨로렘이었습니다. 정말로
-            심금을 울리는 입숨로렘이었습니다. 정말로 심금을 울리는 입숨로렘이었습니다.
+            {{
+              new Date(comment.createdAt).toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            }}
           </div>
-          <div>2025.02</div>
         </div>
 
         <div class="my-12 min-h-43 border-1 border-mono-200 rounded-lg">
           <textarea
+            v-if="authStore.isAuthenticated"
             v-model="comment"
             class="min-h-22 w-256 my-4 mx-7"
             placeholder="댓글을 작성해보세요!"
           ></textarea>
+          <div
+            v-else
+            class="min-h-22 w-256 my-4 mx-7 cursor-pointer text-mono-500"
+            @click="router.push('/auth')"
+          >
+            <div class="flex">
+              <div class="font-bold text-main-400">로그인 후&nbsp;</div>
+              <div>댓글을 작성해보세요!</div>
+            </div>
+          </div>
           <div class="h-13 border-t-1 border-mono-200 flex items-center justify-end">
             <button
               @click="submitComment"
