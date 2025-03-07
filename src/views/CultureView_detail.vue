@@ -1,26 +1,19 @@
 <script setup lang="ts">
-<<<<<<< HEAD
+  
+import CultureAPI from "@/apis/cultureApi";
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useCultureStore } from "../stores/cultureStore";
-=======
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
->>>>>>> main
-import CultureAPI from "@/apis/cultureApi";
-
+import BookmarkButton from '@/components/BookmarkButton.vue';
+import ShareButton from '@/components/ShareButton.vue';
+  
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import KakaoMap_festival from "@/components/KakaoMap_festival.vue";
-<<<<<<< HEAD
-import BookmarkButton from '@/components/BookmarkButton.vue';
-import ShareButton from '@/components/ShareButton.vue';
-=======
->>>>>>> main
-
+  
 const router = useRouter();
 const route = useRoute();
 const festivalId = ref(route.params.id);
