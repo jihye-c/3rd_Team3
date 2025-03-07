@@ -47,7 +47,7 @@
                 >자수성가</RouterLink
               >
             </h1>
-            <div class="text-xl font-semibold cursor-pointer  bg flex items-center">
+            <div class="text-xl font-semibold cursor-pointer bg flex items-center">
               <RouterLink
                 v-for="(link, index) in links"
                 :key="index"
@@ -56,35 +56,39 @@
               >
                 {{ link.label }}
               </RouterLink>
-              <RouterLink class="group/item relative px-6" to="/community/resale"
-                >커뮤니티
+              <div class="group/item relative px-6" to="/community/resale">
+                커뮤니티
                 <div class="absolute w-full pt-6 left-0 top-7">
                   <ul
                     class="group/edit hidden bg-[#fff] text-mono-700 w-full group-hover/item:flex flex-col items-center justify-center gap-3 text-sm bg-white shadow-sm hover:flex"
                   >
-                    <li
+                    <RouterLink
+                      to="/community/question"
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      <RouterLink to="/community/question">질문 게시판</RouterLink>
-                    </li>
-                    <li
+                      질문 게시판
+                    </RouterLink>
+                    <RouterLink
+                      to="/community/review"
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      <RouterLink to="/community/review">동네리뷰</RouterLink>
-                    </li>
-                    <li
+                      동네리뷰
+                    </RouterLink>
+                    <RouterLink
+                      to="/community/resale"
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      <RouterLink to="/community/resale">중고거래</RouterLink>
-                    </li>
-                    <li
+                      중고거래
+                    </RouterLink>
+                    <RouterLink
+                      to="/community/recipe"
                       class="w-full px-3 py-3 text-center hover:bg-main-400 transition-all duration-300 hover:text-main-50"
                     >
-                      <RouterLink to="/community/recipe">나만의 레시피</RouterLink>
-                    </li>
+                      나만의 레시피
+                    </RouterLink>
                   </ul>
                 </div>
-              </RouterLink>
+              </div>
             </div>
           </div>
           <div class="flex items-center">
@@ -148,7 +152,7 @@
   #app:has(#hospitalContent) header {
     background: white !important;
     color: var(--color-mono-900);
-    box-shadow: 0px 2px 8px rgba(0,0,0,.08);
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
   }
   header :deep(.v-field__outline) {
     display: none;

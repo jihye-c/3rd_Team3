@@ -5,7 +5,41 @@ import ResaleCard from '@/components/community/ResaleCard.vue';
 import CommunityPostList from '@/components/community/CommunityPostList.vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import { useUserStore } from '@/stores/userStore';
+import { useRouter } from 'vue-router';
+import { useCultureStore } from "../stores/cultureStore";
 
+const router = useRouter();
+const cultureStore = useCultureStore();
+
+const goToCultureDetail = (contentId) => {
+  router.push(`/culture/${contentId}`);
+};
+const formatDate = (dateString: string) => {
+  if (!dateString || dateString.length !== 8) return "날짜 미정"; // 예외 처리
+  return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
+};
+// ✅ 카테고리 코드 → 한글명 변환
+const subCategories = [
+  { name: "문화관광축제", code: "A02070100" },
+  { name: "일반축제", code: "A02070200" },
+  { name: "전통공연", code: "A02080100" },
+  { name: "연극", code: "A02080200" },
+  { name: "뮤지컬", code: "A02080300" },
+  { name: "오페라", code: "A02080400" },
+  { name: "전시회", code: "A02080500" },
+  { name: "박람회", code: "A02080600" },
+  { name: "무용", code: "A02080800" },
+  { name: "클래식음악회", code: "A02080900" },
+  { name: "대중콘서트", code: "A02081000" },
+  { name: "영화", code: "A02081100" },
+  { name: "스포츠경기", code: "A02081200" },
+  { name: "기타행사", code: "A02081300" },
+];
+
+const getCategoryName = (code: string) => {
+  const category = subCategories.find((sub) => sub.code === code);
+  return category ? category.name : "기타";
+};
 const userStore = useUserStore()
 const userInfo = ref()
 const nickname = ref('도형');
@@ -140,10 +174,39 @@ const recipeList = [
   { name: '코코넛워터 토마토카레', image: '/recipe/recipe_popular3.webp', author: { profileImg: '/images/user3.png', name: '자취생C' }, tag: '퓨전' },
 ];
 
+const cultureList = ref([
+  {
+    title: '서울문화재단 - 예술인 지원 프로그램',
+    description: '서울에서 활동하는 예술인들을 위한 다양한 지원 프로그램!',
+    image: '/images/culture/culture_1.jpg',
+    link: '/culture/1',
+  },
+  {
+    title: '서울시립미술관 전시회 안내',
+    description: '서울시립미술관에서 열리는 다양한 전시회 정보를 확인해보세요.',
+    image: '/images/culture/culture_2.jpg',
+    link: '/culture/2',
+  },
+  {
+    title: '무료 클래식 콘서트',
+    description: '서울시 주최 무료 클래식 음악 콘서트 일정',
+    image: '/images/culture/culture_3.jpg',
+    link: '/culture/3',
+  },
+]);
+
+
 // 현재 페이지에 맞게 데이터 필터링
 const paginatedRecipes = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return recipeList.slice(start, start + itemsPerPage);
+});
+const totalCulturePages = computed(() => {
+  return Math.ceil(cultureStore.bookmarkedFestivals.length / itemsPerPage);
+});
+const paginatedFestivals = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return cultureStore.bookmarkedFestivals.slice(start, start + itemsPerPage);
 });
 
 const totalPages = computed(() => Math.ceil(recipeList.length / itemsPerPage));
@@ -207,18 +270,18 @@ onMounted( async()=>{
       <div class="mt-12">
         <h2 class="text-[32px] font-semibold text-mono-900">나의 스크랩</h2>
 
-        <!-- 탭 -->
-        <div class="flex border-b border-mono-200 mt-6">
-          <button
-            v-for="tab in ['동네리뷰', '중고거래', '질문게시판', '나만의 레시피']"
-            :key="tab"
-            @click="selectedTab = tab"
-            class="px-6 py-3 text-[20px] font-medium text-mono-600 transition-colors duration-200"
-            :class="selectedTab === tab ? 'border-b-4 border-main-400 text-mono-900' : ''"
-          >
-            {{ tab }}
-          </button>
-        </div>
+      <!-- 기존 탭 -->
+      <div class="flex border-b border-mono-200 mt-6">
+        <button
+          v-for="tab in ['동네리뷰', '중고거래', '질문게시판', '나만의 레시피', '문화생활']"
+          :key="tab"
+          @click="selectedTab = tab"
+          class="px-6 py-3 text-[20px] font-medium text-mono-600 transition-colors duration-200"
+          :class="selectedTab === tab ? 'border-b-4 border-main-400 text-mono-900' : ''"
+        >
+          {{ tab }}
+        </button>
+      </div>
 
         <!-- 탭 컨텐츠 -->
         <div class="mt-6">
@@ -274,8 +337,45 @@ onMounted( async()=>{
             />
           </div>
 
+          <div class="mt-6">
+            <!-- ✅ 문화생활 탭 추가 -->
+            <div v-if="selectedTab === '문화생활'" class="grid grid-cols-3 gap-4 w-full">
+              <div 
+                v-for="(festival, index) in paginatedFestivals" 
+                :key="index"
+                class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer"
+                @click="goToCultureDetail(festival.content_id)"
+              >
+                <p class="text-sm text-mono-600 flex items-center mb-4">
+                  <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>{{ getCategoryName(festival.category3) }}
+                </p>
+                <img 
+                  :src="festival.homepage.startsWith('http') ? festival.homepage : '/images/default-image.jpg'" 
+                  class="h-[340px] w-full object-cover rounded-lg"
+                />
+
+                <div class="mt-4">
+                  <p class="font-bold text-mono-900">{{ festival.name }}</p>
+                  <p class="text-mono-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[90%]">
+                    {{ festival.overview.split('.')[0] }}.
+                  </p>
+                </div>
+                <div class="mt-4 text-[12px] text-mono-600">
+                  {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}
+                  <br />
+                  {{ festival.gu_name }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+
           <!-- 페이지네이션 추가 -->
-          <PaginationComponent :totalPages="totalPages" @pageChange="handlePageChange" />
+          <PaginationComponent 
+            :totalPages="totalCulturePages" 
+            :currentPage="currentPage"
+            @pageChange="handlePageChange" 
+          />
         </div>
       </div>
     </div>

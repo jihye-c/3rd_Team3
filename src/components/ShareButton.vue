@@ -3,8 +3,14 @@
     (event: 'share'): void;
   }>();
 
-  const handleClick = () => {
-    emit('share');
+  const handleClick = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      alert('URL이 복사되었습니다!');
+      emit('share');
+    } catch (error) {
+      console.error('URL 복사 실패:', error);
+    }
   };
 </script>
 
