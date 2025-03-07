@@ -15,7 +15,6 @@ import ShareButton from '@/components/ShareButton.vue';
 
 import { getUserScrapList } from "@/apis/userService"; // ✅ 추가
 
-
 const router = useRouter();
 const route = useRoute();
 const festivalId = ref(route.params.id);
@@ -80,7 +79,6 @@ const toggleBookmark = async () => {
   }
 };
 
-
 // 서브카테고리 목록
 const subCategories = [
   { name: "문화관광축제", code: "A02070100" },
@@ -99,116 +97,6 @@ const subCategories = [
   { name: "기타행사", code: "A02081300" },
 ];
 
-// ✅ 서브카테고리 코드 → 한글 이름 변환 함수
-const getCategoryName = (code: string) => {
-  const category = subCategories.find((sub) => sub.code === code);
-  return category ? category.name : "기타"; // 코드 매칭 안되면 '기타'로 표시
-};
-
-
-
-const fetchFestivalDetails = async () => {
-  try {
-    // 행사 세부 데이터 가져오기
-    const festivalData = await CultureAPI.getEventDetail(festivalId.value);
-    if (!festivalData) {
-      console.error("❌ 행사 세부 정보가 없습니다.");
-      return;
-    }
-    // ✅ 좌표값 로그 확인
-    console.log("🌍 좌표값 확인:", festivalData.longitude, festivalData.latitude);
-
-    // ✅ festivalData에 값 설정 (좌표 값이 없으면 null 처리)
-    festivalDetail.value = {
-      ...festivalData,
-      longitude: festivalData.longitude || null,
-      latitude: festivalData.latitude || null,
-      address: festivalData.address || "주소 정보 없음",
-    };
-
-    // 카테고리명
-    categoryName.value = getCategoryName(festivalData.category3);
-
-    // 제목
-    title.value = festivalData.name;
-
-    // 행사 소개
-    const eventIntroData = await CultureAPI.getEventIntro(festivalId.value, festivalData.content_type_id);
-    eventIntro.value = {
-      event_start_date: eventIntroData?.event_start_date && eventIntroData.event_start_date.length === 8
-        ? eventIntroData.event_start_date
-        : "날짜 미정",
-      event_end_date: eventIntroData?.event_end_date && eventIntroData.event_end_date.length === 8
-        ? eventIntroData.event_end_date
-        : "날짜 미정",
-      event_intro: eventIntroData?.event_intro || "행사 소개가 없습니다."
-    };
-
-    // 행사 기간 (예: 2025.04.30 ~ 2025.05.06)
-    eventPeriod.value = `${formatDate(eventIntroData.event_start_date)} ~ ${formatDate(eventIntroData.event_end_date)}`;
-
-    // 행사 내용
-    const eventInfoData = await CultureAPI.getEventInfo(festivalId.value, festivalData.content_type_id);
-    if (eventInfoData && eventInfoData.length > 0) {
-      eventContent.value = eventInfoData.map((info) => {
-        if (info.field_category === "1") {
-          return { type: "내용", text: info.info_text };
-        } else if (info.field_category === "2") {
-          return { type: "소개", text: info.info_text };
-        }
-      });
-    } else {
-      eventContent.value = [{ type: "내용", text: "행사 내용이 없습니다." }];
-    }
-
-    // 행사 위치
-    location.value = festivalData.address || "주소 정보 없음";
-
-    // 운영 시간
-    playtime.value = eventIntroData.playtime || "운영시간 정보 없음";
-
-    // 후원자
-    sponsor1.value = eventIntroData.sponsor1 || "후원자 정보 없음";
-    sponsor2.value = eventIntroData.sponsor2 || "후원자 정보 없음";
-
-    // 전화번호
-    phoneNumber.value = festivalData.phone_number || "전화번호 정보 없음";
-
-    // 홈페이지 URL
-    website.value = festivalData.homepage || "홈페이지 정보 없음";
-
-    // 행사 이미지 가져오기
-    const images = await CultureAPI.getEventImages(festivalId.value);
-    if (images && Array.isArray(images)) {
-      festivalImages.value = images.map((item) => item.originimgurl || item.original_image_url || item.small_image_url);
-    }
-  } catch (error) {
-    console.error("❌ 행사 정보 가져오기 실패:", error);
-  }
-};
-
-// 날짜 포맷 함수
-const formatDate = (dateString: string) => {
-  if (!dateString || dateString.length !== 8) return "날짜 미정";
-  return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
-};
-
-// 줄바꿈 처리 함수
-const formatText = (text: string) => {
-  return text.replace(/\n/g, "<br>").replace(/\\n/g, "<br>");
-};
-
-// Website URL에서 불필요한 HTML 속성 제거 및 링크 변환
-const formatWebsiteLinks = (text: string) => {
-  const urlRegex = /<a\s+[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/g;
-  // 링크를 간단한 URL로 변환하여 표시
-  return text.replace(urlRegex, (match, url, innerText) => {
-    return `<a href="${url}" target="_blank" title="새창에서 열기">${innerText}</a>`;
-  });
-
-const goBack = () => {
-  router.back(); // ✅ 브라우저의 뒤로 가기 기능과 동일
-};
 // ✅ 북마크 목록을 불러오는 함수 추가
 const loadBookmarks = async () => {
   if (userId.value) {
@@ -356,6 +244,7 @@ onMounted(async () => {
     console.log('🔑 Kakao API Key:', import.meta.env.VITE_KAKAO_MAP_KEY); // ✅ API 키 출력 확인
     fetchFestivalDetails(); // ✅ 행사 정보 불러오기
   });
+
 </script>
 
 <template>
