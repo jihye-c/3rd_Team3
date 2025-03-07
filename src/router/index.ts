@@ -100,11 +100,6 @@ const router = createRouter({
       name: 'used-post-detail',
       component: () => import('@/views/UsedPostDetailView.vue'),
     },
-    // {
-    //   path: '/community/post',
-    //   name: 'posting',
-    //   component: () => import('@/views/PostView.vue'),
-    // },
     {
       path: '/community/create/:type',
       name: 'community-post-create',
@@ -136,6 +131,13 @@ const router = createRouter({
       component: AdminView,
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return {top: 0};
+    }
+  },
 });
 
 export default router;
