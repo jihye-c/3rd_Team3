@@ -4,6 +4,7 @@
   import BannerComponent from '@/components/BannerComponent.vue';
   import CommunityLinkBanner from '@/components/Subscription/CommunityLinkBanner.vue';
   import SubscriptionCard from '@/components/Subscription/NewsCardComponent.vue';
+  import OrderRadioButton from '@/components/community/OrderRadioButton.vue';
 
   interface Props {
     long?: boolean;
@@ -24,6 +25,9 @@
     date: string;
     id: string;
   }
+
+  // 정렬기준
+  const selectedOrder = ref('recent');
 
   // ✅ API에서 카드 뉴스 데이터 가져오기
   const fetchNews = async () => {
@@ -126,25 +130,11 @@
 
   <section class="mb-10">
     <div class="container flex h-26 items-center justify-between">
+      <!-- 정렬 -->
       <div class="flex gap-7">
-        <div
-          :class="['text-xl', sortType === '최신순' ? 'font-semibold' : '']"
-          @click="setSortType('최신순')"
-        >
-          최신순
-        </div>
-        <div
-          :class="['text-xl', sortType === '스크랩순' ? 'font-semibold' : '']"
-          @click="setSortType('스크랩순')"
-        >
-          스크랩순
-        </div>
-        <div
-          :class="['text-xl', sortType === '좋아요순' ? 'font-semibold' : '']"
-          @click="setSortType('좋아요순')"
-        >
-          좋아요순
-        </div>
+        <OrderRadioButton v-model="selectedOrder" value="recent" label="최신순" />
+        <OrderRadioButton v-model="selectedOrder" value="text" label="댓글순" />
+        <OrderRadioButton v-model="selectedOrder" value="popular" label="좋아요순" />
       </div>
 
       <div
