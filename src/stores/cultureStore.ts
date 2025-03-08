@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { getUserScrapList, toggleScrap } from "@/apis/userService";
 
 export const useCultureStore = defineStore("cultureStore", {
   state: () => ({
@@ -37,14 +38,26 @@ export const useCultureStore = defineStore("cultureStore", {
     setCurrentPage(page: number) {
       this.currentPage = page;
     },
-    toggleBookmark(festival: any) {
-      const index = this.bookmarkedFestivals.findIndex((item) => item.content_id === festival.content_id);
-      if (index !== -1) {
-        this.bookmarkedFestivals.splice(index, 1); // 이미 북마크된 경우 제거
-      } else {
-        this.bookmarkedFestivals.push(festival); // 북마크 추가
+
+    async loadBookmarks(userId) {
+      try {
+        const bookmarks = await getUserScrapList(userId);
+        this.bookmarkedFestivals = bookmarks;
+        console.log("✅ 북마크 불러오기 성공:", bookmarks);
+      } catch (error) {
+        console.error("❌ 북마크 불러오기 실패:", error);
       }
     },
+
+    // ✅ 북마크 추가/삭제
+    async toggleBookmark(userId, festivalData) {
+      try {
+        this.bookmarkedFestivals = await toggleScrap(userId, festivalData);
+        console.log("✅ 북마크 업데이트 완료");
+      } catch (error) {
+        console.error("❌ 북마크 업데이트 실패:", error);
+      }
+    }
   },
 
   // 🛠 **persist 활성화 (상태 유지)**
