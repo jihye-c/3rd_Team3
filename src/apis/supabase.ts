@@ -227,6 +227,11 @@ export default class Supabase {
     if (page < 1) page = 1; //1부터 시작
 
     //기본 쿼리
+    console.log('🔎 Supabase 검색 시작 ')
+    console.log('위치 기준 : ', location.bounds);
+    console.log('병원 타입 : ', hospitalType);
+    console.log('증상 정보 : ', symptomsQuery);
+
     const dbQuery = supabase
       .from('hospital')
       .select(
@@ -240,7 +245,11 @@ export default class Supabase {
 
     //기타 조건부 쿼리들
     if (hospitalType) {
+      if(hospitalType == '치과'){
+      dbQuery.ilike('type', "%치과%");
+      }else{
       dbQuery.eq('type', hospitalType);
+      }
     }
 
     const {count: totalCount} = await dbQuery;
