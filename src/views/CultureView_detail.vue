@@ -287,7 +287,7 @@ onMounted(async () => {
           :loop="true"
           :speed="2000"
         >
-          <SwiperSlide v-for="(image, index) in festivalImages" :key="index">
+        <SwiperSlide v-for="(image, index) in festivalImages" :key="index" >
             <img
               :src="image"
               alt="Festival Image"

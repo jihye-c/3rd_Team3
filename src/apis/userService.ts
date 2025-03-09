@@ -76,8 +76,8 @@ export const getUserScrapList = async (userId: string) => {
   try {
     console.log(`🚀 스크랩 목록 불러오기 (userId: ${userId})`);
 
-    // 1️⃣ 스크랩 채널에서 posts 배열(스크랩 ID 목록) 가져오기
-    const scrapChannelRes = await axios.get(`http://13.125.143.126:5003/posts/channel/67bfdc61ff075444a9c22ebd`);
+    // 1️⃣ scrap 채널의 전체 게시물 가져오기
+    const scrapChannelRes = await axios.get("http://13.125.143.126:5003/posts/channel/67bfdc61ff075444a9c22ebd");
 
     if (!scrapChannelRes.data || !Array.isArray(scrapChannelRes.data)) {
       console.warn("⚠️ 스크랩 목록이 없거나 데이터가 올바르지 않습니다.");
@@ -86,32 +86,31 @@ export const getUserScrapList = async (userId: string) => {
 
     const allScrapPosts = scrapChannelRes.data; // 전체 스크랩된 게시물 리스트
 
-    // 2️⃣ 특정 유저가 작성한 스크랩만 가져오기
-    const userScrapRes = await axios.get(`http://13.125.143.126:5003/posts/author/${userId}`);
+    // 2️⃣ 특정 유저의 스크랩만 필터링
+    const userScrapPosts = allScrapPosts.filter(post => {
+      try {
+        const titleData = JSON.parse(post.title);
+        return titleData.userId === userId;
+      } catch (error) {
+        console.warn("⚠️ JSON 파싱 오류 발생:", post.title);
+        return false;
+      }
+    });
 
-    if (!userScrapRes.data || !Array.isArray(userScrapRes.data)) {
-      console.warn("⚠️ 유저의 스크랩 목록이 없습니다.");
-      return [];
-    }
-
-    const userScrapPosts = userScrapRes.data; // 특정 유저의 스크랩 목록
-
-    // 3️⃣ 유저의 스크랩 ID 리스트만 추출
-    const userScrapIds = new Set(userScrapPosts.map(post => post._id));
-
-    // 4️⃣ 스크랩 채널의 데이터 중, 유저가 스크랩한 것만 필터링
-    const filteredScrapList = allScrapPosts
-      .filter(post => userScrapIds.has(post._id))
-      .map(post => JSON.parse(post.title)); // JSON 변환
+    // 3️⃣ `_id` 값을 포함한 새로운 객체 배열로 변환
+    const filteredScrapList = userScrapPosts.map(post => ({
+      _id: post._id, // ✅ _id 값을 유지하여 삭제할 때 사용
+      ...JSON.parse(post.title) // title 필드에서 JSON 데이터 추출
+    }));
 
     console.log("✅ [유저별] 스크랩 목록 불러오기 성공:", filteredScrapList);
     return filteredScrapList;
-
   } catch (error) {
     console.error("❌ 스크랩 목록 불러오기 실패:", error);
     return [];
   }
 };
+
 
 
 
@@ -134,10 +133,18 @@ export async function testScrapChannelAPI() {
 
 testScrapChannelAPI();
 
-// ✅ 특정 유저의 스크랩 삭제
 export async function deleteScrapPost(scrapId: string) {
   try {
-    const res = await axiosApi.delete(`${apiRoot}/posts/${scrapId}`);
+    if (!scrapId) {
+      console.error("❌ 삭제 요청 실패: scrapId가 없습니다.");
+      return false;
+    }
+
+    console.log(`🗑️ 삭제 요청: ${scrapId}`);
+    const res = await axiosApi.delete(`${apiRoot}/posts/delete`, {
+      data: { id: scrapId } // ✅ 올바른 request body 사용
+    });
+
     console.log("✅ 스크랩 삭제 완료:", res.data);
     return true;
   } catch (error) {
@@ -146,17 +153,33 @@ export async function deleteScrapPost(scrapId: string) {
   }
 }
 
-// ✅ 특정 유저의 스크랩 추가/삭제 (토글)
+
 export async function toggleScrap(userId: string, festivalData: any) {
   try {
-    // ✅ 특정 유저의 스크랩 목록 가져오기
+    // ✅ 유저의 현재 스크랩 목록 가져오기
     const userScraps = await getUserScrapList(userId);
-    const existingScrap = userScraps.find(scrap => scrap.content_id === festivalData.content_id);
     
+    // ✅ 동일한 `content_id`의 스크랩 찾기
+    const existingScrap = userScraps.find(scrap => scrap.content_id === festivalData.content_id);
+
+    console.log("🔎 기존 스크랩 데이터:", existingScrap); // ✅ 삭제할 데이터 확인
+
     let updatedScrapList = [];
 
     if (existingScrap) {
-      await deleteScrapPost(existingScrap._id);
+      if (!existingScrap._id) { // ✅ 삭제할 `_id` 값이 있는지 확인
+        console.error(`❌ 삭제할 스크랩 ID가 없습니다. (content_id: ${existingScrap.content_id})`);
+        return userScraps;
+      }
+
+      console.log(`🗑️ 스크랩 삭제 요청 (scrapId: ${existingScrap._id})`);
+      const isDeleted = await deleteScrapPost(existingScrap._id);
+
+      if (!isDeleted) {
+        console.error(`❌ 스크랩 삭제 실패 (scrapId: ${existingScrap._id})`);
+        return userScraps;
+      }
+
       console.log(`✅ [유저별] 스크랩 삭제 완료 (userId: ${userId})`);
       updatedScrapList = userScraps.filter(scrap => scrap.content_id !== festivalData.content_id);
     } else {
@@ -165,12 +188,14 @@ export async function toggleScrap(userId: string, festivalData: any) {
       updatedScrapList = [...userScraps, { ...festivalData, _id: newScrapId }];
     }
 
-    return updatedScrapList;  // ✅ `cultureStore`를 수정하지 않고 반환값만 전달
+    return updatedScrapList;
   } catch (error) {
     console.error(`❌ [유저별] 스크랩 토글 실패 (userId: ${userId}):`, error);
     return [];
   }
 }
+
+
 
 
 // 좌표를 주소로 받아오는 API
