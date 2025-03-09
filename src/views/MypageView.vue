@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-  import {ref, computed, watchEffect} from 'vue';
+  import {ref, computed, watchEffect,onMounted} from 'vue';
   import RecipeCard from '@/components/community/RecipeCard.vue';
   import ResaleCard from '@/components/community/ResaleCard.vue';
   import CommunityPostList from '@/components/community/CommunityPostList.vue';
@@ -21,7 +21,7 @@ import { getUserScrapList } from "@/apis/userService";
   const userFollowerInfo = ref();
   const userFollowingInfo = ref();
   const defaultImage = '/images/mypage/mypage_default_img.png';
-
+  const cultureStore = useCultureStore()
   const id = localStorage.getItem('userId');
   const routeId =  route.params.id
   const bio = ref(
@@ -215,8 +215,6 @@ const formatDate = (dateString: string) => {
     return recipeList.slice(start, start + itemsPerPage);
   });
 
-  const totalPages = computed(() => Math.ceil(recipeList.length / itemsPerPage));
-
   const openModal = (category: string) => {
     showModal.value = true;
     followCategory.value = category;
@@ -227,9 +225,9 @@ const formatDate = (dateString: string) => {
     followCategory.value = '';
   };
 
-  const handlePageChange = (page: number) => {
-    currentPage.value = page;
-  };
+  // const handlePageChange = (page: number) => {
+  //   currentPage.value = page;
+  // };
 
   watchEffect(async () => {
 
@@ -240,10 +238,7 @@ const formatDate = (dateString: string) => {
     console.log(userInfo.value);
   });
 // 현재 페이지에 맞게 데이터 필터링
-const paginatedRecipes = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return recipeList.slice(start, start + itemsPerPage);
-});
+
 
 const totalCulturePages = computed(() => {
   console.log("📝 현재 스크랩된 문화생활 개수:", cultureStore.bookmarkedFestivals?.length);
