@@ -6,6 +6,8 @@
   import {programmersApiInstance} from '@/utils/axiosInstance';
   import {useAuthStore} from '@/stores/auth';
   import {useCommentStore} from '@/stores/commentStore';
+  import ShareButton from '@/components/ShareButton.vue';
+  import BookmarkButton from '@/components/BookmarkButton.vue';
 
   const communityChannels = {
     question: {
@@ -45,6 +47,13 @@
   const isLoading = ref(false);
   const error = ref<string | null>(null);
   const comment = ref('');
+
+  // 북마크 상태 관리
+  const isBookmarked = ref(false);
+
+  const toggleBookmark = () => {
+    isBookmarked.value = !isBookmarked.value;
+  };
 
   const submitComment = async () => {
     if (!authStore.isAuthenticated) {
@@ -98,27 +107,9 @@
   <div class="w-full flex justify-center pt-16">
     <div class="flex gap-8 max-w-[1600px] w-full px-6">
       <!-- 좌측 버튼 -->
-      <div class="flex flex-col gap-4">
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/like.png" alt="Like" class="w-[20px] h-[20px]" />
-        </button>
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/comment.png" alt="Comment" class="w-[20px] h-[20px]" />
-        </button>
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/scrap.png" alt="Scrap" class="w-[20px] h-[20px]" />
-        </button>
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/share.png" alt="Share" class="w-[20px] h-[20px]" />
-        </button>
+      <div class="flex flex-col gap-4 w-[52px]">
+        <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
+        <ShareButton />
       </div>
 
       <!-- 게시물 상세 -->
