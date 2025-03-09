@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import {useUserStore} from '@/stores/userStore';
   import type {MapData} from '@/types/kakao';
-  import {onMounted, ref, nextTick} from 'vue';
+  import {onMounted, ref, nextTick, watch, watchEffect} from 'vue';
   const kakaoKey = import.meta.env.VITE_KAKAO_JS_KEY;
 
   //lat은 위도 (latitude), lng은 경도 (longtitude)
@@ -33,12 +33,7 @@
     level: 3,
   });
   const props = defineProps<{
-    loadHospital: (
-      mapData: MapData,
-      page: number, //1부터 시작
-      hospitalType?: string[],
-      symptomsQuery?: string[],
-    ) => void;
+loadHospital: () => Promise<void>;
   }>();
 
   const loadScript = () => {
@@ -49,7 +44,7 @@
     };
     document.head.appendChild(script);
   };
-  const loadMap = () => {
+  const loadMap = async() => {
     if (window.kakao && window.kakao.maps) {
       const container = document.getElementById('map');
       if (container) {
@@ -62,15 +57,15 @@
           center: new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng), // 중심 좌표
           level: mapData.value.level,
         };
+        
         map.value = new window.kakao.maps.Map(container, options); // 지도 생성
-        changeMapData(map.value);
-        nextTick(() => {
-          props.loadHospital(mapData.value, 1);
-        });
+        if(map.value){
+          await changeMapData(map.value);
+          await props.loadHospital();
+        }
         container.addEventListener('mousedown', () => {
           prevMapData.value = mapData.value;
         });
-
         window.kakao.maps.event.addListener(map.value, 'bounds_changed', () => {
           changeMapData(map.value);
         });
@@ -79,10 +74,23 @@
       console.error('Kakao Maps API가 로드되지 않았습니다.');
     }
   };
-  const changeMapData = (map) => {
-    const center = map.getCenter();
-    const level = map.getLevel();
-    const bounds = map.getBounds();
+
+  const changeMapData = async (map) => {
+    if (
+      mapData.value.bounds.bottom <= 0||
+      mapData.value.bounds.top <= 0 ||
+      mapData.value.bounds.left <= 0 ||
+      mapData.value.bounds.right <= 0 
+    ) {
+      if(map.value){
+      await map.value.setCenter(new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng));
+      }
+    }
+
+    const center = await map.getCenter();
+    const level = await map.getLevel();
+    const bounds = await map.getBounds();
+
     mapData.value = {
       bounds: {
         left: bounds.ha,
@@ -106,21 +114,27 @@
     }
   };
 
-  onMounted(() => {
+  onMounted(async () => {
     if (!window.kakao) {
       loadScript();
+      props.loadHospital();
     } else {
       loadMap();
     }
   });
   const listLoad = () => {
     loading.value = true;
-    props.loadHospital(mapData.value, 1);
+    props.loadHospital();
     setTimeout(() => {
       loading.value = false;
       isMapChange.value = false;
     }, 800);
-  };
+  };// watchEffect(()=>{
+  //   if (map.value && mapData.value) {
+  //       map.value.setCenter(new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng));
+  //     }
+  // }
+  // );
 </script>
 
 <template v-slot:actions>

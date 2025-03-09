@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
   import {ref, computed, watchEffect} from 'vue';
   import RecipeCard from '@/components/community/RecipeCard.vue';
   import ResaleCard from '@/components/community/ResaleCard.vue';
@@ -8,6 +9,8 @@
   import {useRoute, useRouter} from 'vue-router';
   import Modal from '@/components/ModalComponent.vue';
   import FollowComponent from '@/components/mypage/FollowComponent.vue';
+  import { useCultureStore } from "../stores/cultureStore";
+import { getUserScrapList } from "@/apis/userService";
 
   const route = useRoute<string>();
   const showModal = ref(false);
@@ -236,6 +239,46 @@ const formatDate = (dateString: string) => {
     userFollowingInfo.value = userStore.followingInfo;
     console.log(userInfo.value);
   });
+// 현재 페이지에 맞게 데이터 필터링
+const paginatedRecipes = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return recipeList.slice(start, start + itemsPerPage);
+});
+
+const totalCulturePages = computed(() => {
+  console.log("📝 현재 스크랩된 문화생활 개수:", cultureStore.bookmarkedFestivals?.length);
+  return Math.ceil((cultureStore.bookmarkedFestivals?.length || 0) / itemsPerPage);
+});
+const paginatedFestivals = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return (cultureStore.bookmarkedFestivals ?? []).slice(start, start + itemsPerPage);
+});
+
+
+const totalPages = computed(() => Math.ceil(recipeList.length / itemsPerPage));
+
+const handlePageChange = (page: number) => {
+  console.log("📌 페이지 변경 요청:", page);
+  currentPage.value = page;
+  console.log("✅ 변경된 현재 페이지:", currentPage.value);
+};
+
+
+onMounted(async () => {
+  const id = localStorage.getItem("userId");
+  if (id) {
+    await userStore.getUser(id);
+    userInfo.value = { ...userStore.userInfo };
+    console.log("✅ 유저 정보 불러오기 완료:", userInfo.value);
+
+    // ✅ 유저별 스크랩 목록 가져오기
+    const scrapList = await getUserScrapList(id);
+    cultureStore.bookmarkedFestivals = scrapList;
+    console.log("✅ [유저별] 북마크 불러오기 완료:", cultureStore.bookmarkedFestivals);
+  }
+});
+
+
 
 </script>
 
@@ -372,7 +415,6 @@ const formatDate = (dateString: string) => {
               :tag="recipe.tag"
             />
           </div>
-
           <div class="mt-6">
             <!-- ✅ 문화생활 탭 추가 -->
             <div v-if="selectedTab === '문화생활'" class="grid grid-cols-3 gap-4 w-full">
@@ -386,15 +428,13 @@ const formatDate = (dateString: string) => {
                   <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>{{ getCategoryName(festival.category3) }}
                 </p>
                 <img
-                  :src="festival.homepage.startsWith('http') ? festival.homepage : '/images/default-image.jpg'"
+                  :src="festival.homepage && typeof festival.homepage === 'string' && festival.homepage.startsWith('http')
+                          ? festival.homepage
+                          : '/images/default-image.jpg'"
                   class="h-[340px] w-full object-cover rounded-lg"
                 />
-
                 <div class="mt-4">
                   <p class="font-bold text-mono-900">{{ festival.name }}</p>
-                  <p class="text-mono-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[90%]">
-                    {{ festival.overview.split('.')[0] }}.
-                  </p>
                 </div>
                 <div class="mt-4 text-[12px] text-mono-600">
                   {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}
@@ -404,8 +444,6 @@ const formatDate = (dateString: string) => {
               </div>
             </div>
           </div>
-
-
           <!-- 페이지네이션 추가 -->
           <PaginationComponent :totalPages="totalPages" @pageChange="handlePageChange" />
           <Modal :isOpen="showModal" @close="closeModal">

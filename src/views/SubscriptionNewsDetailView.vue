@@ -11,6 +11,8 @@
   import 'swiper/css';
   import 'swiper/css/navigation';
   import {FreeMode, Navigation} from 'swiper/modules';
+  import TextAlertButton from '@/components/TextAlertButton.vue';
+  import LikeButton from '@/components/LikeButton.vue';
 
   const modules = [FreeMode, Navigation];
   const currentRoute = useRoute();
@@ -31,10 +33,16 @@
   });
 
   const isBookmarked = ref(false);
+  const isLiked = ref(false);
+
   const comment = ref('');
 
   const toggleBookmark = () => {
     isBookmarked.value = !isBookmarked.value;
+  };
+
+  const toggleLike = () => {
+    isLiked.value = !isLiked.value;
   };
 
   const submitComment = async () => {
@@ -102,6 +110,8 @@
   <div class="my-20">
     <div class="container flex gap-55">
       <div class="border-mono-200 w-[52px] h-[104px] flex flex-col gap-[12px]">
+        <LikeButton :is-liked="isLiked" @toggle="toggleLike" />
+        <TextAlertButton :commentleng="commentStore.comments.length" />
         <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
         <ShareButton />
       </div>
@@ -182,7 +192,7 @@
           <div class="h-13 border-t-1 border-mono-200 flex items-center justify-end">
             <button
               @click="submitComment"
-              class="bg-main-400 py-2 px-6 mr-4 rounded-lg text-mono-050"
+              class="bg-main-400 py-2 px-6 mr-4 rounded-lg text-mono-050 cursor-pointer"
             >
               작성하기
             </button>

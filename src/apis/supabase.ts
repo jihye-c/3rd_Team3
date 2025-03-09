@@ -177,6 +177,44 @@ export default class Supabase {
     };
     reader.readAsText(file);
   }
+  static async getFullHospitalSearchData(
+    searchKeyword: string,
+    page: number,
+  ): Promise<FullHospitalRes> {
+    const supabase = this.init();
+    if (!supabase) return {length: 0, data: null};
+
+    if (page < 1) page = 1; //1부터 시작
+
+    const dbQuery = supabase
+      .from('hospital')
+      .select(
+        '*, hospital_detail(opentime_sun,closetime_sun,opentime_mon,closetime_mon,opentime_tue,closetime_tue,opentime_wed,closetime_wed,opentime_thu,closetime_thu,opentime_fri,closetime_fri,opentime_sat,closetime_sat)',
+        {count: 'exact'},
+      );
+
+    const {count: totalCount} = await dbQuery;
+
+    if (!totalCount || totalCount < 1) {
+      return {length: 0, data: null};
+    }
+
+    const pageSize = 10;
+    const start = (page - 1) * pageSize;
+    let end = start + pageSize - 1;
+    end = Math.min(end, totalCount - 1);
+
+    if (searchKeyword) {
+      dbQuery.ilike('name', `%${searchKeyword}%`);
+    }
+
+    const {data: hospitals, count, error} = await dbQuery.range(start, end);
+    if (error || !count) {
+      console.log('DB error : ', error);
+      return {length: 0, data: null};
+    }
+    return {length: count, data: hospitals};
+  }
   static async getFullHospitalData(
     location: MapData,
     page: number,
@@ -189,6 +227,11 @@ export default class Supabase {
     if (page < 1) page = 1; //1부터 시작
 
     //기본 쿼리
+    console.log('🔎 Supabase 검색 시작 ')
+    console.log('위치 기준 : ', location.bounds);
+    console.log('병원 타입 : ', hospitalType);
+    console.log('증상 정보 : ', symptomsQuery);
+
     const dbQuery = supabase
       .from('hospital')
       .select(
@@ -202,7 +245,11 @@ export default class Supabase {
 
     //기타 조건부 쿼리들
     if (hospitalType) {
+      if(hospitalType == '치과'){
+      dbQuery.ilike('type', "%치과%");
+      }else{
       dbQuery.eq('type', hospitalType);
+      }
     }
 
     const {count: totalCount} = await dbQuery;
@@ -216,14 +263,17 @@ export default class Supabase {
     let end = start + pageSize - 1;
     end = Math.min(end, totalCount - 1);
 
+    //데이터 타입 한 번 더 거르기
     if (symptomsQuery && symptomsQuery.length > 0) {
       const korList = new Set<string>();
-      const findList = symptomsQuery.map((query) => symptomsList.find((symptom) => symptom.id === query)?.departments).flat();
-      findList.forEach((f)=>{
-        if(f){
-          korList.add(f)
+      const findList = symptomsQuery
+        .map((query) => symptomsList.find((symptom) => symptom.id === query)?.departments)
+        .flat();
+      findList.forEach((f) => {
+        if (f) {
+          korList.add(f);
         }
-      })
+      });
       dbQuery.in('hospital_treatment.code_name', Array.from(korList));
     }
 
@@ -232,10 +282,8 @@ export default class Supabase {
       console.log('DB error : ', error);
       return {length: 0, data: null};
     }
-    console.log(hospitals)
     return {length: count, data: hospitals};
   }
-
   static async getDetailHospitalData(id: string): Promise<HospitalFullData | null> {
     try {
       //supabase load

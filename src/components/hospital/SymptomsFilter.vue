@@ -45,7 +45,7 @@
 </script>
 
 <template>
-  <form class="flex flex-wrap gap-2 justify-center items-center">
+  <form class="flex flex-wrap gap-2 justify-center items-center mt-4">
     <template v-for="(item, index) in symptoms" :key="item.id">
       <input
         type="checkbox"
