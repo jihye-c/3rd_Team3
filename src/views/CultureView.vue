@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import dayjs from "dayjs";
 import CultureAPI from "@/apis/cultureApi"; // ✅ API 가져오기
@@ -9,11 +9,44 @@ import { useCultureStore } from "../stores/cultureStore";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 import "swiper/css/navigation";
-import { Pagination, Navigation, Autoplay } from "swiper/modules";
+import { Pagination, EffectFade, Autoplay } from "swiper/modules";
 import CalendarComponent from "@/components/CalendarComponent.vue";
 import FestivalSearchComponent from "@/components/FestivalSearchComponent.vue";
 import PaginationComponent from "@/components/PaginationComponent.vue";
+const currentSlide = ref(0);
+
+const onSlideChange = (swiper: any) => {
+  currentSlide.value = swiper.activeIndex;
+};
+
+// ✅ 배너 데이터 따로 저장
+const bannerFestivals = ref<any[]>([]);
+
+// ✅ 배너용 상세 정보 불러오기 (overview 포함)
+const fetchBannerFestivals = async () => {
+  try {
+    // ✅ 기본적으로 필터링된 리스트에서 7개만 선택
+    const selectedFestivals = filteredFestivals.value.slice(0, 7);
+    
+    // ✅ 각 행사에 대해 상세 조회 수행
+    const detailedFestivals = await Promise.all(
+      selectedFestivals.map(async (festival) => {
+        const details = await CultureAPI.getEventDetail(festival.content_id, 15);
+        return {
+          ...festival,
+          overview: details?.overview || "행사 정보 확인 가능",
+        };
+      })
+    );
+
+    bannerFestivals.value = detailedFestivals;
+  } catch (error) {
+    console.error("❌ 배너 상세 데이터 조회 오류:", error);
+  }
+};
+
 
 const router = useRouter();
 const cultureStore = useCultureStore(); // ✅ 상태 저장소 사용
@@ -238,6 +271,20 @@ const goToDetail = (contentId) => {
   router.push(`/culture/${contentId}`);
 };
 
+// ✅ 상태 변수 추가
+const showFullText = ref(false);
+
+// ✅ 토글 함수 추가
+const toggleText = () => {
+  showFullText.value = !showFullText.value;
+};
+
+// ✅ `filteredFestivals`가 변경될 때 배너 업데이트
+watch(filteredFestivals, async (newFestivals) => {
+  if (newFestivals.length > 0) {
+    await fetchBannerFestivals();
+  }
+}, { immediate: true });
 
 onMounted(() => {
   console.log("📌 기존 저장된 상태 확인", {
@@ -250,38 +297,78 @@ onMounted(() => {
   fetchFestivals();
   filterFestivals();
   currentPage.value = cultureStore.currentPage || 1;
+  fetchBannerFestivals();
 });
 
 </script>
 
 <template>
   <div class="w-full">
-    <!-- 배너 -->
-    <div class="w-full h-[582px] relative">
-      <Swiper :modules="[Pagination, Autoplay]" :pagination="{ clickable: true }" :autoplay="{ delay: 3000, disableOnInteraction: false }" :loop="true" :speed="2000">
-        <SwiperSlide v-for="(festival, index) in filteredFestivals.slice(0, 10)" :key="index" class="relative">
-          <div
-            class="absolute top-1/2 right-[5%] sm:right-[10%] md:right-[15%] lg:right-[160px]
-            transform -translate-y-1/2 text-mono-100 text-right p-4 md:p-8 z-20 max-w-[900px] flex flex-col items-end"
-          >
-            <p class="text-[16px] sm:text-[18px] md:text-[20px] whitespace-nowrap">
-              {{ festival.gu_name }}
-            </p>
-
-            <p class="text-[32px] sm:text-[40px] md:text-[48px] font-bold whitespace-nowrap">
-              {{ festival.name }}
-            </p>
-
-            <p class="text-[16px] sm:text-[18px] md:text-[20px] whitespace-nowrap overflow-hidden text-ellipsis max-w-[90%]">
-              {{ festival.overview.split('.')[0] }}.
-            </p>
+    
+    <!-- 배너 섹션 -->
+    <div class="w-screen relative">
+      <Swiper
+        :modules="[Pagination, EffectFade, Autoplay]"
+        :effect="'fade'"
+        :pagination="{ el: '.swiper-pagination', type: 'progressbar' }"
+        @slideChange="onSlideChange"
+        :autoplay="{ delay: 5000, disableOnInteraction: false }"
+        class="swiper h-[580px] pb-3"
+      >
+      <SwiperSlide v-for="(festival, index) in bannerFestivals" :key="index" @click="goToDetail(festival.content_id)" class="cursor-pointer">
+        <div class="relative w-screen h-[580px] flex items-center justify-center overflow-hidden">
+          
+          <!-- ✅ 블러 처리된 배경 이미지 -->
+          <div class="absolute inset-0 overflow-hidden">
+            <img
+              :src="festival.homepage || '/images/default-image.jpg'"
+              class="w-full h-full object-cover brightness-90 blur-lg scale-150"
+              alt="Festival Background"
+            />
           </div>
 
-          <div class="absolute inset-0 bg-gradient-to-r from-transparent to-pink-main opacity-95 pointer-events-none z-10"></div>
-          <img :src="festival.homepage || '/images/default-image.jpg'" class="w-full h-[582px] object-cover" />
-        </SwiperSlide>
+          <!-- ✅ 메인 컨텐츠 박스 -->
+          <div class="container max-w-[1600px] mx-auto flex items-center justify-between px-10 relative z-10">
+            
+            <!-- ✅ 배너 텍스트 -->
+            <div class="max-w-[700px] text-mono-050 transition-opacity duration-700"
+                :class="{ 'opacity-100': index === currentSlide, 'opacity-0': index !== currentSlide }">
+              <h3 class="text-5xl font-bold drop-shadow-md">{{ festival.name }}</h3>
+              <p class="text-xl mt-4 drop-shadow-md max-w-[600px]" @click.stop>
+                {{ showFullText ? festival.overview : festival.overview.slice(0, 80) + '...' }}
+                <button v-if="festival.overview.length > 80" @click="toggleText" class="text-main-400 ml-2 cursor-pointer" >
+                  {{ showFullText ? "간략히" : "자세히" }}
+                </button>
+              </p>
+
+            </div>
+
+            <!-- ✅ 메인 이미지 -->
+            <div class="relative flex justify-end">
+              <img
+                :src="festival.homepage || '/images/default-image.jpg'"
+                class="max-w-[1000px] h-[400px] object-cover object-right"
+                alt="Festival Main"
+              />
+            </div>
+
+          </div>
+        </div>
+      </SwiperSlide>
+
+
+        <!-- ✅ 프로그레스 바 (배너와 정렬) -->
+        <!-- ✅ 프로그레스 바 (배너와 정렬) -->
+        <div class="relative max-w-[1600px] mx-auto px-10">
+          <div class="absolute left-0 !bottom-[90px] z-10 w-full">
+            <div class="swiper-pagination progressbar"></div>
+          </div>
+        </div>
       </Swiper>
     </div>
+
+
+
 
     <div class="max-w-[1600px] mx-auto">
       <div class="flex justify-center flex-wrap gap-8 mt-10 md:flex-col lg:flex-row">
@@ -340,3 +427,22 @@ onMounted(() => {
     </div>
   </div>
 </template>
+<style scoped>
+/* ✅ 프로그레스 바 중앙 정렬 */
+:deep(.progressbar) {
+  width: 700px;
+  margin: 0 auto;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ 프로그레스 바 색상 */
+:deep(.swiper-pagination-progressbar-fill) {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* ✅ 텍스트 가독성 개선 */
+.drop-shadow-md {
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+}
+</style>

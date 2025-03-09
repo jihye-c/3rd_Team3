@@ -8,6 +8,10 @@ import { useUserStore } from '@/stores/userStore';
 import { useRouter } from 'vue-router';
 import { useCultureStore } from "../stores/cultureStore";
 import { getUserScrapList } from "@/apis/userService"; // ✅ 유저별 스크랩 목록 불러오기 함수 추가
+import BookmarkButton from '@/components/BookmarkButton.vue';
+import { toggleScrap } from "@/apis/userService";
+
+
 
 const router = useRouter();
 const cultureStore = useCultureStore();
@@ -235,6 +239,32 @@ onMounted(async () => {
   }
 });
 
+const handleScrapToggle = async (festival) => {
+  try {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.warn("⚠️ 로그인이 필요합니다.");
+      return;
+    }
+
+    console.log("✅ 마이페이지에서 북마크 추가/삭제 요청:", festival);
+
+    // ✅ scrap 채널에 저장 or 삭제 (서버에 요청)
+    const updatedScraps = await toggleScrap(userId, festival);
+
+    // ✅ 최신 북마크 목록으로 업데이트
+    cultureStore.bookmarkedFestivals = updatedScraps;
+
+    console.log("✅ 마이페이지 북마크 업데이트 완료!");
+  } catch (error) {
+    console.error("❌ 북마크 저장 실패:", error);
+  }
+};
+
+// ✅ 북마크 상태 확인 (현재 스크랩 여부)
+const isBookmarked = (contentId) => {
+  return cultureStore.bookmarkedFestivals.some(festival => festival.content_id === contentId);
+};
 
 </script>
 
@@ -360,9 +390,22 @@ onMounted(async () => {
                 class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer"
                 @click="goToCultureDetail(festival.content_id)"
               >
-                <p class="text-sm text-mono-600 flex items-center mb-4">
+
+              <div class="flex justify-between items-center mb-4">
+                <!-- 카테고리 태그 -->
+                <p class="text-sm text-mono-600 flex items-center">
                   <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>{{ getCategoryName(festival.category3) }}
                 </p>
+
+                <!-- ✅ BookmarkButton 크기 제한 적용 -->
+                <BookmarkButton 
+                  :isBookmarked="isBookmarked(festival.content_id)" 
+                  @toggle="handleScrapToggle(festival)" 
+                  :small="true" 
+                />
+
+              </div>
+
                 <img 
                   :src="festival.homepage && typeof festival.homepage === 'string' && festival.homepage.startsWith('http') 
                           ? festival.homepage 
