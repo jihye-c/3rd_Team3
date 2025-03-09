@@ -245,7 +245,11 @@ export default class Supabase {
 
     //기타 조건부 쿼리들
     if (hospitalType) {
+      if(hospitalType == '치과'){
+      dbQuery.ilike('type', "%치과%");
+      }else{
       dbQuery.eq('type', hospitalType);
+      }
     }
 
     const {count: totalCount} = await dbQuery;
