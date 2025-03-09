@@ -33,7 +33,7 @@
     level: 3,
   });
   const props = defineProps<{
-    loadHospital: () => Promise<void>;
+loadHospital: () => Promise<void>;
   }>();
 
   const loadScript = () => {
@@ -63,7 +63,6 @@
           await changeMapData(map.value);
           await props.loadHospital();
         }
-
         container.addEventListener('mousedown', () => {
           prevMapData.value = mapData.value;
         });
@@ -118,6 +117,7 @@
   onMounted(async () => {
     if (!window.kakao) {
       loadScript();
+      props.loadHospital();
     } else {
       loadMap();
     }
@@ -129,9 +129,7 @@
       loading.value = false;
       isMapChange.value = false;
     }, 800);
-  };
-
-  // watchEffect(()=>{
+  };// watchEffect(()=>{
   //   if (map.value && mapData.value) {
   //       map.value.setCenter(new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng));
   //     }

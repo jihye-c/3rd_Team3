@@ -4,59 +4,15 @@
   import ResaleCard from '@/components/community/ResaleCard.vue';
   import SearchBar from '@/components/community/SearchBar.vue';
   import {RESALE_CHANNEL_ID} from '@/constants/channelId';
+  import {useAuthStore} from '@/stores/auth';
   import type {Post} from '@/types/PostResponse';
   import {programmersApiInstance} from '@/utils/axiosInstance';
   import {ref, watch} from 'vue';
   import {useRoute, useRouter} from 'vue-router';
 
-  // 더미 데이터
-  // const postList = [
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: true,
-  //   },
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: true,
-  //   },
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: false,
-  //   },
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: true,
-  //   },
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: true,
-  //   },
-  //   {
-  //     image: '/images/community/community_resale_dummy.jpg',
-  //     title: '상태 좋은 의자 판매합니다.',
-  //     price: '50000',
-  //     dong: '수유1동',
-  //     available: true,
-  //   },
-  // ];
-
   const route = useRoute();
   const router = useRouter();
+  const authStore = useAuthStore();
 
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
@@ -125,7 +81,11 @@
           <OrderRadioButton v-model="selectedOrder" value="available" label="판매완료 제외" />
         </div>
         <!-- 글작성 버튼 -->
-        <v-btn variant="flat" class="write" @click="() => router.push('/community/create/resale')"
+        <v-btn
+          v-if="authStore.isAuthenticated"
+          variant="flat"
+          class="write"
+          @click="() => router.push('/community/create/resale')"
           >글작성</v-btn
         >
       </div>
@@ -139,6 +99,12 @@
             :price="JSON.parse(item.title).price"
             :dong="JSON.parse(item.title).region"
             :available="JSON.parse(item.title).available"
+            @click="
+              router.push({
+                name: 'used-post-detail',
+                params: {id: item._id},
+              })
+            "
           />
         </template>
       </div>

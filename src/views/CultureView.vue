@@ -154,9 +154,8 @@ const handleFilterChange = (filters: { category: string; subCategory: string; lo
 // ✅ API에서 데이터 가져오기
 const fetchFestivals = async () => {
   try {
-
-      // ✅ 기존 데이터가 있으면 API 호출을 생략
-      if (cultureStore.festivals.length > 0) {
+    // ✅ 기존 데이터가 있으면 API 호출 생략
+    if (cultureStore.festivals.length > 0) {
       console.log("✅ 기존 데이터가 존재하여 API 요청 생략");
       festivalData.value = [...cultureStore.festivals];
       filteredFestivals.value = cultureStore.filteredFestivals.length > 0 
@@ -166,49 +165,26 @@ const fetchFestivals = async () => {
       selectedFilters.value = { ...cultureStore.selectedFilters };
       return;
     }
-    console.log("🎯 API 요청 시작...");
-    const data = await CultureAPI.getSeoulFestivalsAndEvents();
+
+    console.log("🎯 API 요청 시작: 빠른 목록 로딩");
+    const data = await CultureAPI.getSeoulFestivalsAndEvents(); // ✅ 한 번만 요청
     console.log("📌 받아온 데이터:", data);
 
     if (data.length > 0) {
-      // ✅ 개별 이벤트 상세 정보 가져오기 (overview, 상세 내용, 이미지 포함)
-      const detailedData = await Promise.all(
-        data.map(async (event) => {
-          try {
-            const [details, info, images] = await Promise.all([
-              CultureAPI.getEventDetail(event.content_id, event.content_type_id),
-              CultureAPI.getEventInfo(event.content_id, event.content_type_id),
-              CultureAPI.getEventImages(event.content_id),
-            ]);
+      // ✅ `searchFestival1` 응답 데이터만 사용하여 최적화
+      const optimizedData = data.map(event => ({
+        ...event,
+        images: event.homepage || "/images/default-image.jpg", // ✅ 대표 이미지
+        overview: "행사 정보 확인 가능", // ✅ 상세 소개는 상세 페이지에서 요청
+      }));
 
-            return {
-              ...event,
-              category2: event.category2 || "", // 행사 분류
-              category3: event.category3 || "기타", // 상세 분류
-              overview: details?.overview || "설명 없음",
-              event_info: info || [],
-              images: images || [],
-            };
-          } catch (err) {
-            console.error(`❌ 상세 정보 가져오기 실패 (ID: ${event.content_id})`, err);
-            return {
-              ...event,
-              category2: event.category2 || "",
-              category3: event.category3 || "기타",
-              overview: "설명 없음",
-              event_info: [],
-              images: [],
-            };
-          }
-        })
-      );
-      console.log("📌 상세 정보 포함된 데이터:", detailedData);
+      console.log("✅ 최적화된 데이터:", optimizedData);
 
-      cultureStore.setFestivals(detailedData);
-      cultureStore.setFilteredFestivals(detailedData);
+      cultureStore.setFestivals(optimizedData);
+      cultureStore.setFilteredFestivals(optimizedData);
 
-      festivalData.value = detailedData;
-      filteredFestivals.value = detailedData; 
+      festivalData.value = optimizedData;
+      filteredFestivals.value = optimizedData; 
       
     } else {
       console.warn("⚠️ 받아온 데이터가 없음");
@@ -331,16 +307,20 @@ onMounted(() => {
               class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer"
               @click="goToDetail(festival.content_id)"
             >
+              <!-- 카테고리 -->
               <p class="text-sm text-mono-600 flex items-center mb-4">
                 <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>{{ getCategoryName(festival.category3) }}
               </p>
+
+              <!-- 대표 이미지 -->
               <img :src="festival.homepage || '/images/default-image.jpg'" class="h-[340px] w-full object-cover rounded-lg" />
+
+              <!-- 행사 제목 -->
               <div class="mt-4">
                 <p class="font-bold text-mono-900">{{ festival.name }}</p>
-                <p class="text-mono-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[90%]">
-                  {{ festival.overview.split('.')[0] }}.
-                </p>
               </div>
+
+              <!-- 일정 & 지역 -->
               <div class="mt-4 text-[12px] text-mono-600">
                 {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}
                 <br />
@@ -348,6 +328,7 @@ onMounted(() => {
               </div>
             </div>
           </div>
+
 
           <PaginationComponent
             :totalPages="totalPages"
