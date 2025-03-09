@@ -7,12 +7,27 @@
   import {useAuthStore} from '@/stores/auth';
   import type {Post} from '@/types/PostResponse';
   import {programmersApiInstance} from '@/utils/axiosInstance';
-  import {ref, watch} from 'vue';
+  import {computed, ref, watch} from 'vue';
   import {useRoute, useRouter} from 'vue-router';
+  import districtData from '@/assets/data/district.json';
+  import {useUserStore} from '@/stores/userStore';
+
+  type DistrictKeys = keyof typeof districtData;
 
   const route = useRoute();
   const router = useRouter();
   const authStore = useAuthStore();
+  const UserStore = useUserStore();
+  const {userLocation} = UserStore;
+
+  // 지역 필터
+  const guList = Object.keys(districtData);
+  const selectedGu = ref<string>(userLocation?.address || '강남구');
+  const dongList = computed(() => districtData[selectedGu.value as DistrictKeys]);
+  const selectedDong = ref<string | null>(null);
+  watch(selectedGu, () => {
+    selectedDong.value = null;
+  });
 
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
@@ -22,7 +37,22 @@
   const selectedOrder = ref('recent');
 
   const postList = ref<Post[]>([]);
+  const filteredPostList = ref<Post[]>(postList.value);
   const isLoading = ref<boolean>(false);
+
+  const filterByGu = () => {
+    const filteredData = postList.value.filter(
+      (data) => JSON.parse(data.title).region.gu === selectedGu.value,
+    );
+    filteredPostList.value = filteredData;
+  };
+
+  const filterByDong = () => {
+    const filteredData = postList.value.filter(
+      (data) => JSON.parse(data.title).region.dong === selectedDong.value,
+    );
+    filteredPostList.value = filteredData;
+  };
 
   watch(
     () => JSON.stringify(route.query),
@@ -33,7 +63,8 @@
           `/posts/channel/${QUESTION_CHANNEL_ID}`,
         );
         postList.value = response.data;
-        console.log(JSON.parse(response.data[0].title).title);
+        filterByGu();
+        // console.log(JSON.parse(response.data[0].title).title);
       } catch (error) {
         console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
       } finally {
@@ -61,12 +92,31 @@
 
     <div class="container">
       <!-- 검색 -->
-      <div class="flex justify-between items-center pb-[60px]">
+      <div class="flex justify-between items-center pb-[60px] gap-4">
         <div class="flex gap-6">
-          <v-select label="구 선택" variant="outlined" width="134" rounded="lg" density="compact" />
-          <v-select label="동 선택" variant="outlined" width="134" rounded="lg" density="compact" />
+          <v-select
+            v-model="selectedGu"
+            :items="guList"
+            label="구 선택"
+            variant="outlined"
+            width="134"
+            rounded="lg"
+            density="compact"
+            @update:modelValue="filterByGu"
+          />
+          <v-select
+            v-model="selectedDong"
+            :items="dongList"
+            label="동 선택"
+            variant="outlined"
+            width="134"
+            rounded="lg"
+            density="compact"
+            @update:modelValue="filterByDong"
+          />
           <v-select
             label="태그 선택"
+            :items="['병원', '청약', '레시피', '문화생활', '자취꿀팁']"
             variant="outlined"
             width="134"
             rounded="lg"
@@ -99,7 +149,7 @@
 
       <!-- 리스트 -->
       <div class="flex flex-col gap-[28px] pt-[28px] pb-[100px] leading-[32px]">
-        <template v-if="!isLoading" v-for="item in postList">
+        <template v-if="filteredPostList.length" v-for="item in filteredPostList">
           <CommunityPostList
             :title="JSON.parse(item.title).title"
             :content="JSON.parse(item.title).content"
@@ -134,7 +184,7 @@
     color: var(--color-mono-050);
     height: 40px;
   }
-  :deep(.v-label) {
+  /* :deep(.v-label) {
     font-size: 18px;
-  }
+  } */
 </style>

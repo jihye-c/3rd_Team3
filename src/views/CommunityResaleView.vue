@@ -7,12 +7,28 @@
   import {useAuthStore} from '@/stores/auth';
   import type {Post} from '@/types/PostResponse';
   import {programmersApiInstance} from '@/utils/axiosInstance';
-  import {ref, watch} from 'vue';
+  import {computed, ref, watch} from 'vue';
   import {useRoute, useRouter} from 'vue-router';
+  import districtData from '@/assets/data/district.json';
+  import {useUserStore} from '@/stores/userStore';
+
+  type DistrictKeys = keyof typeof districtData;
 
   const route = useRoute();
   const router = useRouter();
   const authStore = useAuthStore();
+  const UserStore = useUserStore();
+  const {userLocation} = UserStore;
+
+  // 지역 필터
+  const guList = Object.keys(districtData);
+  const selectedGu = ref<string>(userLocation?.address || '강남구');
+  console.log();
+  const dongList = computed(() => districtData[selectedGu.value as DistrictKeys]);
+  const selectedDong = ref<string | null>(null);
+  watch(selectedGu, () => {
+    selectedDong.value = null;
+  });
 
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
@@ -22,18 +38,55 @@
   const selectedOrder = ref('recent');
 
   const postList = ref<Post[]>([]);
+  const filteredPostList = ref<Post[]>(postList.value);
   const isLoading = ref<boolean>(false);
+  const init = ref<boolean>(true);
+
+  const filterByGu = () => {
+    const filteredData = postList.value.filter(
+      (data) => JSON.parse(data.title).region.gu === selectedGu.value,
+    );
+    filteredPostList.value = filteredData;
+  };
+
+  const filterByDong = () => {
+    const filteredData = postList.value.filter(
+      (data) => JSON.parse(data.title).region.dong === selectedDong.value,
+    );
+    filteredPostList.value = filteredData;
+  };
+
+  const updateQuery = () => {
+    if (init.value) {
+      router.replace({
+        name: 'community-resale',
+        query: {gu: selectedGu.value, dong: selectedDong.value},
+      });
+    } else {
+      router.push({
+        name: 'community-resale',
+        query: {gu: selectedGu.value, dong: selectedDong.value},
+      });
+    }
+  };
 
   watch(
     () => JSON.stringify(route.query),
     async (newQuery, oldQuery) => {
       try {
-        isLoading.value = true;
-        const response = await programmersApiInstance.get<Post[]>(
-          `/posts/channel/${RESALE_CHANNEL_ID}`,
-        );
-        postList.value = response.data;
-        console.log(JSON.parse(response.data[0].title).title);
+        if (init.value) {
+          isLoading.value = true;
+          const response = await programmersApiInstance.get<Post[]>(
+            `/posts/channel/${RESALE_CHANNEL_ID}`,
+          );
+          postList.value = response.data;
+          updateQuery();
+          filterByGu();
+          init.value = false;
+        } else {
+          filterByGu();
+          filterByDong();
+        }
       } catch (error) {
         console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
       } finally {
@@ -61,10 +114,28 @@
 
     <div class="container">
       <!-- 검색 -->
-      <div class="flex justify-between items-center pb-[60px]">
+      <div class="flex justify-between items-center pb-[60px] gap-4">
         <div class="flex gap-6">
-          <v-select label="구 선택" variant="outlined" width="134" rounded="lg" density="compact" />
-          <v-select label="동 선택" variant="outlined" width="134" rounded="lg" density="compact" />
+          <v-select
+            v-model="selectedGu"
+            :items="guList"
+            label="구 선택"
+            variant="outlined"
+            width="134"
+            rounded="lg"
+            density="compact"
+            @update:modelValue="updateQuery"
+          />
+          <v-select
+            v-model="selectedDong"
+            :items="dongList"
+            label="동 선택"
+            variant="outlined"
+            width="134"
+            rounded="lg"
+            density="compact"
+            @update:modelValue="updateQuery"
+          />
         </div>
         <SearchBar
           v-model:searchCriteria="selectedSearchCriteria"
@@ -92,7 +163,7 @@
 
       <!-- 리스트 -->
       <div class="grid grid-cols-4 gap-x-[24px] gap-y-[32px] pt-[28px] pb-[100px]">
-        <template v-for="item in postList">
+        <template v-if="filteredPostList.length" v-for="item in filteredPostList">
           <ResaleCard
             :image="item.image"
             :title="JSON.parse(item.title).title"
