@@ -103,7 +103,7 @@
           <CommunityPostList
             :title="JSON.parse(item.title).title"
             :content="JSON.parse(item.title).content"
-            :dong="JSON.parse(item.title).region"
+            :dong="JSON.parse(item.title).region.dong"
             :tags="JSON.parse(item.title).tags"
             :bookmarks="item.likes.length"
             :comments="item.comments.length"

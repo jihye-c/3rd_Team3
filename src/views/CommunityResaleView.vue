@@ -97,7 +97,7 @@
             :image="item.image"
             :title="JSON.parse(item.title).title"
             :price="JSON.parse(item.title).price"
-            :dong="JSON.parse(item.title).region"
+            :dong="JSON.parse(item.title).region.dong"
             :available="JSON.parse(item.title).available"
             @click="
               router.push({
