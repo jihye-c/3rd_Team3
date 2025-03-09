@@ -39,6 +39,8 @@
     isBookmarked.value = !isBookmarked.value;
   };
 
+  let youtubeFetched = false; // YouTube API 중복 방지용 플래그
+
   onMounted(async () => {
     // api 호출
     try {
@@ -46,10 +48,21 @@
       // 레시피 데이터 불러오기
       const data = await fetchRecipe(String(paramId.value));
       recipeData.value = data;
+      console.log('api');
       // 유튜브 데이터 불러오기
-      const keyword = String(paramId.value).replace(/\s/g, '')!;
-      const youtubeResponse = await fetchYoutube(keyword);
-      videoId.value = youtubeResponse.items.map((item) => item.id.videoId);
+      if (!youtubeFetched) {
+        const keyword =
+          String(paramId.value).split(' ').length > 2
+            ? String(paramId.value)
+                .split(' ')
+                .slice(1)
+                .reduce((acc, curr) => (acc += curr))!
+            : String(paramId.value).replace(/\s/g, '')!;
+        const youtubeResponse = await fetchYoutube(keyword);
+        videoId.value = youtubeResponse.items.map((item) => item.id.videoId);
+        console.log('youtube');
+        youtubeFetched = true;
+      }
     } catch (err) {
       error.value = '데이터를 불러오는 중 오류가 발생했습니다.';
     } finally {
@@ -117,7 +130,7 @@
               </div>
               <div class="text-[18px] text-mono-600">
                 {{ recipeData?.RCP_PAT2 }} | {{ recipeData?.RCP_WAY2 }}
-                {{ recipeData.HASH_TAG ? ` | #${recipeData?.HASH_TAG}` : '' }}
+                {{ recipeData?.HASH_TAG ? ` | #${recipeData?.HASH_TAG}` : '' }}
               </div>
             </div>
             <div class="flex flex-col gap-4">

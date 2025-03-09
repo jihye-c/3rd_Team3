@@ -58,11 +58,11 @@
       '소고기 들깨 알토란탕은 고소한 들깨가루와 부드러운 소고기, 그리고 특유의 식감이 일품인 알토란을 주재료로 한 영양가 높은 한식 탕입니다. 알토란의 아삭한 식감과 들깨의 고소함이 어우러져 깊은 맛을 내며, 소고기의 감칠맛이 국물에 배어 풍미를 더합니다.',
     image: '/images/recipe/recipe_todays.webp',
     nutrition: {
-      calories: 146.42,
-      sodium: 675.68,
-      protein: 7.57,
+      calories: 300.42,
+      sodium: 400.68,
+      protein: 16.57,
       fat: 5.17,
-      carbohydrates: 17.4,
+      carbohydrates: 50.4,
     },
   };
   const popularRecipeData = [
