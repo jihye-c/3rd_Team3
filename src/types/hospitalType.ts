@@ -12,7 +12,12 @@ export type HospitalData = {
   open_date: string | null;
   mapx: number;
   mapy: number;
-  hospital_detail ?: HospitalDetail
+};
+
+export type HospitalFullData = Partial<HospitalData & HospitalDetail> & {
+  detail ?: HospitalDetail
+  traffic?: HospitalTraffic[];
+  treatment?: HospitalTreatment[];
 };
 
 export type HospitalDetail = {
