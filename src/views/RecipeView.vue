@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
+  import RecipeMainBanner from '@/components/recipe/RecipeMainBanner.vue';
   import RecipePostList from '@/components/recipe/RecipePostList.vue';
   import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
   import RecipeSquareCard from '@/components/recipe/RecipeSquareCard.vue';
@@ -105,23 +106,7 @@
 
 <template>
   <!-- 배너 -->
-  <div class="w-full h-[562px] overflow-hidden">
-    <div class="bg-[url(/images/recipe/recipe_main_banner.webp)] w-full h-full bg-cover bg-center">
-      <div class="w-full h-full bg-mono-900/30 flex place-content-center">
-        <div class="flex flex-col gap-10 justify-center">
-          <!-- 타이틀 -->
-          <div>
-            <div class="text-[40px] text-mono-050 leading-[52px]">혼자 살아도 건강하게!</div>
-            <div class="text-[48px] font-bold text-mono-050 leading-16">
-              자취생을 위한 영양만점 레시피
-            </div>
-          </div>
-          <!-- 검색바 -->
-          <SearchBarRounded long @search="handleSearch" />
-        </div>
-      </div>
-    </div>
-  </div>
+  <RecipeMainBanner />
   <div class="container flex flex-col gap-[100px] py-[100px]">
     <!-- 카테고리별 레시피 -->
     <div class="flex flex-col gap-[28px]">
