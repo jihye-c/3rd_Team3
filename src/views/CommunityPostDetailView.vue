@@ -8,6 +8,8 @@
   import {useCommentStore} from '@/stores/commentStore';
   import ShareButton from '@/components/ShareButton.vue';
   import BookmarkButton from '@/components/BookmarkButton.vue';
+  import LikeButton from '@/components/LikeButton.vue';
+  import TextAlertButton from '@/components/TextAlertButton.vue';
 
   const communityChannels = {
     question: {
@@ -108,6 +110,8 @@
     <div class="flex gap-8 max-w-[1600px] w-full px-6">
       <!-- 좌측 버튼 -->
       <div class="flex flex-col gap-4 w-[52px]">
+        <LikeButton :is-liked="false" />
+        <TextAlertButton :commentleng="commentStore.comments.length" />
         <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
         <ShareButton />
       </div>
