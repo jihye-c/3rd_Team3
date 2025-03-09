@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import {useUserStore} from '@/stores/userStore';
+  import type {FullHospitalRes} from '@/types/hospitalType';
   import type {MapData} from '@/types/kakao';
   import {onMounted, ref, nextTick, watch, watchEffect} from 'vue';
   const kakaoKey = import.meta.env.VITE_KAKAO_JS_KEY;
@@ -33,7 +34,8 @@
     level: 3,
   });
   const props = defineProps<{
-loadHospital: () => Promise<void>;
+    loadHospital: () => Promise<void>;
+    hospitalList: FullHospitalRes;
   }>();
 
   const loadScript = () => {
@@ -44,7 +46,7 @@ loadHospital: () => Promise<void>;
     };
     document.head.appendChild(script);
   };
-  const loadMap = async() => {
+  const loadMap = async () => {
     if (window.kakao && window.kakao.maps) {
       const container = document.getElementById('map');
       if (container) {
@@ -57,9 +59,9 @@ loadHospital: () => Promise<void>;
           center: new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng), // 중심 좌표
           level: mapData.value.level,
         };
-        
+
         map.value = new window.kakao.maps.Map(container, options); // 지도 생성
-        if(map.value){
+        if (map.value) {
           await changeMapData(map.value);
           await props.loadHospital();
         }
@@ -77,13 +79,15 @@ loadHospital: () => Promise<void>;
 
   const changeMapData = async (map) => {
     if (
-      mapData.value.bounds.bottom <= 0||
+      mapData.value.bounds.bottom <= 0 ||
       mapData.value.bounds.top <= 0 ||
       mapData.value.bounds.left <= 0 ||
-      mapData.value.bounds.right <= 0 
+      mapData.value.bounds.right <= 0
     ) {
-      if(map.value){
-      await map.value.setCenter(new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng));
+      if (map.value) {
+        await map.value.setCenter(
+          new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng),
+        );
       }
     }
 
@@ -114,6 +118,26 @@ loadHospital: () => Promise<void>;
     }
   };
 
+  const setMarker = () => {
+    const locations = props.hospitalList.data?.map((data) => {
+      return {lng: data.mapx, lat: data.mapy};
+    });
+    locations?.forEach((loc) => {
+      const markerPosition = new window.kakao.maps.LatLng(loc.lat, loc.lng);
+      const marker = new window.kakao.maps.Marker({
+        position: markerPosition,
+      });
+      marker.setMap(map.value);
+      window.kakao.maps.event.addListener(marker, 'click', async() => {
+        if (map.value) {
+          await map.value.setCenter(
+            new window.kakao.maps.LatLng(loc.lat, loc.lng),
+          );
+        }
+      });
+    });
+  };
+
   onMounted(async () => {
     if (!window.kakao) {
       loadScript();
@@ -129,12 +153,14 @@ loadHospital: () => Promise<void>;
       loading.value = false;
       isMapChange.value = false;
     }, 800);
-  };// watchEffect(()=>{
-  //   if (map.value && mapData.value) {
-  //       map.value.setCenter(new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng));
-  //     }
-  // }
-  // );
+  };
+
+  watch(
+    () => props.hospitalList,
+    () => {
+      setMarker();
+    },
+  );
 </script>
 
 <template v-slot:actions>
