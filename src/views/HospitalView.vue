@@ -204,13 +204,12 @@
         }
       }
     } catch (err) {
-      console.log('키워드 검색 중 에러가 발생했습니다.',  err);
+console.log('키워드 검색 중 에러가 발생했습니다.', err);
     }
   };
 
   onMounted(() => {
     router.replace({path: route.path, query: {type: 'clinic'}});
-    loadHospital();
   });
   watch(
     () => route.query,
