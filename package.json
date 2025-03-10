@@ -78,6 +78,7 @@
     "vuetify": "^3.7.14"
   },
   "optionalDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.34.9"
+    "@rollup/rollup-win32-x64-msvc": "^4.34.9",
+    "@tailwindcss/oxide-win32-x64-msvc" : "4.0.11"
   }
 }
