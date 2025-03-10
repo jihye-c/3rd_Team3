@@ -300,6 +300,7 @@ console.log('키워드 검색 중 에러가 발생했습니다.', err);
         v-model:mapData="mapData"
         v-model:isMapChange="isMapChange"
         :loadHospital="loadHospital"
+        :openDetail="openDetail"
         :hospitalList="hospitalList"
       />
     </div>

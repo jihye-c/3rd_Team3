@@ -36,6 +36,7 @@
   const props = defineProps<{
     loadHospital: () => Promise<void>;
     hospitalList: FullHospitalRes;
+    openDetail:(id:string)=>void;
   }>();
 
   const loadScript = () => {
@@ -120,7 +121,7 @@
 
   const setMarker = () => {
     const locations = props.hospitalList.data?.map((data) => {
-      return {lng: data.mapx, lat: data.mapy};
+      return {lng: data.mapx, lat: data.mapy, id:data.id, name:data.name};
     });
     locations?.forEach((loc) => {
       const markerPosition = new window.kakao.maps.LatLng(loc.lat, loc.lng);
@@ -133,6 +134,7 @@
           await map.value.setCenter(
             new window.kakao.maps.LatLng(loc.lat, loc.lng),
           );
+          props.openDetail(loc.id)
         }
       });
     });
