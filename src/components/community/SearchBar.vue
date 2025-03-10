@@ -37,7 +37,6 @@
       criteria: localSearchCriteria.value,
       query: localSearchQuery.value,
     });
-    alert('click');
   };
 </script>
 

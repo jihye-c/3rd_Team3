@@ -8,13 +8,12 @@
   import type {Post} from '@/types/PostResponse';
   import {programmersApiInstance} from '@/utils/axiosInstance';
   import {computed, onMounted, ref, watch} from 'vue';
-  import {useRoute, useRouter} from 'vue-router';
+  import {useRouter} from 'vue-router';
   import districtData from '@/assets/data/district.json';
   import {useUserStore} from '@/stores/userStore';
 
   type DistrictKeys = keyof typeof districtData;
 
-  const route = useRoute();
   const router = useRouter();
   const authStore = useAuthStore();
   const UserStore = useUserStore();
@@ -33,7 +32,7 @@
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
   // 검색어
-  const searchQuery = ref('');
+  const searchKeyword = ref('');
   // 정렬기준
   const selectedOrder = ref('recent');
 
@@ -53,7 +52,14 @@
       // 태그 필터링
       const matchesTag = selectedTag.value ? parsedData.tags.includes(selectedTag.value) : true;
 
-      return matchesGu && matchesDong && matchesTag;
+      // 검색어 필터링
+      const matchesText = searchKeyword.value
+        ? selectedSearchCriteria.value === '제목'
+          ? parsedData.title.includes(searchKeyword.value)
+          : parsedData.content.includes(searchKeyword.value)
+        : true;
+
+      return matchesGu && matchesDong && matchesTag && matchesText;
     });
   });
 
@@ -61,12 +67,22 @@
     if (init.value) {
       router.replace({
         name: 'community-recipe',
-        query: {gu: selectedGu.value, dong: selectedDong.value, tag: selectedTag.value},
+        query: {
+          gu: selectedGu.value,
+          dong: selectedDong.value,
+          tag: selectedTag.value,
+          keyword: searchKeyword.value,
+        },
       });
     } else {
       router.push({
         name: 'community-recipe',
-        query: {gu: selectedGu.value, dong: selectedDong.value, tag: selectedTag.value},
+        query: {
+          gu: selectedGu.value,
+          dong: selectedDong.value,
+          tag: selectedTag.value,
+          keyword: searchKeyword.value,
+        },
       });
     }
   };
@@ -142,8 +158,8 @@
         </div>
         <SearchBar
           v-model:searchCriteria="selectedSearchCriteria"
-          v-model:searchQuery="searchQuery"
-          @search=""
+          v-model:searchQuery="searchKeyword"
+          @search="updateQuery"
           :width="900"
         />
       </div>
