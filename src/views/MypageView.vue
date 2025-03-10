@@ -1,42 +1,28 @@
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import RecipeCard from '@/components/community/RecipeCard.vue';
+import ResaleCard from '@/components/community/ResaleCard.vue';
+import CommunityPostList from '@/components/community/CommunityPostList.vue';
+import PaginationComponent from '@/components/PaginationComponent.vue';
+import { useUserStore } from '@/stores/userStore';
+import { useRouter } from 'vue-router';
+import { useCultureStore } from "../stores/cultureStore";
+import { getUserScrapList } from "@/apis/userService"; // ✅ 유저별 스크랩 목록 불러오기 함수 추가
+import BookmarkButton from '@/components/BookmarkButton.vue';
+import { toggleScrap } from "@/apis/userService";
 
-  import {ref, computed, watchEffect,onMounted} from 'vue';
-  import RecipeCard from '@/components/community/RecipeCard.vue';
-  import ResaleCard from '@/components/community/ResaleCard.vue';
-  import CommunityPostList from '@/components/community/CommunityPostList.vue';
-  import PaginationComponent from '@/components/PaginationComponent.vue';
-  import {useUserStore} from '@/stores/userStore';
-  import {useRoute, useRouter} from 'vue-router';
-  import Modal from '@/components/ModalComponent.vue';
-  import FollowComponent from '@/components/mypage/FollowComponent.vue';
-  import { useCultureStore } from "../stores/cultureStore";
-import { getUserScrapList } from "@/apis/userService";
+const router = useRouter();
+const cultureStore = useCultureStore();
 
-  const route = useRoute<string>();
-  const showModal = ref(false);
-  const followCategory = ref();
-  const userStore = useUserStore();
-  const router = useRouter();
-  const userInfo = ref();
-  const userFollowerInfo = ref();
-  const userFollowingInfo = ref();
-  const defaultImage = '/images/mypage/mypage_default_img.png';
-  const cultureStore = useCultureStore()
-  const id = localStorage.getItem('userId');
-  const routeId =  route.params.id
-  const bio = ref(
-    `안녕하세요! 🏡 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
-  안녕하세요! 🏡 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
-  안녕하세요! 🏡 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
-  안녕하세요! 🏡 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
-🍜 `,
-  );
-
-  const selectedTab = ref('동네리뷰'); // 기본 탭
-  const currentPage = ref(1);
-  const itemsPerPage = 12;
-
-  const subCategories = [
+const goToCultureDetail = (contentId) => {
+  router.push(`/culture/${contentId}`);
+};
+const formatDate = (dateString: string) => {
+  if (!dateString || dateString.length !== 8) return "날짜 미정"; // 예외 처리
+  return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
+};
+// ✅ 카테고리 코드 → 한글명 변환
+const subCategories = [
   { name: "문화관광축제", code: "A02070100" },
   { name: "일반축제", code: "A02070200" },
   { name: "전통공연", code: "A02080100" },
@@ -273,6 +259,32 @@ onMounted(async () => {
   }
 });
 
+const handleScrapToggle = async (festival) => {
+  try {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.warn("⚠️ 로그인이 필요합니다.");
+      return;
+    }
+
+    console.log("✅ 마이페이지에서 북마크 추가/삭제 요청:", festival);
+
+    // ✅ scrap 채널에 저장 or 삭제 (서버에 요청)
+    const updatedScraps = await toggleScrap(userId, festival);
+
+    // ✅ 최신 북마크 목록으로 업데이트
+    cultureStore.bookmarkedFestivals = updatedScraps;
+
+    console.log("✅ 마이페이지 북마크 업데이트 완료!");
+  } catch (error) {
+    console.error("❌ 북마크 저장 실패:", error);
+  }
+};
+
+// ✅ 북마크 상태 확인 (현재 스크랩 여부)
+const isBookmarked = (contentId) => {
+  return cultureStore.bookmarkedFestivals.some(festival => festival.content_id === contentId);
+};
 
 
 </script>
@@ -419,13 +431,25 @@ onMounted(async () => {
                 class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer"
                 @click="goToCultureDetail(festival.content_id)"
               >
-                <p class="text-sm text-mono-600 flex items-center mb-4">
+
+              <div class="flex justify-between items-center mb-4">
+                <!-- 카테고리 태그 -->
+                <p class="text-sm text-mono-600 flex items-center">
                   <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>{{ getCategoryName(festival.category3) }}
                 </p>
-                <img
-                  :src="festival.homepage && typeof festival.homepage === 'string' && festival.homepage.startsWith('http')
-                          ? festival.homepage
-                          : '/images/default-image.jpg'"
+                <!-- ✅ BookmarkButton 크기 제한 적용 -->
+                <BookmarkButton 
+                  :isBookmarked="isBookmarked(festival.content_id)" 
+                  @toggle="handleScrapToggle(festival)" 
+                  :small="true" 
+                />
+
+              </div>
+
+                <img 
+                  :src="festival.homepage && typeof festival.homepage === 'string' && festival.homepage.startsWith('http') 
+                          ? festival.homepage 
+                          : '/images/default-image.jpg'" 
                   class="h-[340px] w-full object-cover rounded-lg"
                 />
                 <div class="mt-4">
