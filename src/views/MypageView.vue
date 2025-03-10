@@ -1,43 +1,40 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import RecipeCard from '@/components/community/RecipeCard.vue';
-import ResaleCard from '@/components/community/ResaleCard.vue';
-import CommunityPostList from '@/components/community/CommunityPostList.vue';
-import PaginationComponent from '@/components/PaginationComponent.vue';
-import { useUserStore } from '@/stores/userStore';
-import { useRouter } from 'vue-router';
-import { useCultureStore } from "../stores/cultureStore";
-import { getUserScrapList } from "@/apis/userService"; // ✅ 유저별 스크랩 목록 불러오기 함수 추가
-import BookmarkButton from '@/components/BookmarkButton.vue';
-import { toggleScrap } from "@/apis/userService";
+  import {ref, computed, onMounted} from 'vue';
+  import RecipeCard from '@/components/community/RecipeCard.vue';
+  import ResaleCard from '@/components/community/ResaleCard.vue';
+  import CommunityPostList from '@/components/community/CommunityPostList.vue';
+  import PaginationComponent from '@/components/PaginationComponent.vue';
+  import {useUserStore} from '@/stores/userStore';
+  import {useRouter} from 'vue-router';
+  import {useCultureStore} from '../stores/cultureStore';
+  import {getUserScrapList} from '@/apis/userService'; // ✅ 유저별 스크랩 목록 불러오기 함수 추가
+  import BookmarkButton from '@/components/BookmarkButton.vue';
+  import {toggleScrap} from '@/apis/userService';
 
-const router = useRouter();
-const cultureStore = useCultureStore();
+  const router = useRouter();
+  const cultureStore = useCultureStore();
 
-const goToCultureDetail = (contentId) => {
-  router.push(`/culture/${contentId}`);
-};
-const formatDate = (dateString: string) => {
-  if (!dateString || dateString.length !== 8) return "날짜 미정"; // 예외 처리
-  return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
-};
-// ✅ 카테고리 코드 → 한글명 변환
-const subCategories = [
-  { name: "문화관광축제", code: "A02070100" },
-  { name: "일반축제", code: "A02070200" },
-  { name: "전통공연", code: "A02080100" },
-  { name: "연극", code: "A02080200" },
-  { name: "뮤지컬", code: "A02080300" },
-  { name: "오페라", code: "A02080400" },
-  { name: "전시회", code: "A02080500" },
-  { name: "박람회", code: "A02080600" },
-  { name: "무용", code: "A02080800" },
-  { name: "클래식음악회", code: "A02080900" },
-  { name: "대중콘서트", code: "A02081000" },
-  { name: "영화", code: "A02081100" },
-  { name: "스포츠경기", code: "A02081200" },
-  { name: "기타행사", code: "A02081300" },
-];
+  const formatDate = (dateString: string) => {
+    if (!dateString || dateString.length !== 8) return '날짜 미정'; // 예외 처리
+    return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
+  };
+  // ✅ 카테고리 코드 → 한글명 변환
+  const subCategories = [
+    {name: '문화관광축제', code: 'A02070100'},
+    {name: '일반축제', code: 'A02070200'},
+    {name: '전통공연', code: 'A02080100'},
+    {name: '연극', code: 'A02080200'},
+    {name: '뮤지컬', code: 'A02080300'},
+    {name: '오페라', code: 'A02080400'},
+    {name: '전시회', code: 'A02080500'},
+    {name: '박람회', code: 'A02080600'},
+    {name: '무용', code: 'A02080800'},
+    {name: '클래식음악회', code: 'A02080900'},
+    {name: '대중콘서트', code: 'A02081000'},
+    {name: '영화', code: 'A02081100'},
+    {name: '스포츠경기', code: 'A02081200'},
+    {name: '기타행사', code: 'A02081300'},
+  ];
 
   // 🔹 동네 리뷰 게시글 데이터
   const communityPostList = ref([
@@ -92,7 +89,6 @@ const subCategories = [
       comments: 5,
     },
   ]);
-
 
   const postList = [
     {
@@ -185,16 +181,13 @@ const subCategories = [
     },
   ];
   const goToCultureDetail = (contentId) => {
-  router.push(`/culture/${contentId}`);
-};
-const formatDate = (dateString: string) => {
-  if (!dateString || dateString.length !== 8) return "날짜 미정"; // 예외 처리
-  return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
-};
+    router.push(`/culture/${contentId}`);
+  };
   const getCategoryName = (code: string) => {
-  const category = subCategories.find((sub) => sub.code === code);
-  return category ? category.name : "기타";
-};
+    const category = subCategories.find((sub) => sub.code === code);
+    return category ? category.name : '기타';
+  };
+  
   // 현재 페이지에 맞게 데이터 필터링
   const paginatedRecipes = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
@@ -216,82 +209,75 @@ const formatDate = (dateString: string) => {
   // };
 
   watchEffect(async () => {
-
     await userStore.getUser(routeId);
     userInfo.value = userStore.userInfo;
     userFollowerInfo.value = userStore.followerInfo;
     userFollowingInfo.value = userStore.followingInfo;
     console.log(userInfo.value);
   });
-// 현재 페이지에 맞게 데이터 필터링
+  // 현재 페이지에 맞게 데이터 필터링
 
+  const totalCulturePages = computed(() => {
+    console.log('📝 현재 스크랩된 문화생활 개수:', cultureStore.bookmarkedFestivals?.length);
+    return Math.ceil((cultureStore.bookmarkedFestivals?.length || 0) / itemsPerPage);
+  });
+  const paginatedFestivals = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    return (cultureStore.bookmarkedFestivals ?? []).slice(start, start + itemsPerPage);
+  });
 
-const totalCulturePages = computed(() => {
-  console.log("📝 현재 스크랩된 문화생활 개수:", cultureStore.bookmarkedFestivals?.length);
-  return Math.ceil((cultureStore.bookmarkedFestivals?.length || 0) / itemsPerPage);
-});
-const paginatedFestivals = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return (cultureStore.bookmarkedFestivals ?? []).slice(start, start + itemsPerPage);
-});
+  const totalPages = computed(() => Math.ceil(recipeList.length / itemsPerPage));
 
+  const handlePageChange = (page: number) => {
+    console.log('📌 페이지 변경 요청:', page);
+    currentPage.value = page;
+    console.log('✅ 변경된 현재 페이지:', currentPage.value);
+  };
 
-const totalPages = computed(() => Math.ceil(recipeList.length / itemsPerPage));
+  onMounted(async () => {
+    const id = localStorage.getItem('userId');
+    if (id) {
+      await userStore.getUser(id);
+      userInfo.value = {...userStore.userInfo};
+      console.log('✅ 유저 정보 불러오기 완료:', userInfo.value);
 
-const handlePageChange = (page: number) => {
-  console.log("📌 페이지 변경 요청:", page);
-  currentPage.value = page;
-  console.log("✅ 변경된 현재 페이지:", currentPage.value);
-};
-
-
-onMounted(async () => {
-  const id = localStorage.getItem("userId");
-  if (id) {
-    await userStore.getUser(id);
-    userInfo.value = { ...userStore.userInfo };
-    console.log("✅ 유저 정보 불러오기 완료:", userInfo.value);
-
-    // ✅ 유저별 스크랩 목록 가져오기
-    const scrapList = await getUserScrapList(id);
-    cultureStore.bookmarkedFestivals = scrapList;
-    console.log("✅ [유저별] 북마크 불러오기 완료:", cultureStore.bookmarkedFestivals);
-  }
-});
-
-const handleScrapToggle = async (festival) => {
-  try {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      console.warn("⚠️ 로그인이 필요합니다.");
-      return;
+      // ✅ 유저별 스크랩 목록 가져오기
+      const scrapList = await getUserScrapList(id);
+      cultureStore.bookmarkedFestivals = scrapList;
+      console.log('✅ [유저별] 북마크 불러오기 완료:', cultureStore.bookmarkedFestivals);
     }
+  });
 
-    console.log("✅ 마이페이지에서 북마크 추가/삭제 요청:", festival);
+  const handleScrapToggle = async (festival) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.warn('⚠️ 로그인이 필요합니다.');
+        return;
+      }
 
-    // ✅ scrap 채널에 저장 or 삭제 (서버에 요청)
-    const updatedScraps = await toggleScrap(userId, festival);
+      console.log('✅ 마이페이지에서 북마크 추가/삭제 요청:', festival);
 
-    // ✅ 최신 북마크 목록으로 업데이트
-    cultureStore.bookmarkedFestivals = updatedScraps;
+      // ✅ scrap 채널에 저장 or 삭제 (서버에 요청)
+      const updatedScraps = await toggleScrap(userId, festival);
 
-    console.log("✅ 마이페이지 북마크 업데이트 완료!");
-  } catch (error) {
-    console.error("❌ 북마크 저장 실패:", error);
-  }
-};
+      // ✅ 최신 북마크 목록으로 업데이트
+      cultureStore.bookmarkedFestivals = updatedScraps;
 
-// ✅ 북마크 상태 확인 (현재 스크랩 여부)
-const isBookmarked = (contentId) => {
-  return cultureStore.bookmarkedFestivals.some(festival => festival.content_id === contentId);
-};
+      console.log('✅ 마이페이지 북마크 업데이트 완료!');
+    } catch (error) {
+      console.error('❌ 북마크 저장 실패:', error);
+    }
+  };
 
-
+  // ✅ 북마크 상태 확인 (현재 스크랩 여부)
+  const isBookmarked = (contentId) => {
+    return cultureStore.bookmarkedFestivals.some((festival) => festival.content_id === contentId);
+  };
 </script>
 
 <template>
   <div class="w-full container pt-24">
-
     <div class="mx-auto mt-4">
       <!-- 내 정보 박스 -->
       <div class="w-full bg-white rounded-lg p-6 flex items-center justify-between relative">
@@ -302,7 +288,6 @@ const isBookmarked = (contentId) => {
           >
             <img
               :src="userInfo?.image ?? defaultImage"
-
               alt="Profile"
               class="w-full h-full object-cover"
             />
@@ -331,7 +316,6 @@ const isBookmarked = (contentId) => {
             <!-- 자기 소개 -->
             <div class="mt-4 w-full">
               <p class="text-mono-600 text-wrap text-[16px]">{{ bio }}</p>
-
             </div>
           </div>
         </div>
@@ -346,29 +330,31 @@ const isBookmarked = (contentId) => {
           </button>
         </div>
         <div v-else class="absolute top-6 right-6 flex gap-4">
-          <button @click="router.push('/mypage/user-update')" class="w-[120px] text-main-50 cursor-pointer hover:bg-main-400/80 bg-main-400 py-2 rounded-md">
-           <span class="text-md ">팔로우</span>
+          <button
+            @click="router.push('/mypage/user-update')"
+            class="w-[120px] text-main-50 cursor-pointer hover:bg-main-400/80 bg-main-400 py-2 rounded-md"
+          >
+            <span class="text-md">팔로우</span>
           </button>
         </div>
       </div>
 
       <!-- 나의 스크랩 -->
       <div class="mt-12">
-
         <h2 class="text-[32px] font-semibold text-mono-900">나의 스크랩</h2>
 
-      <!-- 기존 탭 -->
-      <div class="flex border-b border-mono-200 mt-6">
-        <button
-          v-for="tab in ['동네리뷰', '중고거래', '질문게시판', '나만의 레시피', '문화생활']"
-          :key="tab"
-          @click="selectedTab = tab"
-          class="px-6 py-3 text-[20px] font-medium text-mono-600 transition-colors duration-200"
-          :class="selectedTab === tab ? 'border-b-4 border-main-400 text-mono-900' : ''"
-        >
-          {{ tab }}
-        </button>
-      </div>
+        <!-- 기존 탭 -->
+        <div class="flex border-b border-mono-200 mt-6">
+          <button
+            v-for="tab in ['동네리뷰', '중고거래', '질문게시판', '나만의 레시피', '문화생활']"
+            :key="tab"
+            @click="selectedTab = tab"
+            class="px-6 py-3 text-[20px] font-medium text-mono-600 transition-colors duration-200"
+            :class="selectedTab === tab ? 'border-b-4 border-main-400 text-mono-900' : ''"
+          >
+            {{ tab }}
+          </button>
+        </div>
         <!-- 탭 컨텐츠 -->
         <div class="mt-6">
           <!-- 동네 리뷰 탭 -->
@@ -431,32 +417,36 @@ const isBookmarked = (contentId) => {
                 class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer"
                 @click="goToCultureDetail(festival.content_id)"
               >
+                <div class="flex justify-between items-center mb-4">
+                  <!-- 카테고리 태그 -->
+                  <p class="text-sm text-mono-600 flex items-center">
+                    <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span
+                    >{{ getCategoryName(festival.category3) }}
+                  </p>
+                  <!-- ✅ BookmarkButton 크기 제한 적용 -->
+                  <BookmarkButton
+                    :isBookmarked="isBookmarked(festival.content_id)"
+                    @toggle="handleScrapToggle(festival)"
+                    :small="true"
+                  />
+                </div>
 
-              <div class="flex justify-between items-center mb-4">
-                <!-- 카테고리 태그 -->
-                <p class="text-sm text-mono-600 flex items-center">
-                  <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>{{ getCategoryName(festival.category3) }}
-                </p>
-                <!-- ✅ BookmarkButton 크기 제한 적용 -->
-                <BookmarkButton 
-                  :isBookmarked="isBookmarked(festival.content_id)" 
-                  @toggle="handleScrapToggle(festival)" 
-                  :small="true" 
-                />
-
-              </div>
-
-                <img 
-                  :src="festival.homepage && typeof festival.homepage === 'string' && festival.homepage.startsWith('http') 
-                          ? festival.homepage 
-                          : '/images/default-image.jpg'" 
+                <img
+                  :src="
+                    festival.homepage &&
+                    typeof festival.homepage === 'string' &&
+                    festival.homepage.startsWith('http')
+                      ? festival.homepage
+                      : '/images/default-image.jpg'
+                  "
                   class="h-[340px] w-full object-cover rounded-lg"
                 />
                 <div class="mt-4">
                   <p class="font-bold text-mono-900">{{ festival.name }}</p>
                 </div>
                 <div class="mt-4 text-[12px] text-mono-600">
-                  {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}
+                  {{ formatDate(festival.event_start_date) }} ~
+                  {{ formatDate(festival.event_end_date) }}
                   <br />
                   {{ festival.gu_name }}
                 </div>
