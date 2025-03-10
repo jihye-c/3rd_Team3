@@ -7,7 +7,7 @@
   import {useAuthStore} from '@/stores/auth';
   import type {Post} from '@/types/PostResponse';
   import {programmersApiInstance} from '@/utils/axiosInstance';
-  import {computed, ref, watch} from 'vue';
+  import {computed, onMounted, ref, watch} from 'vue';
   import {useRoute, useRouter} from 'vue-router';
   import districtData from '@/assets/data/district.json';
   import {useUserStore} from '@/stores/userStore';
@@ -28,6 +28,7 @@
   watch(selectedGu, () => {
     selectedDong.value = null;
   });
+  const selectedTag = ref<string | null>(null);
 
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
@@ -37,65 +38,56 @@
   const selectedOrder = ref('recent');
 
   const postList = ref<Post[]>([]);
-  const filteredPostList = ref<Post[]>(postList.value);
   const isLoading = ref<boolean>(false);
   const init = ref<boolean>(true);
 
-  const filterByGu = () => {
-    const filteredData = postList.value.filter(
-      (data) => JSON.parse(data.title).region.gu === selectedGu.value,
-    );
-    filteredPostList.value = filteredData;
-  };
+  const filteredPostList = computed(() => {
+    return postList.value.filter((data: Post) => {
+      const parsedData = JSON.parse(data.title);
+      // 구 필터링
+      const matchesGu = selectedGu.value ? parsedData.region.gu === selectedGu.value : true;
 
-  const filterByDong = () => {
-    if (selectedDong.value) {
-      const filteredData = postList.value.filter(
-        (data) => JSON.parse(data.title).region.dong === selectedDong.value,
-      );
-      filteredPostList.value = filteredData;
-    }
-  };
+      // 동 필터링
+      const matchesDong = selectedDong.value ? parsedData.region.dong === selectedDong.value : true;
+
+      // 태그 필터링
+      const matchesTag = selectedTag.value ? parsedData.tags.includes(selectedTag.value) : true;
+
+      return matchesGu && matchesDong && matchesTag;
+    });
+  });
 
   const updateQuery = () => {
     if (init.value) {
       router.replace({
         name: 'community-review',
-        query: {gu: selectedGu.value, dong: selectedDong.value},
+        query: {gu: selectedGu.value, dong: selectedDong.value, tag: selectedTag.value},
       });
     } else {
       router.push({
         name: 'community-review',
-        query: {gu: selectedGu.value, dong: selectedDong.value},
+        query: {gu: selectedGu.value, dong: selectedDong.value, tag: selectedTag.value},
       });
     }
   };
 
-  watch(
-    () => JSON.stringify(route.query),
-    async (newQuery, oldQuery) => {
-      try {
-        if (init.value) {
-          isLoading.value = true;
-          const response = await programmersApiInstance.get<Post[]>(
-            `/posts/channel/${REVIEW_CHANNEL_ID}`,
-          );
-          postList.value = response.data;
-          updateQuery();
-          filterByGu();
-          init.value = false;
-        } else {
-          filterByGu();
-          filterByDong();
-        }
-      } catch (error) {
-        console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
-      } finally {
-        isLoading.value = false;
+  onMounted(async () => {
+    try {
+      if (init.value) {
+        isLoading.value = true;
+        const response = await programmersApiInstance.get<Post[]>(
+          `/posts/channel/${REVIEW_CHANNEL_ID}`,
+        );
+        postList.value = response.data;
+        updateQuery();
+        init.value = false;
       }
-    },
-    {immediate: true},
-  );
+    } catch (error) {
+      console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
+    } finally {
+      isLoading.value = false;
+    }
+  });
 </script>
 
 <template>
@@ -138,12 +130,14 @@
             @update:modelValue="updateQuery"
           />
           <v-select
+            v-model="selectedTag"
             label="태그 선택"
-            :items="['병원', '청약', '레시피', '문화생활', '자취꿀팁']"
+            :items="['맛집', '생활편의', '교통', '주거', '문화']"
             variant="outlined"
             width="134"
             rounded="lg"
             density="compact"
+            @update:modelValue="updateQuery"
           />
         </div>
         <SearchBar
@@ -189,6 +183,7 @@
             "
           />
         </template>
+        <!-- {{ filteredPostList[0] }} -->
       </div>
 
       <!-- 페이지네이션 -->
