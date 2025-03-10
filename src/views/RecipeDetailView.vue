@@ -3,7 +3,7 @@
   import BookmarkButton from '@/components/BookmarkButton.vue';
   import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
   import ShareButton from '@/components/ShareButton.vue';
-  import {onMounted, watch, ref} from 'vue';
+  import {onMounted, watch, ref, onBeforeUnmount} from 'vue';
   import {useRoute} from 'vue-router';
   import {fetchRecipe} from '@/apis/recipeApi';
   import type {Recipe} from '@/types/RecipeResponse';
@@ -90,6 +90,9 @@
         .map(([_, value]) => value)
         .sort((a, b) => Number(a[0].split('.')[0]) - Number(b[0].split('.')[0]));
     }
+  });
+  onBeforeUnmount(() => {
+    window.onbeforeunload = null;
   });
 </script>
 
@@ -181,10 +184,16 @@
           <div class="text-[40px] text-mono-700 font-semibold">연관 레시피</div>
           <div class="flex gap-[24px]">
             <div class="bg-mono-200 h-[360px] w-full rounded-2xl overflow-hidden">
-              <iframe :src="`https://www.youtube.com/embed/${videoId[0]}`" class="w-full h-full" />
+              <iframe
+                :src="`https://www.youtube.com/embed/${videoId[0]}?enablejsapi=1&rel=0`"
+                class="w-full h-full"
+              />
             </div>
             <div class="bg-mono-200 h-[360px] w-full rounded-2xl overflow-hidden">
-              <iframe :src="`https://www.youtube.com/embed/${videoId[1]}`" class="w-full h-full" />
+              <iframe
+                :src="`https://www.youtube.com/embed/${videoId[1]}?enablejsapi=1&rel=0`"
+                class="w-full h-full"
+              />
             </div>
           </div>
         </div>
