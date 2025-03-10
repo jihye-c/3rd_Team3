@@ -117,21 +117,21 @@ export const getUserScrapList = async (userId: string) => {
 
 
 
-export async function testScrapChannelAPI() {
-  try {
-    const response = await axios.get("http://13.125.143.126:5003/channels/67bfdc61ff075444a9c22ebd", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-      }
-    });
+// export async function testScrapChannelAPI() {
+//   try {
+//     const response = await axios.get("http://13.125.143.126:5003/channels/67bfdc61ff075444a9c22ebd", {
+//       headers: {
+//         Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+//       }
+//     });
 
-    console.log("📌 스크랩 채널 API 응답:", response.data);
-  } catch (error) {
-    console.error("❌ 스크랩 채널 API 요청 실패:", error);
-  }
-}
+//     console.log("📌 스크랩 채널 API 응답:", response.data);
+//   } catch (error) {
+//     console.error("❌ 스크랩 채널 API 요청 실패:", error);
+//   }
+// }
 
-testScrapChannelAPI();
+// testScrapChannelAPI();
 
 export async function deleteScrapPost(scrapId: string) {
   try {

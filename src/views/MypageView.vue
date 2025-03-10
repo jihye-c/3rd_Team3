@@ -381,7 +381,7 @@ const isBookmarked = (contentId) => {
               :tag="recipe.tag"
             />
           </div>
-          <div class="mt-6">
+          
             <!-- ✅ 문화생활 탭 추가 -->
             <div v-if="selectedTab === '문화생활'" class="grid grid-cols-3 gap-4 w-full">
               <div 
@@ -399,7 +399,8 @@ const isBookmarked = (contentId) => {
 
                 <!-- ✅ BookmarkButton 크기 제한 적용 -->
                 <BookmarkButton 
-                  :isBookmarked="isBookmarked(festival.content_id)" 
+                  :isBookmarked="isBookmarked(festival.content_id)"
+                  @click.stop 
                   @toggle="handleScrapToggle(festival)" 
                   :small="true" 
                 />
@@ -422,7 +423,7 @@ const isBookmarked = (contentId) => {
                 </div>
               </div>
             </div>
-          </div>
+          
           <!-- 페이지네이션 추가 -->
           <PaginationComponent 
             :totalPages="totalCulturePages" 
