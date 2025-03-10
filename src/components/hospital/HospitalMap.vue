@@ -36,7 +36,7 @@
   const props = defineProps<{
     loadHospital: () => Promise<void>;
     hospitalList: FullHospitalRes;
-    openDetail:(id:string)=>void;
+    openDetail: (id: string) => void;
   }>();
 
   const loadScript = () => {
@@ -119,26 +119,79 @@
     }
   };
 
-  const setMarker = () => {
-    const locations = props.hospitalList.data?.map((data) => {
-      return {lng: data.mapx, lat: data.mapy, id:data.id, name:data.name};
+const setMarker = () => {
+  const locations = props.hospitalList.data?.map((data) => ({
+    lng: Number(data.mapx),
+    lat: Number(data.mapy),
+    id: data.id,
+    name: data.name,
+  }));
+
+  const offset = 0.00003;
+  const positionMap = new Map();
+
+  locations?.forEach((loc) => {
+    let newLat = loc.lat;
+    let newLng = loc.lng;
+    const key = `${newLat},${newLng}`; // 중복 체크 시 수정된 좌표 기준
+
+    //지터링
+    if (positionMap.has(key)) {
+      const count = positionMap.get(key);
+      newLat += offset * count;
+      newLng += offset * 2 * count;
+      positionMap.set(key, count + 1);
+    } else {
+      positionMap.set(key, 1);
+    }
+
+    const markerPosition = new window.kakao.maps.LatLng(newLat, newLng);
+
+    // 기본 마커 추가
+    const marker = new window.kakao.maps.Marker({
+      position: markerPosition,
+      map: map.value,
     });
-    locations?.forEach((loc) => {
-      const markerPosition = new window.kakao.maps.LatLng(loc.lat, loc.lng);
-      const marker = new window.kakao.maps.Marker({
-        position: markerPosition,
-      });
-      marker.setMap(map.value);
-      window.kakao.maps.event.addListener(marker, 'click', async() => {
-        if (map.value) {
-          await map.value.setCenter(
-            new window.kakao.maps.LatLng(loc.lat, loc.lng),
-          );
-          props.openDetail(loc.id)
-        }
-      });
+
+    console.log(`마커 추가: ${loc.name} (${newLat}, ${newLng})`);
+
+    // 오버레이 추가
+    const overlayId = `${loc.id}_overlay`;
+    const content = `<div id="${overlayId}" class="bg-main-50 border border-main-400 text-main-400" style="opacity:0; transition: opacity 0.3s;">
+      ${loc.name}
+    </div>`;
+    const overlay = new window.kakao.maps.CustomOverlay({
+      position: markerPosition,
+      content: content,
+      yAnchor: 1.5,
     });
-  };
+    overlay.setMap(map.value);
+
+    setTimeout(() => {
+      const overlayElement = document.getElementById(overlayId);
+      if (overlayElement) {
+        window.kakao.maps.event.addListener(marker, 'mouseover', function () {
+          overlayElement.style.opacity = '1';
+        });
+
+        window.kakao.maps.event.addListener(marker, 'mouseout', function () {
+          overlayElement.style.opacity = '0';
+        });
+      } else {
+        console.warn(`오버레이 요소를 찾을 수 없음: ${overlayId}`);
+      }
+    }, 100);
+
+    // 마커 클릭 이벤트 추가
+    window.kakao.maps.event.addListener(marker, 'click', async () => {
+      if (map.value) {
+        await map.value.setCenter(markerPosition);
+        props.openDetail(loc.id);
+      }
+    });
+  });
+};
+
 
   onMounted(async () => {
     if (!window.kakao) {
