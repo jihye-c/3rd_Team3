@@ -41,7 +41,7 @@
   const init = ref<boolean>(true);
 
   const filteredPostList = computed(() => {
-    return postList.value.filter((data: Post) => {
+    const filteredData = postList.value.filter((data: Post) => {
       const parsedData = JSON.parse(data.title);
       // 구 필터링
       const matchesGu = selectedGu.value ? parsedData.region.gu === selectedGu.value : true;
@@ -61,6 +61,14 @@
 
       return matchesGu && matchesDong && matchesTag && matchesText;
     });
+    // 정렬
+    return filteredData.sort((a, b) => {
+      if (selectedOrder.value === 'popular') {
+        return b.likes.length - a.likes.length; // 'likes'가 많은 순으로 정렬
+      } else {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // 최신순 정렬
+      }
+    });
   });
 
   const updateQuery = () => {
@@ -71,6 +79,7 @@
           gu: selectedGu.value,
           dong: selectedDong.value,
           keyword: searchKeyword.value,
+          order: selectedOrder.value,
         },
       });
     } else {
@@ -80,6 +89,7 @@
           gu: selectedGu.value,
           dong: selectedDong.value,
           keyword: searchKeyword.value,
+          order: selectedOrder.value,
         },
       });
     }
@@ -165,8 +175,18 @@
       <div class="flex justify-between items-center">
         <!-- 정렬 -->
         <div class="flex gap-7">
-          <OrderRadioButton v-model="selectedOrder" value="recent" label="최신순" />
-          <OrderRadioButton v-model="selectedOrder" value="popular" label="인기순" />
+          <OrderRadioButton
+            v-model="selectedOrder"
+            value="recent"
+            label="최신순"
+            @update:modelValue="updateQuery"
+          />
+          <OrderRadioButton
+            v-model="selectedOrder"
+            value="popular"
+            label="인기순"
+            @update:modelValue="updateQuery"
+          />
         </div>
         <!-- 글작성 버튼 -->
         <v-btn
