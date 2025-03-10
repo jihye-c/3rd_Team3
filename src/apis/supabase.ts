@@ -1,19 +1,12 @@
 import type {MapData} from '@/types/kakao.d';
 import type {
   FullHospitalRes,
-  HospitalData,
-  HospitalDetail,
-  HospitalTraffic,
-  HospitalTreatment,
+  HospitalFullData
 } from '@/types/hospitalType';
 import {createClient, SupabaseClient} from '@supabase/supabase-js';
 import Papa from 'papaparse'; // PapaParse 라이브러리 사용
 import symptomsList from '@/assets/data/symptoms.json';
 
-type HospitalFullData = Partial<HospitalData & HospitalDetail> & {
-  traffic?: HospitalTraffic[];
-  treatment?: HospitalTreatment[];
-};
 export default class Supabase {
   private static supabase: SupabaseClient | null = null;
   private static init() {
@@ -306,9 +299,9 @@ export default class Supabase {
         .from('hospital_detail')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
       if (!detailError && hospitalDetail) {
-        totalData = {...totalData, ...hospitalDetail};
+        totalData = {...totalData, detail:hospitalDetail};
       }
 
       //교통 정보 불러오기
