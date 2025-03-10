@@ -50,10 +50,12 @@
   };
 
   const filterByDong = () => {
-    const filteredData = postList.value.filter(
-      (data) => JSON.parse(data.title).region.dong === selectedDong.value,
-    );
-    filteredPostList.value = filteredData;
+    if (selectedDong.value) {
+      const filteredData = postList.value.filter(
+        (data) => JSON.parse(data.title).region.dong === selectedDong.value,
+      );
+      filteredPostList.value = filteredData;
+    }
   };
 
   const updateQuery = () => {
@@ -196,9 +198,9 @@
     color: var(--color-mono-050);
     height: 40px;
   }
-  :deep(.v-label) {
+  /* :deep(.v-label) {
     font-size: 18px;
-  }
+  } */
   /* 선택된 값 표시 글자 크기 */
   /* :deep(.v-field__input) {
     font-size: 18px;

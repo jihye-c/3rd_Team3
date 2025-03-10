@@ -39,6 +39,7 @@
   const postList = ref<Post[]>([]);
   const filteredPostList = ref<Post[]>(postList.value);
   const isLoading = ref<boolean>(false);
+  const init = ref<boolean>(true);
 
   const filterByGu = () => {
     const filteredData = postList.value.filter(
@@ -48,23 +49,45 @@
   };
 
   const filterByDong = () => {
-    const filteredData = postList.value.filter(
-      (data) => JSON.parse(data.title).region.dong === selectedDong.value,
-    );
-    filteredPostList.value = filteredData;
+    if (selectedDong.value) {
+      const filteredData = postList.value.filter(
+        (data) => JSON.parse(data.title).region.dong === selectedDong.value,
+      );
+      filteredPostList.value = filteredData;
+    }
+  };
+
+  const updateQuery = () => {
+    if (init.value) {
+      router.replace({
+        name: 'community-question',
+        query: {gu: selectedGu.value, dong: selectedDong.value},
+      });
+    } else {
+      router.push({
+        name: 'community-question',
+        query: {gu: selectedGu.value, dong: selectedDong.value},
+      });
+    }
   };
 
   watch(
     () => JSON.stringify(route.query),
     async (newQuery, oldQuery) => {
       try {
-        isLoading.value = true;
-        const response = await programmersApiInstance.get<Post[]>(
-          `/posts/channel/${QUESTION_CHANNEL_ID}`,
-        );
-        postList.value = response.data;
-        filterByGu();
-        // console.log(JSON.parse(response.data[0].title).title);
+        if (init.value) {
+          isLoading.value = true;
+          const response = await programmersApiInstance.get<Post[]>(
+            `/posts/channel/${QUESTION_CHANNEL_ID}`,
+          );
+          postList.value = response.data;
+          updateQuery();
+          filterByGu();
+          init.value = false;
+        } else {
+          filterByGu();
+          filterByDong();
+        }
       } catch (error) {
         console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
       } finally {
