@@ -94,18 +94,19 @@ const filterFestivals = () => {
   console.log("✅ 필터링 전 데이터 개수:", festivalData.value.length);
 
   if (
-    !selectedFilters.value.category && 
-    !selectedFilters.value.subCategory && 
-    !selectedFilters.value.keyword && 
+    !selectedFilters.value.category &&
+    !selectedFilters.value.subCategory &&
+    !selectedFilters.value.keyword &&
     selectedFilters.value.location === "전체" &&
     !selectedFilters.value.period
-  ) { 
+  ) {
     if (festivalData.value.length > 0) {
       filteredFestivals.value = festivalData.value;
       cultureStore.setFilteredFestivals(festivalData.value);
     }
     return;
   }
+
 
 
   const today = dayjs();
@@ -159,7 +160,7 @@ const filterFestivals = () => {
 
   // ✅ 사용자가 필터를 변경한 경우에만 팝업을 띄움
   if (newFilteredFestivals.length === 0 && festivalData.value.length > 0) {
-    showPopup.value = true; 
+    showPopup.value = true;
   } else {
     showPopup.value = false;
   }
@@ -191,7 +192,7 @@ const fetchFestivals = async () => {
     if (cultureStore.festivals.length > 0) {
       console.log("✅ 기존 데이터가 존재하여 API 요청 생략");
       festivalData.value = [...cultureStore.festivals];
-      filteredFestivals.value = cultureStore.filteredFestivals.length > 0 
+      filteredFestivals.value = cultureStore.filteredFestivals.length > 0
         ? [...cultureStore.filteredFestivals]
         : [...cultureStore.festivals];
       currentPage.value = cultureStore.currentPage;
@@ -216,9 +217,10 @@ const fetchFestivals = async () => {
       cultureStore.setFestivals(optimizedData);
       cultureStore.setFilteredFestivals(optimizedData);
 
+
       festivalData.value = optimizedData;
-      filteredFestivals.value = optimizedData; 
-      
+      filteredFestivals.value = optimizedData;
+
     } else {
       console.warn("⚠️ 받아온 데이터가 없음");
       filteredFestivals.value = [];
@@ -388,7 +390,7 @@ onMounted(() => {
 
           <!-- 카드 리스트 -->
           <div class="grid grid-cols-3 gap-4 w-full">
-            <div 
+            <div
               v-for="(festival, index) in paginatedFestivals"
               :key="index"
               class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer"

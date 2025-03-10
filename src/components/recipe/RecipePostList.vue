@@ -4,6 +4,7 @@
     title: string;
     content: string;
     image: string;
+    font_class?:string;
   }
 
   const props = defineProps<Props>();
@@ -20,7 +21,7 @@
     </div>
     <div class="flex flex-col gap-[8px] ml-4 overflow-hidden flex-1">
       <div class="text-[18px] text-mono-400 truncate">{{ props.author }}</div>
-      <div class="text-[32px] text-mono-700 font-semibold leading-[38px] line-clamp-1">
+      <div :class="`text-[32px] text-mono-700 font-semibold leading-[38px] line-clamp-1 ${font_class}`">
         {{ props.title }}
       </div>
       <div class="text-[18px] text-mono-700 line-clamp-1">{{ props.content }}</div>

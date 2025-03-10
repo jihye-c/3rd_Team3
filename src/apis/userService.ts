@@ -153,17 +153,11 @@ export async function deleteScrapPost(scrapId: string) {
   }
 }
 
-
 export async function toggleScrap(userId: string, festivalData: any, context: string = "default") {
   try {
     // ✅ 유저의 현재 스크랩 목록 가져오기
     const userScraps = await getUserScrapList(userId);
-    
-    // ✅ 동일한 `content_id`의 스크랩 찾기
-    const existingScrap = userScraps.find(scrap => scrap.content_id === festivalData.content_id);
-
-    console.log("🔎 기존 스크랩 데이터:", existingScrap); // ✅ 삭제할 데이터 확인
-
+const existingScrap = userScraps.find(scrap => scrap.content_id === festivalData.content_id);
     let updatedScrapList = [];
 
     if (existingScrap) {
@@ -192,8 +186,7 @@ export async function toggleScrap(userId: string, festivalData: any, context: st
       console.log("🔄 페이지 이동 필요 (마이페이지 제외)");
       return updatedScrapList;
     }
-    
-        console.log("✅ 마이페이지 내에서 스크랩 변경 완료!");
+    console.log("✅ 마이페이지 내에서 스크랩 변경 완료!");
     return updatedScrapList;
   } catch (error) {
     console.error(`❌ [유저별] 스크랩 토글 실패 (userId: ${userId}):`, error);
@@ -218,3 +211,16 @@ export async function getGeolocationAddress(locations: { latitude: number; longi
   return res.data
 }
 
+export async function updateUserProfile(formData:FormData){
+  const response = await axios.post(`${apiRoot}/users/upload-photo`,formData,{
+    headers: {
+      'Content-Type':'multipart/form-data',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  console.log(response);
+  if (response.status !== 200) {
+    throw 'state : ' + response.status;
+  }
+  return response.data;
+}
