@@ -153,7 +153,6 @@ export async function deleteScrapPost(scrapId: string) {
   }
 }
 
-
 export async function toggleScrap(userId: string, festivalData: any, context: string = "default") {
   try {
     // ✅ 유저의 현재 스크랩 목록 가져오기
@@ -192,8 +191,7 @@ export async function toggleScrap(userId: string, festivalData: any, context: st
       console.log("🔄 페이지 이동 필요 (마이페이지 제외)");
       return updatedScrapList;
     }
-    
-        console.log("✅ 마이페이지 내에서 스크랩 변경 완료!");
+    console.log("✅ 마이페이지 내에서 스크랩 변경 완료!");
     return updatedScrapList;
   } catch (error) {
     console.error(`❌ [유저별] 스크랩 토글 실패 (userId: ${userId}):`, error);
