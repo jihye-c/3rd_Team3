@@ -1,6 +1,6 @@
 <template>
-  <div class=" w-[300px] hover-target cursor-pointer flex flex-col gap-3">
-    <div class=" relative  group h-[375px]  rounded-lg overflow-hidden">
+  <div class=" w-[300px]  cursor-pointer flex flex-col gap-3">
+    <div class=" relative  group h-[375px] hover-target  rounded-lg overflow-hidden">
   <img
     :src="link"
     alt=""

@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import {useUserStore} from '@/stores/userStore';
+  import type {FullHospitalRes} from '@/types/hospitalType';
   import type {MapData} from '@/types/kakao';
   import {onMounted, ref, nextTick, watch, watchEffect} from 'vue';
   const kakaoKey = import.meta.env.VITE_KAKAO_JS_KEY;
@@ -33,7 +34,9 @@
     level: 3,
   });
   const props = defineProps<{
-loadHospital: () => Promise<void>;
+    loadHospital: () => Promise<void>;
+    hospitalList: FullHospitalRes;
+    openDetail: (id: string) => void;
   }>();
 
   const loadScript = () => {
@@ -44,7 +47,7 @@ loadHospital: () => Promise<void>;
     };
     document.head.appendChild(script);
   };
-  const loadMap = async() => {
+  const loadMap = async () => {
     if (window.kakao && window.kakao.maps) {
       const container = document.getElementById('map');
       if (container) {
@@ -57,9 +60,9 @@ loadHospital: () => Promise<void>;
           center: new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng), // 중심 좌표
           level: mapData.value.level,
         };
-        
+
         map.value = new window.kakao.maps.Map(container, options); // 지도 생성
-        if(map.value){
+        if (map.value) {
           await changeMapData(map.value);
           await props.loadHospital();
         }
@@ -77,13 +80,15 @@ loadHospital: () => Promise<void>;
 
   const changeMapData = async (map) => {
     if (
-      mapData.value.bounds.bottom <= 0||
+      mapData.value.bounds.bottom <= 0 ||
       mapData.value.bounds.top <= 0 ||
       mapData.value.bounds.left <= 0 ||
-      mapData.value.bounds.right <= 0 
+      mapData.value.bounds.right <= 0
     ) {
-      if(map.value){
-      await map.value.setCenter(new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng));
+      if (map.value) {
+        await map.value.setCenter(
+          new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng),
+        );
       }
     }
 
@@ -114,6 +119,80 @@ loadHospital: () => Promise<void>;
     }
   };
 
+const setMarker = () => {
+  const locations = props.hospitalList.data?.map((data) => ({
+    lng: Number(data.mapx),
+    lat: Number(data.mapy),
+    id: data.id,
+    name: data.name,
+  }));
+
+  const offset = 0.00003;
+  const positionMap = new Map();
+
+  locations?.forEach((loc) => {
+    let newLat = loc.lat;
+    let newLng = loc.lng;
+    const key = `${newLat},${newLng}`; // 중복 체크 시 수정된 좌표 기준
+
+    //지터링
+    if (positionMap.has(key)) {
+      const count = positionMap.get(key);
+      newLat += offset * count;
+      newLng += offset * 2 * count;
+      positionMap.set(key, count + 1);
+    } else {
+      positionMap.set(key, 1);
+    }
+
+    const markerPosition = new window.kakao.maps.LatLng(newLat, newLng);
+
+    // 기본 마커 추가
+    const marker = new window.kakao.maps.Marker({
+      position: markerPosition,
+      map: map.value,
+    });
+
+    console.log(`마커 추가: ${loc.name} (${newLat}, ${newLng})`);
+
+    // 오버레이 추가
+    const overlayId = `${loc.id}_overlay`;
+    const content = `<div id="${overlayId}" class="bg-main-50 border border-main-400 text-main-400" style="opacity:0; transition: opacity 0.3s;">
+      ${loc.name}
+    </div>`;
+    const overlay = new window.kakao.maps.CustomOverlay({
+      position: markerPosition,
+      content: content,
+      yAnchor: 1.5,
+    });
+    overlay.setMap(map.value);
+
+    setTimeout(() => {
+      const overlayElement = document.getElementById(overlayId);
+      if (overlayElement) {
+        window.kakao.maps.event.addListener(marker, 'mouseover', function () {
+          overlayElement.style.opacity = '1';
+        });
+
+        window.kakao.maps.event.addListener(marker, 'mouseout', function () {
+          overlayElement.style.opacity = '0';
+        });
+      } else {
+        console.warn(`오버레이 요소를 찾을 수 없음: ${overlayId}`);
+      }
+    }, 100);
+
+    // 마커 클릭 이벤트 추가
+    window.kakao.maps.event.addListener(marker, 'click', async () => {
+      if (map.value) {
+        await map.value.setCenter(markerPosition);
+        props.openDetail(loc.id);
+      }
+    });
+  });
+};
+
+
   onMounted(async () => {
     if (!window.kakao) {
       loadScript();
@@ -129,12 +208,14 @@ loadHospital: () => Promise<void>;
       loading.value = false;
       isMapChange.value = false;
     }, 800);
-  };// watchEffect(()=>{
-  //   if (map.value && mapData.value) {
-  //       map.value.setCenter(new window.kakao.maps.LatLng(mapData.value.lat, mapData.value.lng));
-  //     }
-  // }
-  // );
+  };
+
+  watch(
+    () => props.hospitalList,
+    () => {
+      setMarker();
+    },
+  );
 </script>
 
 <template v-slot:actions>

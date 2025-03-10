@@ -1,6 +1,7 @@
 <script setup lang="ts">
   interface Props {
     isBookmarked: boolean;
+    small? :boolean;
   }
 
   const props = defineProps<Props>();
@@ -16,11 +17,15 @@
 
 <template>
   <v-btn
-    variant="outlined"
-    block
-    height="52"
+    :variant="props.small ? 'text' : 'outlined'"
+    :block="!props.small" 
+    :height="props.small ? '32' : '52'" 
     @click="toggleBookmark"
-    :style="{borderColor: 'var(--color-mono-300)'}"
+    :style="{ borderColor: 'var(--color-mono-300)',
+     width: props.small ? '32px' : 'auto',
+     minWidth: props.small ? '32px' : 'auto',
+    padding: props.small ? '0' : 'auto'
+     }"
   >
     <v-icon size="30" :class="isBookmarked ? 'bookmarked' : 'unbookmarked'">{{
       props.isBookmarked ? 'mdi-bookmark' : 'mdi-bookmark-outline'

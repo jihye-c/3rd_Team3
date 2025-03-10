@@ -36,7 +36,6 @@ const onMouseEnter = (event: MouseEvent) => {
   const rect = target.getBoundingClientRect();
   const style =window.getComputedStyle(target)
   targetRect.value = { left: rect.left, top: rect.top+scrollY.value };
-  console.log(targetRect)
   isInsideTarget.value = true;
   cursorWidthSize.value = rect.width;
   cursorHeightSize.value = rect.height;

@@ -1,31 +1,31 @@
 <script lang="ts" setup>
 import MedicalItem from '../ui/MedicalItem.vue';
  const items = [{
-   src:"/public/home/main_medical1.webp",
+   src:"/home/main_medical1.webp",
    alt:"복통 아이콘",
    caption:"복통"
  },{
-   src:"/public/home/main_medical2.webp",
+   src:"/home/main_medical2.webp",
    alt:"열나는 사진",
    caption:"열/오한"
  },{
-   src:"/public/home/main_medical3.webp",
+   src:"/home/main_medical3.webp",
    alt:"화상 사진",
    caption:"화상"
  },{
-   src:"/public/home/main_medical4.webp",
+   src:"/home/main_medical4.webp",
    alt:"이명 사진",
    caption:"이명"
  },{
-   src:"/public/home/main_medical5.webp",
+   src:"/home/main_medical5.webp",
    alt:"구토 사진",
    caption:"구토"
  },{
-   src:"/public/home/main_medical6.webp",
+   src:"/home/main_medical6.webp",
    alt:"기침 사진",
    caption:"기침"
  },{
-   src:"/public/home/main_medical7.webp",
+   src:"/home/main_medical7.webp",
    alt:"골절 사진",
    caption:"골절"
  },]
@@ -73,7 +73,7 @@ import MedicalItem from '../ui/MedicalItem.vue';
             </ul>
           </div>
         </div>
-        <div class="absolute right-0 bottom-0"><img src="/public//home/main_medical_hero.webp" alt=""></div>
+        <div class="absolute right-0 bottom-0"><img src="/home/main_medical_hero.webp" alt=""></div>
       </div>
     </div>
   </div>

@@ -21,7 +21,8 @@ export async function userLogin(email: string, password: string): Promise<User> 
   }
 }
 
-export async function getUserInfo(id:string):Promise<User>{ //return 어떻게 오는지 봐야함
+
+export async function getUserInfo(id:string){ //return 어떻게 오는지 봐야함
   const res = await axiosApi.get(`${apiRoot}/users/${id}`);
   if(res.status !== 200){
     throw new Error('유저 정보를 가져오던 중 에러가 발생했습니다. : '+ res.status);
