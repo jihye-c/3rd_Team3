@@ -1,119 +1,59 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useCultureStore } from "../stores/cultureStore";
-import CultureAPI from "@/apis/cultureApi";
+  import {ref, onMounted, computed} from 'vue';
+  import {useRoute, useRouter} from 'vue-router';
+  import {useCultureStore} from '../stores/cultureStore';
+  import CultureAPI from '@/apis/cultureApi';
 
-import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-import { Pagination, Navigation, Autoplay } from "swiper/modules";
-import KakaoMap_festival from "@/components/KakaoMap_festival.vue";
-import BookmarkButton from '@/components/BookmarkButton.vue';
-import ShareButton from '@/components/ShareButton.vue';
+  import {Swiper, SwiperSlide} from 'swiper/vue';
+  import 'swiper/css';
+  import 'swiper/css/pagination';
+  import 'swiper/css/navigation';
+  import {Pagination, Navigation, Autoplay} from 'swiper/modules';
+  import KakaoMap_festival from '@/components/KakaoMap_festival.vue';
+  import BookmarkButton from '@/components/BookmarkButton.vue';
+  import ShareButton from '@/components/ShareButton.vue';
 
-import { getUserScrapList } from "@/apis/userService"; // ✅ 추가
+  import {getUserScrapList} from '@/apis/userService'; // ✅ 추가
 
-const router = useRouter();
-const route = useRoute();
-const festivalId = ref(route.params.id);
-const festivalImages = ref<string[]>([]);
-const festivalDetail = ref<any>(null);
-const categoryName = ref("");
-const title = ref("");
-const eventPeriod = ref("");
-const eventIntro = ref("");
-const eventContent = ref<Array<{ type: string; text: string }>>([]);
-const location = ref("");
-const playtime = ref("");
-const sponsor1 = ref("");
-const sponsor2 = ref("");
-const phoneNumber = ref("");
-const website = ref("");
-const cultureStore = useCultureStore();
-const userId = ref(localStorage.getItem("userId") || "");
+  const router = useRouter();
+  const route = useRoute();
+  const festivalId = ref(route.params.id);
+  const festivalImages = ref<string[]>([]);
+  const festivalDetail = ref<any>(null);
+  const categoryName = ref('');
+  const title = ref('');
+  const eventPeriod = ref('');
+  const eventIntro = ref('');
+  const eventContent = ref<Array<{type: string; text: string}>>([]);
+  const location = ref('');
+  const playtime = ref('');
+  const sponsor1 = ref('');
+  const sponsor2 = ref('');
+  const phoneNumber = ref('');
+  const website = ref('');
 
-// ✅ 현재 상세 페이지의 이벤트가 북마크되었는지 확인
-const isBookmarked = computed(() => {
-  return cultureStore.bookmarkedFestivals.some(festival => festival.content_id === festivalId.value);
-});
+  // 서브카테고리 목록
+  const subCategories = [
+    {name: '문화관광축제', code: 'A02070100'},
+    {name: '일반축제', code: 'A02070200'},
+    {name: '전통공연', code: 'A02080100'},
+    {name: '연극', code: 'A02080200'},
+    {name: '뮤지컬', code: 'A02080300'},
+    {name: '오페라', code: 'A02080400'},
+    {name: '전시회', code: 'A02080500'},
+    {name: '박람회', code: 'A02080600'},
+    {name: '무용', code: 'A02080800'},
+    {name: '클래식음악회', code: 'A02080900'},
+    {name: '대중콘서트', code: 'A02081000'},
+    {name: '영화', code: 'A02081100'},
+    {name: '스포츠경기', code: 'A02081200'},
+    {name: '기타행사', code: 'A02081300'},
+  ];
 
-import { toggleScrap } from "@/apis/userService"; 
-const toggleBookmark = async () => {
-  try {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      console.warn("⚠️ 로그인이 필요합니다.");
-      return;
-    }
-
-    if (festivalDetail.value) {
-      const newBookmark = {
-        content_id: festivalDetail.value.content_id,
-        name: festivalDetail.value.name,
-        category3: festivalDetail.value.category3,
-        homepage: festivalImages.value.length > 0 ? festivalImages.value[0] : "/images/default-image.jpg",
-        overview: festivalDetail.value.overview || "설명 없음",
-        event_start_date: eventIntro.value.event_start_date && eventIntro.value.event_start_date !== "날짜 미정"
-          ? eventIntro.value.event_start_date
-          : "날짜 미정",
-        event_end_date: eventIntro.value.event_end_date && eventIntro.value.event_end_date !== "날짜 미정"
-          ? eventIntro.value.event_end_date
-          : "날짜 미정",
-        gu_name: festivalDetail.value.address || "주소 정보 없음",
-      };
-
-      console.log("✅ 북마크 추가/삭제 요청:", newBookmark);
-
-      // ✅ scrap 채널에 저장 or 삭제 (서버에 요청)
-      const updatedScraps = await toggleScrap(userId, newBookmark);
-
-      // ✅ 최신 북마크 목록으로 업데이트
-      cultureStore.bookmarkedFestivals = updatedScraps;
-
-      console.log("✅ 북마크 업데이트 완료!");
-    }
-  } catch (error) {
-    console.error("❌ 북마크 저장 실패:", error);
-  }
-};
-
-// 서브카테고리 목록
-const subCategories = [
-  { name: "문화관광축제", code: "A02070100" },
-  { name: "일반축제", code: "A02070200" },
-  { name: "전통공연", code: "A02080100" },
-  { name: "연극", code: "A02080200" },
-  { name: "뮤지컬", code: "A02080300" },
-  { name: "오페라", code: "A02080400" },
-  { name: "전시회", code: "A02080500" },
-  { name: "박람회", code: "A02080600" },
-  { name: "무용", code: "A02080800" },
-  { name: "클래식음악회", code: "A02080900" },
-  { name: "대중콘서트", code: "A02081000" },
-  { name: "영화", code: "A02081100" },
-  { name: "스포츠경기", code: "A02081200" },
-  { name: "기타행사", code: "A02081300" },
-];
-
-// ✅ 북마크 목록을 불러오는 함수 추가
-const loadBookmarks = async () => {
-  if (userId.value) {
-    await cultureStore.loadBookmarks(userId.value);
-  }
-};
-onMounted(async () => {
-  console.log("🔑 Kakao API Key:", import.meta.env.VITE_KAKAO_MAP_KEY);
-  
-  fetchFestivalDetails(); // ✅ 행사 정보 불러오기
-
-  // ✅ 유저가 로그인 되어 있다면 스크랩 목록 불러오기
-  if (userId.value) {
-    const scrapList = await getUserScrapList(userId.value);
-    cultureStore.bookmarkedFestivals = scrapList;
-  }
-});
+  onMounted(async () => {
+    console.log('🔑 Kakao API Key:', import.meta.env.VITE_KAKAO_MAP_KEY);
+    fetchFestivalDetails();
+  });
 
   // ✅ 서브카테고리 코드 → 한글 이름 변환 함수
   const getCategoryName = (code: string) => {
@@ -244,7 +184,6 @@ onMounted(async () => {
     console.log('🔑 Kakao API Key:', import.meta.env.VITE_KAKAO_MAP_KEY); // ✅ API 키 출력 확인
     fetchFestivalDetails(); // ✅ 행사 정보 불러오기
   });
-
 </script>
 
 <template>
@@ -274,7 +213,16 @@ onMounted(async () => {
       <!-- 좌측 버튼들 -->
       <div class="border-mono-200 w-[52px] h-[104px] flex flex-col gap-[12px]">
         <!-- 스크랩, 공유 버튼 -->
-        <BookmarkButton :isBookmarked="isBookmarked" @toggle="toggleBookmark"/>
+        <BookmarkButton
+          :cultureData="{
+            title: title,
+            contentId: festivalId,
+            eventEndDate: eventIntro.event_start_date,
+            eventStartDate: eventIntro.event_end_date,
+            location: location,
+            image_src: festivalImages[0],
+          }"
+        />
         <ShareButton />
       </div>
 
@@ -287,7 +235,7 @@ onMounted(async () => {
           :loop="true"
           :speed="2000"
         >
-        <SwiperSlide v-for="(image, index) in festivalImages" :key="index" >
+          <SwiperSlide v-for="(image, index) in festivalImages" :key="index">
             <img
               :src="image"
               alt="Festival Image"
