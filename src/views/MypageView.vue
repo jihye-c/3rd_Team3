@@ -1,4 +1,20 @@
 <script setup lang="ts">
+type Post = {
+  title: string;
+  content: string;
+  tags?:string[];
+  image?:string;
+  available?: boolean;
+  authorName: string;
+  price?: number;
+  region?: {
+    gu: string;
+    dong: string;
+  };
+  likes?:string[];
+  comments?: string[];
+};
+
   import {ref, computed, watchEffect} from 'vue';
   import RecipeCard from '@/components/community/RecipeCard.vue';
   import ResaleCard from '@/components/community/ResaleCard.vue';
@@ -12,6 +28,12 @@
   import {getUserScrapList, toggleScrap} from '@/apis/userService';
 
   import BookmarkButton from '@/components/BookmarkButton.vue';
+  import {
+    QUESTION_CHANNEL_ID,
+    RECIPE_CHANNEL_ID,
+    RESALE_CHANNEL_ID,
+    REVIEW_CHANNEL_ID,
+  } from '@/constants/channelId';
 
   const route = useRoute<string>();
   const showModal = ref(false);
@@ -29,174 +51,26 @@
   const selectedTab = ref('동네리뷰'); // 기본 탭
   const currentPage = ref(1);
   const itemsPerPage = 12;
+  const reviewList = ref<Post[]>([]);
+  const resaleList = ref<Post[]>([]);
+  const questionList = ref<Post[]>([]);
+  const recipeList = ref<Post[]>([])
 
-  const subCategories = [
-    {name: '문화관광축제', code: 'A02070100'},
-    {name: '일반축제', code: 'A02070200'},
-    {name: '전통공연', code: 'A02080100'},
-    {name: '연극', code: 'A02080200'},
-    {name: '뮤지컬', code: 'A02080300'},
-    {name: '오페라', code: 'A02080400'},
-    {name: '전시회', code: 'A02080500'},
-    {name: '박람회', code: 'A02080600'},
-    {name: '무용', code: 'A02080800'},
-    {name: '클래식음악회', code: 'A02080900'},
-    {name: '대중콘서트', code: 'A02081000'},
-    {name: '영화', code: 'A02081100'},
-    {name: '스포츠경기', code: 'A02081200'},
-    {name: '기타행사', code: 'A02081300'},
-  ];
-
-  const formatDate = (dateString: string) => {
-    if (!dateString || dateString.length !== 8) return '날짜 미정'; // 예외 처리
-    return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
+  const listMap = {
+    recipeList,
+    resaleList,
+    questionList,
+    reviewList,
+  };
+  const channelMap: Record<string, string> = {
+    recipeList: RECIPE_CHANNEL_ID,
+    resaleList: RESALE_CHANNEL_ID,
+    questionList: QUESTION_CHANNEL_ID,
+    reviewList: REVIEW_CHANNEL_ID,
+    // cultureList: CULT_CHANNEL_ID,
   };
 
-  // :small_blue_diamond: 동네 리뷰 게시글 데이터
-  const communityPostList = ref([
-    {
-      image: '/recipe/recipe_popular2.webp',
-      title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
-      content: '자취를 시작하고 나서 주말마다 너무 심심해요...',
-      dong: '신림동',
-      tags: ['문화생활', '취미'],
-      bookmarks: 5,
-      comments: 4,
-    },
-    {
-      image: '/recipe/recipe_popular3.webp',
-      title: '집 근처 조용한 카페 추천해주세요!',
-      content: '집에서 공부하려니 너무 집중이 안 되네요...',
-      dong: '강남구',
-      tags: ['카페', '스터디'],
-      bookmarks: 3,
-      comments: 2,
-    },
-    {
-      title: '맛있는 배달 음식 추천 좀 해주세요!',
-      content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
-      dong: '홍대',
-      tags: ['배달음식', '맛집'],
-      bookmarks: 7,
-      comments: 5,
-    },
-    {
-      title: '맛있는 배달 음식 추천 좀 해주세요!',
-      content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
-      dong: '홍대',
-      tags: ['배달음식', '맛집'],
-      bookmarks: 7,
-      comments: 5,
-    },
-    {
-      title: '맛있는 배달 음식 추천 좀 해주세요!',
-      content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
-      dong: '홍대',
-      tags: ['배달음식', '맛집'],
-      bookmarks: 7,
-      comments: 5,
-    },
-    {
-      title: '맛있는 배달 음식 추천 좀 해주세요!',
-      content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
-      dong: '홍대',
-      tags: ['배달음식', '맛집'],
-      bookmarks: 7,
-      comments: 5,
-    },
-  ]);
-
-  const postList = [
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: false,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-    {
-      image: '/images/community/community_resale_dummy.jpg',
-      title: '상태 좋은 의자 판매합니다.',
-      price: '50000',
-      dong: '수유1동',
-      available: true,
-    },
-  ];
-
-  const recipeList = [
-    {
-      name: '저염된장 삼치구이',
-      image: '/recipe/recipe_popular1.webp',
-      author: {profileImg: '/images/user1.png', name: '자취생A'},
-      tag: '한식',
-    },
-    {
-      name: '참나물 소보로 덮밥',
-      image: '/recipe/recipe_popular2.webp',
-      author: {profileImg: '/images/user2.png', name: '자취생B'},
-      tag: '덮밥',
-    },
-    {
-      name: '코코넛워터 토마토카레',
-      image: '/recipe/recipe_popular3.webp',
-      author: {profileImg: '/images/user3.png', name: '자취생C'},
-      tag: '퓨전',
-    },
-    {
-      name: '저염된장 삼치구이',
-      image: '/recipe/recipe_popular1.webp',
-      author: {profileImg: '/images/user1.png', name: '자취생A'},
-      tag: '한식',
-    },
-    {
-      name: '참나물 소보로 덮밥',
-      image: '/recipe/recipe_popular2.webp',
-      author: {profileImg: '/images/user2.png', name: '자취생B'},
-      tag: '덮밥',
-    },
-    {
-      name: '코코넛워터 토마토카레',
-      image: '/recipe/recipe_popular3.webp',
-      author: {profileImg: '/images/user3.png', name: '자취생C'},
-      tag: '퓨전',
-    },
-  ];
-  const goToCultureDetail = (contentId) => {
+  const goToCultureDetail = (contentId: string) => {
     router.push(`/culture/${contentId}`);
   };
   const getCategoryName = (code: string) => {
@@ -207,7 +81,7 @@
   // 현재 페이지에 맞게 데이터 필터링
   const paginatedRecipes = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
-    return recipeList.slice(start, start + itemsPerPage);
+    return recipeList.value.slice(start, start + itemsPerPage);
   });
 
   const openModal = (category: string) => {
@@ -229,7 +103,7 @@
     return (cultureStore.bookmarkedFestivals ?? []).slice(start, start + itemsPerPage);
   });
 
-  const totalPages = computed(() => Math.ceil(recipeList.length / itemsPerPage));
+  const totalPages = computed(() => Math.ceil(recipeList.value.length / itemsPerPage));
 
   const handlePageChange = (page: number) => {
     console.log(':pushpin: 페이지 변경 요청:', page);
@@ -294,24 +168,49 @@
     if (path) {
       await userStore.getUser(path);
       userInfo.value = userStore.userInfo;
-      console.log('✅ 유저 정보 불러오기 완료:', userInfo.value);
       userFollowerInfo.value = userStore.followerInfo;
       userFollowingInfo.value = userStore.followingInfo;
       // ✅ 유저별 스크랩 목록 가져오기
-      const scrapList = await getUserScrapList(id);
-      cultureStore.bookmarkedFestivals = scrapList;
-      console.log('✅ [유저별] 북마크 불러오기 완료:', cultureStore.bookmarkedFestivals);
+      if (path === id) {
+        const scrapList = await getUserScrapList(id);
+        cultureStore.bookmarkedFestivals = scrapList;
+        console.log('✅ [유저별] 북마크 불러오기 완료:', cultureStore.bookmarkedFestivals);
+      } else if (path !== id) {
+        Object.keys(channelMap).forEach((key) => {
+          const channelId = channelMap[key];
+          listMap[key as keyof typeof listMap].value = userInfo.value.posts
+            .filter((item) => item.channel === channelId)
+            .map((item:Post) => {
+              try {
+                // JSON 파싱 시도
+                const parsedTitle = JSON.parse(item.title);
+                return {image:item.image,likes:item.likes,comments:item.comments, ...parsedTitle};
+              } catch (error) {
+                console.error('Error parsing item title:', error);
+                // 파싱 실패 시 원본 그대로 반환
+                return item;
+              }
+            });
+
+
+        });
+        console.log(recipeList.value)
+            console.log(reviewList.value)
+            console.log(resaleList.value)
+            console.log(questionList.value)
+
+      }
     }
   });
 
   // :white_check_mark: 북마크 상태 확인 (현재 스크랩 여부)
-  const isBookmarked = (contentId) => {
+  const isBookmarked = (contentId: string) => {
     return cultureStore.bookmarkedFestivals.some((festival) => festival.content_id === contentId);
   };
 </script>
 
 <template>
-  <div class="w-full container pt-24">
+  <div id="communityCreateContent" class="w-full container pt-24">
     <div class="mx-auto mt-4">
       <!-- 내 정보 박스 -->
       <div class="w-full bg-white rounded-lg p-6 flex items-center justify-between relative">
@@ -407,39 +306,39 @@
           <!-- 동네 리뷰 탭 -->
           <div v-if="selectedTab === '동네리뷰'" class="grid grid-cols-2 gap-6">
             <CommunityPostList
-              v-for="(post, index) in communityPostList"
+              v-for="(post, index) in reviewList"
               :key="index"
               :title="post.title"
               :content="post.content"
-              :dong="post.dong"
+              :dong="post.region?.dong"
               :tags="post.tags"
-              :bookmarks="post.bookmarks"
-              :comments="post.comments"
+              :bookmarks="post.likes.length"
+              :comments="post.comments.length"
               :image="post.image"
               class="w-full"
             />
           </div>
           <div v-if="selectedTab === '중고거래'" class="grid grid-cols-4 gap-6">
             <ResaleCard
-              v-for="(post, index) in postList"
+              v-for="(post, index) in resaleList"
               :key="index"
               :title="post.title"
-              :image="post.image"
-              :price="post.price"
-              :dong="post.dong"
-              :available="post.available"
+              :image="post.image ?? ''"
+              :price="post.price ?? 0"
+              :dong="post.region?.dong ?? ''"
+              :available="post.available ?? false"
             />
           </div>
           <div v-if="selectedTab === '질문게시판'" class="grid grid-cols-2 gap-6">
             <CommunityPostList
-              v-for="(post, index) in communityPostList"
+              v-for="(post, index) in questionList"
               :key="index"
               :title="post.title"
               :content="post.content"
-              :dong="post.dong"
-              :tags="post.tags"
-              :bookmarks="post.bookmarks"
-              :comments="post.comments"
+              :dong="post.region?.dong ??''"
+              :tags="post.tags ?? []"
+              :bookmarks="post.bookmarks ?? []"
+              :comments="post.comments?.length ?? 0"
               :image="post.image"
               class="w-full"
             />
@@ -447,7 +346,7 @@
           <!-- "나만의 레시피" 탭 - 카드 리스트 -->
           <div v-if="selectedTab === '나만의 레시피'" class="grid grid-cols-4 gap-6">
             <RecipeCard
-              v-for="(recipe, index) in paginatedRecipes"
+              v-for="(recipe, index) in recipeList"
               :key="index"
               :title="recipe.name"
               :image="recipe.image"
