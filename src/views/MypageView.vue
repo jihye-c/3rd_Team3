@@ -1,275 +1,299 @@
 <script setup lang="ts">
+  import {ref, computed, onMounted, watchEffect, watch} from 'vue';
+  import RecipeCard from '@/components/community/RecipeCard.vue';
+  import ResaleCard from '@/components/community/ResaleCard.vue';
+  import CommunityPostList from '@/components/community/CommunityPostList.vue';
+  import PaginationComponent from '@/components/PaginationComponent.vue';
+  import {useUserStore} from '@/stores/userStore';
+  import {onBeforeRouteUpdate, useRoute, useRouter} from 'vue-router';
+  import Modal from '@/components/ModalComponent.vue';
+  import FollowComponent from '@/components/mypage/FollowComponent.vue';
+  import {useCultureStore} from '../stores/cultureStore';
+  import {getUserScrapList, toggleScrap} from '@/apis/userService';
 
-import { ref, computed, onMounted, watchEffect, watch } from 'vue';
-import RecipeCard from '@/components/community/RecipeCard.vue';
-import ResaleCard from '@/components/community/ResaleCard.vue';
-import CommunityPostList from '@/components/community/CommunityPostList.vue';
-import PaginationComponent from '@/components/PaginationComponent.vue';
-import { useUserStore } from '@/stores/userStore';
-import {onBeforeRouteUpdate, useRoute, useRouter} from 'vue-router';
-import Modal from '@/components/ModalComponent.vue';
-import FollowComponent from '@/components/mypage/FollowComponent.vue';
-import { useCultureStore } from "../stores/cultureStore";
-import { getUserScrapList, toggleScrap } from "@/apis/userService";
+  import BookmarkButton from '@/components/BookmarkButton.vue';
 
-import BookmarkButton from '@/components/BookmarkButton.vue';
+  const route = useRoute<string>();
+  const showModal = ref(false);
+  const followCategory = ref();
+  const router = useRouter();
+  const userInfo = ref();
+  const userFollowerInfo = ref();
+  const userFollowingInfo = ref();
+  const defaultImage = '/images/mypage/mypage_default_img.png';
+  const cultureStore = useCultureStore();
+  const id = localStorage.getItem('userId');
+  const routeId = ref();
+  const userStore = useUserStore();
 
-const route = useRoute<string>();
-const showModal = ref(false);
-const followCategory = ref();
-const router = useRouter();
-const userInfo = ref()
-const userFollowerInfo = ref();
-const userFollowingInfo = ref();
-const defaultImage = '/images/mypage/mypage_default_img.png';
-const cultureStore = useCultureStore()
-const id = localStorage.getItem('userId');
-const routeId =  ref()
-const userStore = useUserStore()
+  const selectedTab = ref('동네리뷰'); // 기본 탭
+  const currentPage = ref(1);
+  const itemsPerPage = 12;
 
+  const subCategories = [
+    {name: '문화관광축제', code: 'A02070100'},
+    {name: '일반축제', code: 'A02070200'},
+    {name: '전통공연', code: 'A02080100'},
+    {name: '연극', code: 'A02080200'},
+    {name: '뮤지컬', code: 'A02080300'},
+    {name: '오페라', code: 'A02080400'},
+    {name: '전시회', code: 'A02080500'},
+    {name: '박람회', code: 'A02080600'},
+    {name: '무용', code: 'A02080800'},
+    {name: '클래식음악회', code: 'A02080900'},
+    {name: '대중콘서트', code: 'A02081000'},
+    {name: '영화', code: 'A02081100'},
+    {name: '스포츠경기', code: 'A02081200'},
+    {name: '기타행사', code: 'A02081300'},
+  ];
 
+  const formatDate = (dateString: string) => {
+    if (!dateString || dateString.length !== 8) return '날짜 미정'; // 예외 처리
+    return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
+  };
 
-const selectedTab = ref('동네리뷰'); // 기본 탭
-const currentPage = ref(1);
-const itemsPerPage = 12;
+  // :small_blue_diamond: 동네 리뷰 게시글 데이터
+  const communityPostList = ref([
+    {
+      image: '/recipe/recipe_popular2.webp',
+      title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
+      content: '자취를 시작하고 나서 주말마다 너무 심심해요...',
+      dong: '신림동',
+      tags: ['문화생활', '취미'],
+      bookmarks: 5,
+      comments: 4,
+    },
+    {
+      image: '/recipe/recipe_popular3.webp',
+      title: '집 근처 조용한 카페 추천해주세요!',
+      content: '집에서 공부하려니 너무 집중이 안 되네요...',
+      dong: '강남구',
+      tags: ['카페', '스터디'],
+      bookmarks: 3,
+      comments: 2,
+    },
+    {
+      title: '맛있는 배달 음식 추천 좀 해주세요!',
+      content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
+      dong: '홍대',
+      tags: ['배달음식', '맛집'],
+      bookmarks: 7,
+      comments: 5,
+    },
+    {
+      title: '맛있는 배달 음식 추천 좀 해주세요!',
+      content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
+      dong: '홍대',
+      tags: ['배달음식', '맛집'],
+      bookmarks: 7,
+      comments: 5,
+    },
+    {
+      title: '맛있는 배달 음식 추천 좀 해주세요!',
+      content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
+      dong: '홍대',
+      tags: ['배달음식', '맛집'],
+      bookmarks: 7,
+      comments: 5,
+    },
+    {
+      title: '맛있는 배달 음식 추천 좀 해주세요!',
+      content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
+      dong: '홍대',
+      tags: ['배달음식', '맛집'],
+      bookmarks: 7,
+      comments: 5,
+    },
+  ]);
 
-const subCategories = [
-  { name: "문화관광축제", code: "A02070100" },
-  { name: "일반축제", code: "A02070200" },
-  { name: "전통공연", code: "A02080100" },
-  { name: "연극", code: "A02080200" },
-  { name: "뮤지컬", code: "A02080300" },
-  { name: "오페라", code: "A02080400" },
-  { name: "전시회", code: "A02080500" },
-  { name: "박람회", code: "A02080600" },
-  { name: "무용", code: "A02080800" },
-  { name: "클래식음악회", code: "A02080900" },
-  { name: "대중콘서트", code: "A02081000" },
-  { name: "영화", code: "A02081100" },
-  { name: "스포츠경기", code: "A02081200" },
-  { name: "기타행사", code: "A02081300" },
-];
+  const postList = [
+    {
+      image: '/images/community/community_resale_dummy.jpg',
+      title: '상태 좋은 의자 판매합니다.',
+      price: '50000',
+      dong: '수유1동',
+      available: true,
+    },
+    {
+      image: '/images/community/community_resale_dummy.jpg',
+      title: '상태 좋은 의자 판매합니다.',
+      price: '50000',
+      dong: '수유1동',
+      available: true,
+    },
+    {
+      image: '/images/community/community_resale_dummy.jpg',
+      title: '상태 좋은 의자 판매합니다.',
+      price: '50000',
+      dong: '수유1동',
+      available: false,
+    },
+    {
+      image: '/images/community/community_resale_dummy.jpg',
+      title: '상태 좋은 의자 판매합니다.',
+      price: '50000',
+      dong: '수유1동',
+      available: true,
+    },
+    {
+      image: '/images/community/community_resale_dummy.jpg',
+      title: '상태 좋은 의자 판매합니다.',
+      price: '50000',
+      dong: '수유1동',
+      available: true,
+    },
+    {
+      image: '/images/community/community_resale_dummy.jpg',
+      title: '상태 좋은 의자 판매합니다.',
+      price: '50000',
+      dong: '수유1동',
+      available: true,
+    },
+    {
+      image: '/images/community/community_resale_dummy.jpg',
+      title: '상태 좋은 의자 판매합니다.',
+      price: '50000',
+      dong: '수유1동',
+      available: true,
+    },
+  ];
 
-const formatDate = (dateString: string) => {
-  if (!dateString || dateString.length !== 8) return "날짜 미정"; // 예외 처리
-  return `${dateString.substring(0, 4)}.${dateString.substring(4, 6)}.${dateString.substring(6, 8)}`;
-};
+  const recipeList = [
+    {
+      name: '저염된장 삼치구이',
+      image: '/recipe/recipe_popular1.webp',
+      author: {profileImg: '/images/user1.png', name: '자취생A'},
+      tag: '한식',
+    },
+    {
+      name: '참나물 소보로 덮밥',
+      image: '/recipe/recipe_popular2.webp',
+      author: {profileImg: '/images/user2.png', name: '자취생B'},
+      tag: '덮밥',
+    },
+    {
+      name: '코코넛워터 토마토카레',
+      image: '/recipe/recipe_popular3.webp',
+      author: {profileImg: '/images/user3.png', name: '자취생C'},
+      tag: '퓨전',
+    },
+    {
+      name: '저염된장 삼치구이',
+      image: '/recipe/recipe_popular1.webp',
+      author: {profileImg: '/images/user1.png', name: '자취생A'},
+      tag: '한식',
+    },
+    {
+      name: '참나물 소보로 덮밥',
+      image: '/recipe/recipe_popular2.webp',
+      author: {profileImg: '/images/user2.png', name: '자취생B'},
+      tag: '덮밥',
+    },
+    {
+      name: '코코넛워터 토마토카레',
+      image: '/recipe/recipe_popular3.webp',
+      author: {profileImg: '/images/user3.png', name: '자취생C'},
+      tag: '퓨전',
+    },
+  ];
+  const goToCultureDetail = (contentId) => {
+    router.push(`/culture/${contentId}`);
+  };
+  const getCategoryName = (code: string) => {
+    const category = subCategories.find((sub) => sub.code === code);
+    return category ? category.name : '기타';
+  };
 
-// :small_blue_diamond: 동네 리뷰 게시글 데이터
-const communityPostList = ref([
-  {
-    image: '/recipe/recipe_popular2.webp',
-    title: '자취생이 가볍게 즐길 수 있는 문화생활 뭐가 있을까요?',
-    content: '자취를 시작하고 나서 주말마다 너무 심심해요...',
-    dong: '신림동',
-    tags: ['문화생활', '취미'],
-    bookmarks: 5,
-    comments: 4,
-  },
-  {
-    image: '/recipe/recipe_popular3.webp',
-    title: '집 근처 조용한 카페 추천해주세요!',
-    content: '집에서 공부하려니 너무 집중이 안 되네요...',
-    dong: '강남구',
-    tags: ['카페', '스터디'],
-    bookmarks: 3,
-    comments: 2,
-  },
-  {
-    title: '맛있는 배달 음식 추천 좀 해주세요!',
-    content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
-    dong: '홍대',
-    tags: ['배달음식', '맛집'],
-    bookmarks: 7,
-    comments: 5,
-  },
-  {
-    title: '맛있는 배달 음식 추천 좀 해주세요!',
-    content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
-    dong: '홍대',
-    tags: ['배달음식', '맛집'],
-    bookmarks: 7,
-    comments: 5,
-  },
-  {
-    title: '맛있는 배달 음식 추천 좀 해주세요!',
-    content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
-    dong: '홍대',
-    tags: ['배달음식', '맛집'],
-    bookmarks: 7,
-    comments: 5,
-  },
-  {
-    title: '맛있는 배달 음식 추천 좀 해주세요!',
-    content: '매번 똑같은 배달음식만 먹어서 새로운 거...',
-    dong: '홍대',
-    tags: ['배달음식', '맛집'],
-    bookmarks: 7,
-    comments: 5,
-  },
-]);
+  // 현재 페이지에 맞게 데이터 필터링
+  const paginatedRecipes = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    return recipeList.slice(start, start + itemsPerPage);
+  });
 
-const postList = [
-  {
-    image: '/images/community/community_resale_dummy.jpg',
-    title: '상태 좋은 의자 판매합니다.',
-    price: '50000',
-    dong: '수유1동',
-    available: true,
-  },
-  {
-    image: '/images/community/community_resale_dummy.jpg',
-    title: '상태 좋은 의자 판매합니다.',
-    price: '50000',
-    dong: '수유1동',
-    available: true,
-  },
-  {
-    image: '/images/community/community_resale_dummy.jpg',
-    title: '상태 좋은 의자 판매합니다.',
-    price: '50000',
-    dong: '수유1동',
-    available: false,
-  },
-  {
-    image: '/images/community/community_resale_dummy.jpg',
-    title: '상태 좋은 의자 판매합니다.',
-    price: '50000',
-    dong: '수유1동',
-    available: true,
-  },
-  {
-    image: '/images/community/community_resale_dummy.jpg',
-    title: '상태 좋은 의자 판매합니다.',
-    price: '50000',
-    dong: '수유1동',
-    available: true,
-  },
-  {
-    image: '/images/community/community_resale_dummy.jpg',
-    title: '상태 좋은 의자 판매합니다.',
-    price: '50000',
-    dong: '수유1동',
-    available: true,
-  },
-  {
-    image: '/images/community/community_resale_dummy.jpg',
-    title: '상태 좋은 의자 판매합니다.',
-    price: '50000',
-    dong: '수유1동',
-    available: true,
-  },
-];
+  const openModal = (category: string) => {
+    showModal.value = true;
+    followCategory.value = category;
+  };
 
-const recipeList = [
-  { name: '저염된장 삼치구이', image: '/recipe/recipe_popular1.webp', author: { profileImg: '/images/user1.png', name: '자취생A' }, tag: '한식' },
-  { name: '참나물 소보로 덮밥', image: '/recipe/recipe_popular2.webp', author: { profileImg: '/images/user2.png', name: '자취생B' }, tag: '덮밥' },
-  { name: '코코넛워터 토마토카레', image: '/recipe/recipe_popular3.webp', author: { profileImg: '/images/user3.png', name: '자취생C' }, tag: '퓨전' },
-  { name: '저염된장 삼치구이', image: '/recipe/recipe_popular1.webp', author: { profileImg: '/images/user1.png', name: '자취생A' }, tag: '한식' },
-  { name: '참나물 소보로 덮밥', image: '/recipe/recipe_popular2.webp', author: { profileImg: '/images/user2.png', name: '자취생B' }, tag: '덮밥' },
-  { name: '코코넛워터 토마토카레', image: '/recipe/recipe_popular3.webp', author: { profileImg: '/images/user3.png', name: '자취생C' }, tag: '퓨전' },
-];
-const goToCultureDetail = (contentId) => {
-  router.push(`/culture/${contentId}`);
-};
-const getCategoryName = (code: string) => {
-  const category = subCategories.find((sub) => sub.code === code);
-  return category ? category.name : "기타";
-};
+  const closeModal = () => {
+    showModal.value = false;
+    followCategory.value = '';
+  };
 
-// 현재 페이지에 맞게 데이터 필터링
-const paginatedRecipes = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return recipeList.slice(start, start + itemsPerPage);
-});
+  const totalCulturePages = computed(() => {
+    console.log(':memo: 현재 스크랩된 문화생활 개수:', cultureStore.bookmarkedFestivals?.length);
+    return Math.ceil((cultureStore.bookmarkedFestivals?.length || 0) / itemsPerPage);
+  });
+  const paginatedFestivals = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    return (cultureStore.bookmarkedFestivals ?? []).slice(start, start + itemsPerPage);
+  });
 
-const openModal = (category: string) => {
-  showModal.value = true;
-  followCategory.value = category;
-};
+  const totalPages = computed(() => Math.ceil(recipeList.length / itemsPerPage));
 
-const closeModal = () => {
-  showModal.value = false;
-  followCategory.value = '';
-};
+  const handlePageChange = (page: number) => {
+    console.log(':pushpin: 페이지 변경 요청:', page);
+    currentPage.value = page;
+    console.log(':white_check_mark: 변경된 현재 페이지:', currentPage.value);
+  };
 
-const totalCulturePages = computed(() => {
-  console.log(":memo: 현재 스크랩된 문화생활 개수:", cultureStore.bookmarkedFestivals?.length);
-  return Math.ceil((cultureStore.bookmarkedFestivals?.length || 0) / itemsPerPage);
-});
-const paginatedFestivals = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return (cultureStore.bookmarkedFestivals ?? []).slice(start, start + itemsPerPage);
-});
-
-const totalPages = computed(() => Math.ceil(recipeList.length / itemsPerPage));
-
-const handlePageChange = (page: number) => {
-  console.log(":pushpin: 페이지 변경 요청:", page);
-  currentPage.value = page;
-  console.log(":white_check_mark: 변경된 현재 페이지:", currentPage.value);
-};
-
-const followHandeler = async () => {
-    const id = route.params.id
-    try{
-      await userStore.postFollowUser(id)
+  const followHandeler = async () => {
+    const id = route.params.id;
+    try {
+      await userStore.postFollowUser(id);
       userFollowerInfo.value = userStore.followerInfo;
       userFollowingInfo.value = userStore.followingInfo;
-      console.log(userStore.followingInfo)
-      console.log(userStore.followerInfo)
+      console.log(userStore.followingInfo);
+      console.log(userStore.followerInfo);
 
-      followCheck()
-    }catch(e) {
-      console.log(e)
+      followCheck();
+    } catch (e) {
+      console.log(e);
     }
-
-}
-const deleteFollowHandeler = async () => {
-    const id = route.params.id
-    try{
-      await userStore.deleteFollowUser(id)
+  };
+  const deleteFollowHandeler = async () => {
+    const id = route.params.id;
+    try {
+      await userStore.deleteFollowUser(id);
       userFollowerInfo.value = userStore.followerInfo;
       userFollowingInfo.value = userStore.followingInfo;
-    }catch(e) {
-      console.log(e)
+    } catch (e) {
+      console.log(e);
     }
+  };
+  const handleScrapToggle = async (festival) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.warn(':warning: 로그인이 필요합니다.');
+        return;
+      }
 
-}
-const handleScrapToggle = async (festival) => {
-  try {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      console.warn(":warning: 로그인이 필요합니다.");
-      return;
+      console.log(':white_check_mark: 마이페이지에서 북마크 추가/삭제 요청:', festival);
+
+      // :white_check_mark: scrap 채널에 저장 or 삭제 (서버에 요청)
+      const updatedScraps = await toggleScrap(userId, festival);
+
+      // :white_check_mark: 최신 북마크 목록으로 업데이트
+      cultureStore.bookmarkedFestivals = updatedScraps;
+
+      console.log(':white_check_mark: 마이페이지 북마크 업데이트 완료!');
+    } catch (error) {
+      console.error(':x: 북마크 저장 실패:', error);
     }
-
-    console.log(":white_check_mark: 마이페이지에서 북마크 추가/삭제 요청:", festival);
-
-    // :white_check_mark: scrap 채널에 저장 or 삭제 (서버에 요청)
-    const updatedScraps = await toggleScrap(userId, festival);
-
-    // :white_check_mark: 최신 북마크 목록으로 업데이트
-    cultureStore.bookmarkedFestivals = updatedScraps;
-
-    console.log(":white_check_mark: 마이페이지 북마크 업데이트 완료!");
-  } catch (error) {
-    console.error(":x: 북마크 저장 실패:", error);
-  }
-};
-const followCheck = ()=>{
-  if(userFollowerInfo.value){
-    return userFollowerInfo.value.some((item) => item.id === id)
-  }
-
-}
-watchEffect(async () => {
-  routeId.value = route.params.id
+  };
+  const followCheck = () => {
+    if (userFollowerInfo.value) {
+      return userFollowerInfo.value.some((item) => item.id === id);
+    }
+  };
+  watchEffect(async () => {
+    routeId.value = route.params.id;
     const id = localStorage.getItem('userId');
-    const path =route.params.id
+    const path = route.params.id;
     if (path) {
       await userStore.getUser(path);
-      userInfo.value = userStore.userInfo
+      userInfo.value = userStore.userInfo;
       console.log('✅ 유저 정보 불러오기 완료:', userInfo.value);
       userFollowerInfo.value = userStore.followerInfo;
       userFollowingInfo.value = userStore.followingInfo;
@@ -280,10 +304,10 @@ watchEffect(async () => {
     }
   });
 
-// :white_check_mark: 북마크 상태 확인 (현재 스크랩 여부)
-const isBookmarked = (contentId) => {
-  return cultureStore.bookmarkedFestivals.some(festival => festival.content_id === contentId);
-};
+  // :white_check_mark: 북마크 상태 확인 (현재 스크랩 여부)
+  const isBookmarked = (contentId) => {
+    return cultureStore.bookmarkedFestivals.some((festival) => festival.content_id === contentId);
+  };
 </script>
 
 <template>
@@ -325,9 +349,12 @@ const isBookmarked = (contentId) => {
             </div>
             <!-- 자기 소개 -->
             <div class="mt-4 w-full">
-              <p v-if="userInfo?.fullName.introduction" class="text-mono-600 text-wrap text-[16px]">{{ userInfo?.fullName.introduction }}</p>
-              <p v-else class="text-mono-600 text-wrap text-[16px]">사용자의 소개가 아직 없습니다:)</p>
-
+              <p v-if="userInfo?.fullName.introduction" class="text-mono-600 text-wrap text-[16px]">
+                {{ userInfo?.fullName.introduction }}
+              </p>
+              <p v-else class="text-mono-600 text-wrap text-[16px]">
+                사용자의 소개가 아직 없습니다:)
+              </p>
             </div>
           </div>
         </div>
@@ -343,7 +370,7 @@ const isBookmarked = (contentId) => {
         </div>
         <div v-else-if="!followCheck()" class="absolute top-6 right-6 flex gap-4">
           <button
-          @click=" followHandeler"
+            @click="followHandeler"
             class="w-[120px] text-main-50 cursor-pointer hover:bg-main-400/80 bg-main-400 py-2 rounded-md"
           >
             <span class="text-md">팔로우</span>
@@ -351,7 +378,7 @@ const isBookmarked = (contentId) => {
         </div>
         <div v-else class="absolute top-6 right-6 flex gap-4">
           <button
-          @click=" deleteFollowHandeler"
+            @click="deleteFollowHandeler"
             class="w-[120px] text-main-400 cursor-pointer hover:bg-main-400/80 border-main-400 border-1 py-2 rounded-md"
           >
             <span class="text-md">팔로우 취소</span>
@@ -361,7 +388,6 @@ const isBookmarked = (contentId) => {
 
       <!-- 나의 스크랩 -->
       <div class="mt-12">
-
         <h2 v-if="routeId === id" class="text-[32px] font-semibold text-mono-900">나의 스크랩</h2>
         <h2 v-else class="text-[32px] font-semibold text-mono-900">작성 게시물</h2>
 
@@ -461,7 +487,6 @@ const isBookmarked = (contentId) => {
                       ? festival.homepage
                       : '/images/default-image.jpg'
                   "
-
                   class="h-[340px] w-full object-cover rounded-lg"
                 />
                 <div class="mt-4">
@@ -482,13 +507,15 @@ const isBookmarked = (contentId) => {
             <FollowComponent
               v-if="followCategory === 'follower'"
               :items="userFollowerInfo"
-              :isOpen="showModal" @close="closeModal"
+              :isOpen="showModal"
+              @close="closeModal"
               title="팔로워"
             />
             <FollowComponent
               v-if="followCategory === 'following'"
               :items="userFollowingInfo"
-              :isOpen="showModal" @close="closeModal"
+              :isOpen="showModal"
+              @close="closeModal"
               title="팔로잉"
             />
           </Modal>
