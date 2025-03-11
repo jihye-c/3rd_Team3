@@ -1,19 +1,19 @@
 <script setup lang="ts">
-type Post = {
-  title: string;
-  content: string;
-  tags?:string[];
-  image?:string;
-  available?: boolean;
-  authorName: string;
-  price?: number;
-  region?: {
-    gu: string;
-    dong: string;
+  type Post = {
+    title: string;
+    content: string;
+    tags?: string[];
+    image?: string;
+    available?: boolean;
+    authorName: string;
+    price?: number;
+    region?: {
+      gu: string;
+      dong: string;
+    };
+    likes?: string[];
+    comments?: string[];
   };
-  likes?:string[];
-  comments?: string[];
-};
 
   import {ref, computed, watchEffect} from 'vue';
   import RecipeCard from '@/components/community/RecipeCard.vue';
@@ -54,7 +54,7 @@ type Post = {
   const reviewList = ref<Post[]>([]);
   const resaleList = ref<Post[]>([]);
   const questionList = ref<Post[]>([]);
-  const recipeList = ref<Post[]>([])
+  const recipeList = ref<Post[]>([]);
 
   const listMap = {
     recipeList,
@@ -180,25 +180,27 @@ type Post = {
           const channelId = channelMap[key];
           listMap[key as keyof typeof listMap].value = userInfo.value.posts
             .filter((item) => item.channel === channelId)
-            .map((item:Post) => {
+            .map((item: Post) => {
               try {
                 // JSON 파싱 시도
                 const parsedTitle = JSON.parse(item.title);
-                return {image:item.image,likes:item.likes,comments:item.comments, ...parsedTitle};
+                return {
+                  image: item.image,
+                  likes: item.likes,
+                  comments: item.comments,
+                  ...parsedTitle,
+                };
               } catch (error) {
                 console.error('Error parsing item title:', error);
                 // 파싱 실패 시 원본 그대로 반환
                 return item;
               }
             });
-
-
         });
-        console.log(recipeList.value)
-            console.log(reviewList.value)
-            console.log(resaleList.value)
-            console.log(questionList.value)
-
+        console.log(recipeList.value);
+        console.log(reviewList.value);
+        console.log(resaleList.value);
+        console.log(questionList.value);
       }
     }
   });
@@ -335,7 +337,7 @@ type Post = {
               :key="index"
               :title="post.title"
               :content="post.content"
-              :dong="post.region?.dong ??''"
+              :dong="post.region?.dong ?? ''"
               :tags="post.tags ?? []"
               :bookmarks="post.bookmarks ?? []"
               :comments="post.comments?.length ?? 0"

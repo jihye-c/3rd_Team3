@@ -128,7 +128,7 @@
           </div>
           <div class="flex flex-col gap-[48px] p-[48px]">
             <div class="flex flex-col gap-4">
-              <div class="text-[40px] text-main-400 font-semibold">
+              <div id="recipeName" class="text-[40px] text-main-400 font-semibold">
                 {{ recipeData?.RCP_NM }}
               </div>
               <div class="text-[18px] text-mono-600">
