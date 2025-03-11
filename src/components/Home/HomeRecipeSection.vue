@@ -111,7 +111,7 @@ const todaysRecipeData = {
 onBeforeMount(async () => {
   try {
     const response = await programmersApiInstance.get(`/posts/channel/${RECIPE_CHANNEL_ID}`);
-    recipeCommunityData.value = response.data.slice(0, 3).map((item: Post) => ({
+    recipeCommunityData.value = response.data.slice(0, 2).map((item: Post) => ({
       ...item,
       title: JSON.parse(item.title),
       author: JSON.parse(item.author.fullName),

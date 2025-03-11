@@ -362,7 +362,8 @@ const isBookmarked = (contentId) => {
       <!-- 나의 스크랩 -->
       <div class="mt-12">
 
-        <h2 class="text-[32px] font-semibold text-mono-900">나의 스크랩</h2>
+        <h2 v-if="routeId === id" class="text-[32px] font-semibold text-mono-900">나의 스크랩</h2>
+        <h2 v-else class="text-[32px] font-semibold text-mono-900">작성 게시물</h2>
 
         <!-- 기존 탭 -->
         <div class="flex border-b border-mono-200 mt-6">
