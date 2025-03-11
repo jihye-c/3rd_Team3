@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import {ref, computed, onMounted, watchEffect, watch} from 'vue';
+  import {ref, computed, watchEffect} from 'vue';
   import RecipeCard from '@/components/community/RecipeCard.vue';
   import ResaleCard from '@/components/community/ResaleCard.vue';
   import CommunityPostList from '@/components/community/CommunityPostList.vue';
   import PaginationComponent from '@/components/PaginationComponent.vue';
   import {useUserStore} from '@/stores/userStore';
-  import {onBeforeRouteUpdate, useRoute, useRouter} from 'vue-router';
+  import {useRoute, useRouter} from 'vue-router';
   import Modal from '@/components/ModalComponent.vue';
   import FollowComponent from '@/components/mypage/FollowComponent.vue';
   import {useCultureStore} from '../stores/cultureStore';
@@ -390,7 +390,6 @@
       <div class="mt-12">
         <h2 v-if="routeId === id" class="text-[32px] font-semibold text-mono-900">나의 스크랩</h2>
         <h2 v-else class="text-[32px] font-semibold text-mono-900">작성 게시물</h2>
-
         <!-- 기존 탭 -->
         <div class="flex border-b border-mono-200 mt-6">
           <button
