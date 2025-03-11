@@ -459,23 +459,41 @@ export default class Supabase {
       }
     }
   }
-  static async checkScrap(userId:string, fullPath: string):Promise<boolean> {
+  static async checkScrap(userId: string, fullPath: string): Promise<boolean> {
     const supabase = this.init();
     if (!supabase) return false;
 
-    const {data, error} = await supabase.from('scrap_default').select('post_url').eq('post_url', fullPath).eq('user_id', userId);
-    if(error){
-      console.error("데이터 조회 중 에러가 발생했습니다.", error);
+    const {data, error} = await supabase
+      .from('scrap_default')
+      .select('post_url')
+      .eq('post_url', fullPath)
+      .eq('user_id', userId);
+    if (error) {
+      console.error('데이터 조회 중 에러가 발생했습니다.', error);
       return false;
     }
-    if(data && data.length > 0){
-      return true
-    }else{
-      return false
+    if (data && data.length > 0) {
+      return true;
+    } else {
+      return false;
     }
-
   }
+  static async removeScrap(userId: string, fullPath: string): Promise<void> {
+    const supabase = this.init();
+    if (!supabase) return;
 
+    const {error} = await supabase
+      .from('scrap_default')
+      .delete()
+      .eq('user_id', userId)
+      .eq('post_url', fullPath);
+
+    if (error) {
+      console.log('삭제 중 에러가 발생했습니다', error);
+    } else {
+      console.log('스크랩을 삭제했습니다.');
+    }
+  }
 }
 
 type InsertScrapData<T extends ScrapType> = {

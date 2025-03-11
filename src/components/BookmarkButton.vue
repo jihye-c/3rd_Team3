@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import Supabase from '@/apis/supabase';
-  import {useUserStore} from '@/stores/userStore';
   import {onMounted, ref} from 'vue';
   import {useRoute} from 'vue-router';
   const route = useRoute();
@@ -17,10 +16,9 @@
   }>();
 
   const toggleBookmark = async () => {
+    if (!userId) return;
     if (!bookmarked.value) {
       //북마크 넣기
-      if (!userId) return;
-
       switch (splitPath[1]) {
         case 'subscription':
           break;
@@ -37,7 +35,6 @@
             post_url: route.fullPath,
             title: titleEl?.innerText || '레시피',
           };
-          console.log(defaultData);
           await Supabase.addScrapData({type: 'recipe', defaultData});
           break;
         case 'culture':
@@ -55,14 +52,16 @@
           }
           break;
       }
-
       bookmarked.value = true;
     } else {
       //북마크 지우기
+      await Supabase.removeScrap(userId, route.fullPath);
+      bookmarked.value = false;
     }
     emit('toggle');
   };
   onMounted(async () => {
+    if (!userId) return;
     bookmarked.value = await Supabase.checkScrap(userId, route.fullPath);
   });
 </script>
