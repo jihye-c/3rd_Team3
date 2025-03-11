@@ -412,14 +412,13 @@ export default class Supabase {
       case 'subscription':
         tableName = 'scrap_subscription';
         break;
-      case 'recipe':
+case 'recipe':
         passFlag = true;
         break;
       default:
         console.error('허용되지 않은 scrap type입니다.');
         return [];
     }
-
     if (passFlag) {
       const {data, error} = await supabase
         .from('scrap_default')
