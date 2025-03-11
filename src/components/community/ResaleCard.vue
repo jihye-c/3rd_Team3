@@ -2,7 +2,7 @@
   interface Props {
     image: string;
     title: string;
-    price: string;
+    price: number;
     dong: string;
     available: boolean;
   }

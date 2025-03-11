@@ -3,7 +3,7 @@
   import BookmarkButton from '@/components/BookmarkButton.vue';
   import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
   import ShareButton from '@/components/ShareButton.vue';
-  import {onMounted, watch, ref} from 'vue';
+  import {onMounted, watch, ref, onBeforeUnmount} from 'vue';
   import {useRoute} from 'vue-router';
   import {fetchRecipe} from '@/apis/recipeApi';
   import type {Recipe} from '@/types/RecipeResponse';
@@ -39,6 +39,8 @@
     isBookmarked.value = !isBookmarked.value;
   };
 
+  let youtubeFetched = false; // YouTube API 중복 방지용 플래그
+
   onMounted(async () => {
     // api 호출
     try {
@@ -46,10 +48,21 @@
       // 레시피 데이터 불러오기
       const data = await fetchRecipe(String(paramId.value));
       recipeData.value = data;
+      console.log('api');
       // 유튜브 데이터 불러오기
-      const keyword = String(paramId.value).replace(/\s/g, '')!;
-      const youtubeResponse = await fetchYoutube(keyword);
-      videoId.value = youtubeResponse.items.map((item) => item.id.videoId);
+      if (!youtubeFetched) {
+        const keyword =
+          String(paramId.value).split(' ').length > 2
+            ? String(paramId.value)
+                .split(' ')
+                .slice(1)
+                .reduce((acc, curr) => (acc += curr))!
+            : String(paramId.value).replace(/\s/g, '')!;
+        const youtubeResponse = await fetchYoutube(keyword);
+        videoId.value = youtubeResponse.items.map((item) => item.id.videoId);
+        console.log('youtube');
+        youtubeFetched = true;
+      }
     } catch (err) {
       error.value = '데이터를 불러오는 중 오류가 발생했습니다.';
     } finally {
@@ -77,6 +90,9 @@
         .map(([_, value]) => value)
         .sort((a, b) => Number(a[0].split('.')[0]) - Number(b[0].split('.')[0]));
     }
+  });
+  onBeforeUnmount(() => {
+    window.onbeforeunload = null;
   });
 </script>
 
@@ -117,7 +133,7 @@
               </div>
               <div class="text-[18px] text-mono-600">
                 {{ recipeData?.RCP_PAT2 }} | {{ recipeData?.RCP_WAY2 }}
-                {{ recipeData.HASH_TAG ? ` | #${recipeData?.HASH_TAG}` : '' }}
+                {{ recipeData?.HASH_TAG ? ` | #${recipeData?.HASH_TAG}` : '' }}
               </div>
             </div>
             <div class="flex flex-col gap-4">
@@ -168,10 +184,16 @@
           <div class="text-[40px] text-mono-700 font-semibold">연관 레시피</div>
           <div class="flex gap-[24px]">
             <div class="bg-mono-200 h-[360px] w-full rounded-2xl overflow-hidden">
-              <iframe :src="`https://www.youtube.com/embed/${videoId[0]}`" class="w-full h-full" />
+              <iframe
+                :src="`https://www.youtube.com/embed/${videoId[0]}?enablejsapi=1&rel=0`"
+                class="w-full h-full"
+              />
             </div>
             <div class="bg-mono-200 h-[360px] w-full rounded-2xl overflow-hidden">
-              <iframe :src="`https://www.youtube.com/embed/${videoId[1]}`" class="w-full h-full" />
+              <iframe
+                :src="`https://www.youtube.com/embed/${videoId[1]}?enablejsapi=1&rel=0`"
+                class="w-full h-full"
+              />
             </div>
           </div>
         </div>

@@ -5,7 +5,7 @@
     author: Author;
     image: string;
     title: string;
-    tags: string;
+    tags: string[];
   }
   defineProps<Props>();
 </script>

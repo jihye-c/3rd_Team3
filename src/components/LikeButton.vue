@@ -15,17 +15,19 @@
 </script>
 
 <template>
-  <v-btn
-    variant="outlined"
-    block
-    height="52"
-    @click="toggleLike"
-    :style="{borderColor: 'var(--color-mono-300)'}"
-  >
-    <v-icon size="30" :class="isLiked ? 'liked' : 'unliked'">{{
-      props.isLiked ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'
-    }}</v-icon>
-  </v-btn>
+  <div>
+    <v-btn
+      variant="outlined"
+      block
+      height="52"
+      @click="toggleLike"
+      :style="{borderColor: 'var(--color-mono-300)'}"
+    >
+      <v-icon size="30" :class="isLiked ? 'liked' : 'unliked'">{{
+        props.isLiked ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'
+      }}</v-icon>
+    </v-btn>
+  </div>
 </template>
 
 <style scoped>
