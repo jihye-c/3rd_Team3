@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 const defaultImage = "/images/mypage/mypage_default_img.png";
 const router = useRouter()
@@ -6,10 +7,22 @@ const router = useRouter()
 const props = defineProps<{
   items: { email: string; fullName: { name: string }; image?: string,id:string }[];
   title: string;
+  isOpen: boolean,
 }>();
 
-const { items, title } = props; // 이렇게 구조 분해하면 정상 작동함
+const emit = defineEmits(['close']);
+const pushRouter =(id:string)=>{
+  router.push(`/mypage/${id}`);
+  closeModal()
+}
+const closeModal = () => {
+  emit('close');
+};
+const { items, title } = props;
 
+onMounted(()=>{
+
+})
 </script>
 
 <template>
@@ -33,7 +46,7 @@ const { items, title } = props; // 이렇게 구조 분해하면 정상 작동�
         <v-list-item
           :subtitle="item.email"
           :title="item.fullName.name"
-          @click.stop="router.push(`/mypage/${item.id}`)"
+          @click.stop="pushRouter(item.id)"
 
         >
           <template v-slot:prepend>

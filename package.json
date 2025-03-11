@@ -27,7 +27,6 @@
     "@mdi/font": "^7.4.47",
     "@popperjs/core": "^2.11.8",
     "@supabase/supabase-js": "^2.49.1",
-    "@tailwindcss/oxide-win32-x64-msvc": "^4.0.11",
     "@tailwindcss/postcss": "^4.0.9",
     "@tailwindcss/vite": "^4.0.9",
     "axios": "^1.8.1",

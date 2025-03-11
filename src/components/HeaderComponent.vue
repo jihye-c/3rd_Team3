@@ -5,8 +5,10 @@
   import {useAuthStore} from '@/stores/auth';
 import { onBeforeMount, onMounted, ref, watchEffect } from 'vue';
 import { getUserInfo } from '@/apis/auth';
+import { useUserStore } from '@/stores/userStore';
 
   const authStore = useAuthStore();
+  const userStore = useUserStore();
   const {scrollY} = useScroll();
   const background = useTransform(scrollY, [0, 100], ['rgba(0,0,0,0.0)', 'rgba(255,255,255,1)']);
   const height = useTransform(scrollY, [0, 100], [0, '100%']);
@@ -14,6 +16,7 @@ import { getUserInfo } from '@/apis/auth';
   const color = useTransform(scrollY, [0, 100], ['#fff', '#000']);
   const defaultImage = '/images/mypage/mypage_default_img.png'
   const userData = ref({})
+  const profileImg = ref('')
   const id = localStorage.getItem('userId')
   const props = defineProps({
     backgroundOpacity: {
@@ -28,6 +31,7 @@ import { getUserInfo } from '@/apis/auth';
     {to: '/culture', label: '문화 생활'},
   ];
   const logoutHandler = () => {
+
     authStore.logout();
   };
   const getUserData =async () =>{
@@ -38,8 +42,11 @@ import { getUserInfo } from '@/apis/auth';
      console.log(data)
   }
   watchEffect(() => {
-  if (authStore.isAuthenticated) {
+    profileImg.value = userStore.userProfileImage
+  if (localStorage.getItem('token')) {
     getUserData();
+    profileImg.value = localStorage.getItem('userImage') || userData.value?.image;
+
   }
 });
 </script>
@@ -118,7 +125,7 @@ import { getUserInfo } from '@/apis/auth';
                   <v-avatar
                     v-bind="activatorProps"
 
-                    :image="userData?.image ?? defaultImage "
+                    :image="profileImg ?? defaultImage "
                   ></v-avatar>
                 </template>
 

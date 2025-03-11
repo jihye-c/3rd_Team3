@@ -1,5 +1,6 @@
 import {getUserInfo} from '@/apis/auth';
-import {getGeolocationAddress, updateUserProfile} from '@/apis/userService';
+import {deleteFollow, deleteUser, getGeolocationAddress, postFollow, updateInfo, updatePasswordInfo, updateUserProfile} from '@/apis/userService';
+import type User from '@/types/User';
 import type {UserAddress} from '@/types/User';
 import {defineStore} from 'pinia';
 import {ref} from 'vue';
@@ -32,26 +33,25 @@ export const useUserStore = defineStore('user', () => {
       const data = await getUserInfo(id);
       const fullName = JSON.parse(data.fullName);
       userInfo.value = {...data, fullName};
+      followerInfo.value = []
+      followingInfo.value = []
       if(userInfo.value.image){
         localStorage.setItem('userImage', userInfo.value.image)
       }
       if (data.followers.length > 0) {
         for (const item of data.followers) {
           const userData = await getUserInfo(item.follower);
-          const fullName = JSON.parse(data.fullName);
+          const fullName = JSON.parse(userData.fullName);
           followerInfo.value.push({...userData, fullName,id:userData._id});
-          console.log(followerInfo.value);
         }
       }
       if (data.following.length > 0) {
         for (const item of data.following) {
-          const userData = await getUserInfo(item.follower);
-          console.log(userData);
-          const fullName = JSON.parse(data.fullName);
+          const userData = await getUserInfo(item.user ?? item.follower);
+          const fullName = JSON.parse(userData.fullName);
           followingInfo.value.push({...userData, fullName,id:userData._id});
         }
       }
-      console.log(fullName);
     } catch (e) {
       console.log(e);
     }
@@ -61,6 +61,7 @@ export const useUserStore = defineStore('user', () => {
     try {
       const data = await updateUserProfile(formData);
       localStorage.setItem('userImage', data.image)
+
       userProfileImage.value = data.image
       console.log(data);
     } catch (e) {
@@ -70,12 +71,56 @@ export const useUserStore = defineStore('user', () => {
 
   };
 
-
+  const postFollowUser = async (id:string) =>{
+    try{
+    const data = await postFollow(id)
+    console.log(data);
+    await getUser(data.user)
+  }catch(e){
+    console.log(e);
+  }
+  }
+  const deleteFollowUser = async (id:string) =>{
+    try{
+    const data = await deleteFollow(id)
+    console.log(data);
+    await getUser(data.user)
+  }catch(e){
+    console.log(e);
+  }
+  }
+  const updateUserInfo = async (payload:{fullName:string}) =>{
+    try{
+    const data = await updateInfo(payload)
+    const fullName = JSON.parse(data.fullName);
+    userInfo.value = {...data, fullName};
+    console.log(data);
+  }catch(e){
+    console.log(e);
+  }
+  }
+  const changePassword = async (payload:{password:string}) =>{
+    try{
+    const data = await updatePasswordInfo(payload)
+    console.log(data);
+  }catch(e){
+    console.log(e);
+  }
+  }
+  const deleteAccount = async (id:string) =>{
+    try{
+    const data = await deleteUser(id)
+    console.log(data);
+  }catch(e){
+    console.log(e);
+  }
+  }
   //유저 위치정보 업데이트
   const updateUserAddress = (newAddress: UserAddress | null) => {
     localStorage.setItem('userAddress', JSON.stringify(newAddress));
     userLocation.value = newAddress;
   };
+
   return {
     userLocation,
     userInfo,
@@ -86,5 +131,10 @@ export const useUserStore = defineStore('user', () => {
     updateUserAddress,
     getUser,
     postUserProfile,
+    postFollowUser,
+    deleteFollowUser,
+    updateUserInfo,
+    changePassword,
+    deleteAccount
   };
 });
