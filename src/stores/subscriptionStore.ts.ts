@@ -19,6 +19,7 @@ export const useSubscriptionStore = defineStore('subscription', () => {
     //  console.log(SubscriptionList.value)
      const sortMonthDate =  await groupByMonth(data.data)
      SubscriptionDateList.value = sortMonthDate
+     await filteredData(Object.keys(sortMonthDate)[0])
     } catch (e) {
       console.log(e);
     }
@@ -27,7 +28,6 @@ export const useSubscriptionStore = defineStore('subscription', () => {
   const filteredData = async (date:any)=>{
    const filter =  SubscriptionDateList.value[date]
    filteredMonthDatas.value = filter
-
    if(filter){
     const sortMonthDate =  await groupByDay(filter)
     filteredDayhDatas.value = sortMonthDate

@@ -1,20 +1,24 @@
 <script setup lang="ts">
-  import {RouterLink} from 'vue-router';
+  import {RouterLink, useRouter} from 'vue-router';
   import {Motion, useScroll, useTransform} from 'motion-v';
   import AddressSelectBar from './Home/common/AddressSelectBar.vue';
   import {useAuthStore} from '@/stores/auth';
-import { onBeforeMount, onMounted, ref, watchEffect } from 'vue';
-import { getUserInfo } from '@/apis/auth';
+  import {onBeforeMount, onMounted, ref, watchEffect} from 'vue';
+  import {getUserInfo} from '@/apis/auth';
+  import {useUserStore} from '@/stores/userStore';
 
   const authStore = useAuthStore();
+  const userStore = useUserStore();
+  const router = useRouter();
   const {scrollY} = useScroll();
   const background = useTransform(scrollY, [0, 100], ['rgba(0,0,0,0.0)', 'rgba(255,255,255,1)']);
   const height = useTransform(scrollY, [0, 100], [0, '100%']);
   const border = useTransform(scrollY, [0, 100], ['none', '1px solid #eee']);
   const color = useTransform(scrollY, [0, 100], ['#fff', '#000']);
-  const defaultImage = '/images/mypage/mypage_default_img.png'
-  const userData = ref({})
-  const id = localStorage.getItem('userId')
+  const defaultImage = '/images/mypage/mypage_default_img.png';
+  const userData = ref({});
+  const profileImg = ref('');
+  const id = localStorage.getItem('userId');
   const props = defineProps({
     backgroundOpacity: {
       type: Boolean,
@@ -30,23 +34,26 @@ import { getUserInfo } from '@/apis/auth';
   const logoutHandler = () => {
     authStore.logout();
   };
-  const getUserData =async () =>{
-    const id = localStorage.getItem('userId')
+  const getUserData = async () => {
+    const id = localStorage.getItem('userId');
     // console.log(user)
-     const data = await getUserInfo(id)
-     userData.value = data
-     console.log(data)
-  }
-  watchEffect(() => {
-  if (authStore.isAuthenticated) {
-    getUserData();
-  }
-});
+    const data = await getUserInfo(id);
+    userData.value = data;
+    console.log(data);
+  };
+  watchEffect(async () => {
+    profileImg.value = userStore.userProfileImage;
+    if (localStorage.getItem('token')) {
+      await getUserData();
+      profileImg.value = localStorage.getItem('userImage') || userData.value?.image;
+    }
+  });
 </script>
 
 <template>
   <Motion
     as="div"
+    :key="3"
     class="w-full fixed z-20"
     :style="{
       background: props.backgroundOpacity ? background : '#fff',
@@ -113,49 +120,48 @@ import { getUserInfo } from '@/apis/auth';
 
             <!-- <RouterLink class="tw:flex tw:items-center" to="/mypage"> </RouterLink> -->
             <v-badge v-if="authStore.isAuthenticated" content="5" color="var(--color-main-400)">
-              <v-speed-dial scrim="true" location="bottom center" transition="fade-transition">
+              <v-speed-dial key="133" scrim="true" location="bottom center" transition="fade-transition">
                 <template v-slot:activator="{props: activatorProps}">
-                  <v-avatar
-                    v-bind="activatorProps"
-
-                    :image="userData?.image ?? defaultImage "
-                  ></v-avatar>
+                  <v-avatar v-bind="activatorProps" :image="profileImg || defaultImage"></v-avatar>
                 </template>
 
-                <v-tooltip location="end">
+                <v-tooltip key="1" location="end">
                   <template v-slot:activator="{props}">
-                    <RouterLink :to="`/mypage/${id}`">
-                      <v-btn icon v-bind="props">
-                        <v-icon color="grey-lighten-1"> mdi-account </v-icon>
-                      </v-btn>
-                    </RouterLink>
+                    <v-btn @click="router.push(`/mypage/${id}`)" icon v-bind="props">
+                      <v-icon color="grey-lighten-1">mdi-account</v-icon>
+                    </v-btn>
                   </template>
                   <span>마이페이지</span>
                 </v-tooltip>
-                <v-tooltip location="end">
+
+                <v-tooltip key="2" location="end">
                   <template v-slot:activator="{props}">
                     <v-btn icon v-bind="props">
-                      <v-icon color="grey-lighten-1"> mdi-bell </v-icon>
+                      <v-icon color="grey-lighten-1">mdi-bell</v-icon>
                     </v-btn>
                   </template>
                   <span>알림</span>
                 </v-tooltip>
-                <v-tooltip location="end">
+
+                <v-tooltip key="3" location="end">
                   <template v-slot:activator="{props}">
                     <v-btn @click="logoutHandler()" icon v-bind="props">
-                      <v-icon color="grey-lighten-1"> mdi-logout </v-icon>
+                      <v-icon color="grey-lighten-1">mdi-logout</v-icon>
                     </v-btn>
                   </template>
                   <span>로그아웃</span>
                 </v-tooltip>
-                <v-tooltip location="end">
+
+                <v-tooltip key="4" location="end">
                   <template v-slot:activator="{props}">
-                    <v-btn v-bind="props" key="4" class="!shadow-none" icon="$error"></v-btn>
+                    <v-btn v-bind="props" class="!shadow-none" icon="$error"></v-btn>
                   </template>
                   <span>닫기</span>
                 </v-tooltip>
+
               </v-speed-dial>
             </v-badge>
+
             <div v-else>
               <RouterLink to="/auth">로그인</RouterLink>
             </div>
@@ -168,6 +174,11 @@ import { getUserInfo } from '@/apis/auth';
 
 <style scoped>
   #app:has(#hospitalContent) header {
+    background: white !important;
+    color: var(--color-mono-900);
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  #app:has(#communityCreateContent) header {
     background: white !important;
     color: var(--color-mono-900);
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);

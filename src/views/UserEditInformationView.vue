@@ -4,7 +4,7 @@
       <div>
         <div class="w-[280px] relative h-[280px]">
           <div class="w-full rounded-full overflow-hidden h-full">
-            <img class="object-cover w-full h-full" :src="previewUrl" alt="" />
+            <img class="object-cover w-full h-full" :src="previewUrl ?? defaultImage" alt="" />
           </div>
           <div class="absolute right-10 bottom-0">
             <v-tooltip location="top">
@@ -56,7 +56,8 @@ import {useUserStore} from '@/stores/userStore';
   const userStore = useUserStore();
   const selectedFile = ref<File | null>(null);
   const previewUrl = ref<string | null>('');
-  const tab = ref(null)
+    const defaultImage = '/images/mypage/mypage_default_img.png';
+    const tab = ref(null)
   const handleFileChange = async (event: Event) => {
     const input = event.target as HTMLInputElement;
 
@@ -80,10 +81,18 @@ import {useUserStore} from '@/stores/userStore';
     input.value = '';
   };
   const uploadHandler = async () => {
-    const formData = new FormData();
+    try{
+      const formData = new FormData();
     formData.append('isCover', 'false');
     formData.append('image', selectedFile.value!);
     await userStore.postUserProfile(formData);
+    alert('이미지 변경에 성공하였습니다.')
+    }catch(e) {
+      console.error('이미지 변경 실패:', e);
+      alert('이미지 변경에 실패했습니다');
+      return;
+    }
+
   };
   onMounted(async () => {
     previewUrl.value = localStorage.getItem('userImage');
