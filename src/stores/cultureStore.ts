@@ -43,9 +43,9 @@ export const useCultureStore = defineStore("cultureStore", {
       try {
         const bookmarks = await getUserScrapList(userId);
         this.bookmarkedFestivals = bookmarks;
-        console.log("✅ 북마크 불러오기 성공:", bookmarks);
+        console.log("북마크 불러오기 성공:", bookmarks);
       } catch (error) {
-        console.error("❌ 북마크 불러오기 실패:", error);
+        console.error("북마크 불러오기 실패:", error);
       }
     },
 
@@ -53,9 +53,9 @@ export const useCultureStore = defineStore("cultureStore", {
     async toggleBookmark(userId, festivalData) {
       try {
         this.bookmarkedFestivals = await toggleScrap(userId, festivalData);
-        console.log("✅ 북마크 업데이트 완료");
+        console.log("북마크 업데이트 완료");
       } catch (error) {
-        console.error("❌ 북마크 업데이트 실패:", error);
+        console.error("북마크 업데이트 실패:", error);
       }
     }
   },

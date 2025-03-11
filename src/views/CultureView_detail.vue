@@ -62,6 +62,7 @@ const toggleBookmark = async () => {
           ? eventIntro.value.event_end_date
           : "날짜 미정",
         gu_name: festivalDetail.value.address || "주소 정보 없음",
+        channel: "culture", // ✅ 채널 정보 추가 (문화생활)
       };
 
       console.log("✅ 북마크 추가/삭제 요청:", newBookmark);
