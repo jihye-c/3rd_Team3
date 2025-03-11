@@ -394,6 +394,7 @@ export default class Supabase {
     if (!supabase) return [];
 
     let tableName = '';
+    let passFlag = false;
 
     switch (type) {
       case 'comm_sale':
@@ -411,36 +412,76 @@ export default class Supabase {
       case 'subscription':
         tableName = 'scrap_subscription';
         break;
+      case 'recipe':
+        passFlag = true;
+        break;
       default:
         console.error('허용되지 않은 scrap type입니다.');
         return [];
     }
 
-    const {data, error} = await supabase
-      .from('scrap_default')
-      .select(`*, ${tableName}(*)`)
-      .eq('user_id', userId)
-      .eq('type', type);
+    if (passFlag) {
+      const {data, error} = await supabase
+        .from('scrap_default')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('type', type);
 
-    if (error) {
-      console.error('스크랩 데이터 조회 중 에러 발생:', error);
-      return [];
-    }
-    if (!data) {
-      return [];
+      if (error) {
+        console.error('스크랩 데이터 조회 중 에러 발생:', error);
+        return [];
+      }
+      if (!data) {
+        return [];
+      } else {
+        return data.map((item) => ({
+          ...item,
+        }));
+      }
     } else {
-      return data.map((item) => ({
-        ...item,
-        ...item[tableName],
-      }));
+      const {data, error} = await supabase
+        .from('scrap_default')
+        .select(`*, ${tableName}(*)`)
+        .eq('user_id', userId)
+        .eq('type', type);
+
+      if (error) {
+        console.error('스크랩 데이터 조회 중 에러 발생:', error);
+        return [];
+      }
+      if (!data) {
+        return [];
+      } else {
+        return data.map((item) => ({
+          ...item,
+          ...item[tableName],
+        }));
+      }
     }
   }
+  static async checkScrap(userId:string, fullPath: string):Promise<boolean> {
+    const supabase = this.init();
+    if (!supabase) return false;
+
+    const {data, error} = await supabase.from('scrap_default').select('post_url').eq('post_url', fullPath).eq('user_id', userId);
+    if(error){
+      console.error("데이터 조회 중 에러가 발생했습니다.", error);
+      return false;
+    }
+    if(data && data.length > 0){
+      return true
+    }else{
+      return false
+    }
+
+  }
+
 }
 
 type InsertScrapData<T extends ScrapType> = {
   type: T;
   defaultData: ScrapDefaultData;
-  additionalData: ScrapDataMap[T];
+  additionalData?: ScrapDataMap[T];
 };
 
 type ScrapType =
@@ -485,11 +526,11 @@ interface ScrapCommQnA {
   tags: string[];
 }
 interface ScrapCulture {
-  tags:string[],
-  contentId:string,
-  eventEndDate:string,
-  eventStartDate:string
-  location:string,
+  tags: string[];
+  contentId: string;
+  eventEndDate: string;
+  eventStartDate: string;
+  location: string;
 }
 interface scrapSubscription {
   date: string[];
