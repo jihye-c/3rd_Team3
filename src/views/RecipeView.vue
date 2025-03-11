@@ -1,9 +1,13 @@
 <script setup lang="ts">
   import DoughnutChart from '@/components/recipe/DoughnutChart.vue';
+  import RecipeMainBanner from '@/components/recipe/RecipeMainBanner.vue';
   import RecipePostList from '@/components/recipe/RecipePostList.vue';
   import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
   import RecipeSquareCard from '@/components/recipe/RecipeSquareCard.vue';
-  import SearchBarRounded from '@/components/recipe/SearchBarRounded.vue';
+  import {RECIPE_CHANNEL_ID} from '@/constants/channelId';
+  import type {Post} from '@/types/PostResponse';
+  import {programmersApiInstance} from '@/utils/axiosInstance';
+  import {onMounted, ref} from 'vue';
   import {useRouter} from 'vue-router';
 
   const recipeCategoryData = [
@@ -57,71 +61,42 @@
       '소고기 들깨 알토란탕은 고소한 들깨가루와 부드러운 소고기, 그리고 특유의 식감이 일품인 알토란을 주재료로 한 영양가 높은 한식 탕입니다. 알토란의 아삭한 식감과 들깨의 고소함이 어우러져 깊은 맛을 내며, 소고기의 감칠맛이 국물에 배어 풍미를 더합니다.',
     image: '/images/recipe/recipe_todays.webp',
     nutrition: {
-      calories: 146.42,
-      sodium: 675.68,
-      protein: 7.57,
+      calories: 300.42,
+      sodium: 400.68,
+      protein: 16.57,
       fat: 5.17,
-      carbohydrates: 17.4,
+      carbohydrates: 50.4,
     },
   };
   const popularRecipeData = [
-    {title: '코코넛워터 토마토카레', image: '/images/recipe/recipe_popular3.webp'},
-    {title: '저염된장 삼치구이', image: '/images/recipe/recipe_popular1.webp'},
-    {title: '참나물 소보로덮밥', image: '/images/recipe/recipe_popular2.webp'},
-  ];
-  const recipeCommunityData = [
-    {
-      author: '방구석셰프',
-      title: '5분 완성! 참치마요 덮밥',
-      content:
-        '따뜻한 밥 위에 기름 뺀 참치와 마요네즈를 섞어 올리면 완성! 한 끼 식사가 부담스러울 때 5분이면 뚝딱 만들 수 있어요. 기호에 따라 김가루나 쪽파를 뿌리면 풍미가 더해지고, 매콤한 맛을 원한다면 고추장이나 sriracha 소스를 살짝 넣어도 좋아요.',
-      image: '/images/recipe/recipe_category_one_dish.webp',
-    },
-    {
-      author: '방구석셰프',
-      title: '5분 완성! 참치마요 덮밥',
-      content: '자취생 필수템, 참치캔과 마요네즈로 만드는 초간단 덮밥!',
-      image: '/images/recipe/recipe_category_one_dish.webp',
-    },
-    {
-      author: '방구석셰프',
-      title: '5분 완성! 참치마요 덮밥',
-      content: '자취생 필수템, 참치캔과 마요네즈로 만드는 초간단 덮밥!',
-      image: '/images/recipe/recipe_category_one_dish.webp',
-    },
-    {
-      author: '방구석셰프',
-      title: '5분 완성! 참치마요 덮밥',
-      content: '자취생 필수템, 참치캔과 마요네즈로 만드는 초간단 덮밥!',
-      image: '/images/recipe/recipe_category_one_dish.webp',
-    },
+    {title: '코코넛워터 토마토카레', image: '/images/recipe/recipe_popular1.webp'},
+    {title: '저염된장 삼치구이', image: '/images/recipe/recipe_popular2.webp'},
+    {title: '참나물 소보로덮밥', image: '/images/recipe/recipe_popular3.webp'},
   ];
 
   const router = useRouter();
 
-  const handleSearch = (searchText: string) =>
-    router.push({name: 'recipe-search', query: {keyword: searchText}});
+  const recipeCommunityData = ref<Post[]>([]);
+  const isLoading = ref<boolean>(false);
+
+  onMounted(async () => {
+    try {
+      isLoading.value = true;
+      const response = await programmersApiInstance.get<Post[]>(
+        `/posts/channel/${RECIPE_CHANNEL_ID}`,
+      );
+      recipeCommunityData.value = response.data;
+    } catch (error) {
+      console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
+    } finally {
+      isLoading.value = false;
+    }
+  });
 </script>
 
 <template>
   <!-- 배너 -->
-  <div class="w-full h-[562px] overflow-hidden">
-    <div class="bg-[url(/images/recipe/recipe_main_banner.webp)] w-full h-full bg-cover bg-center">
-      <div class="w-full h-full bg-mono-900/30 flex place-content-center">
-        <div class="flex flex-col gap-10 justify-center">
-          <!-- 타이틀 -->
-          <div>
-            <div class="text-[40px] text-mono-050 leading-[52px]">혼자 살아도 건강하게!</div>
-            <div class="text-[48px] font-bold text-mono-050 leading-16">
-              자취생을 위한 영양만점 레시피
-            </div>
-          </div>
-          <!-- 검색바 -->
-          <SearchBarRounded long @search="handleSearch" />
-        </div>
-      </div>
-    </div>
-  </div>
+  <RecipeMainBanner />
   <div class="container flex flex-col gap-[100px] py-[100px]">
     <!-- 카테고리별 레시피 -->
     <div class="flex flex-col gap-[28px]">
@@ -216,12 +191,13 @@
     <div class="flex flex-col gap-[28px]">
       <div class="ft-point text-[48px] text-mono-700">리얼 자취생 레시피</div>
       <div class="grid grid-cols-2 gap-[24px] justify-between">
-        <template v-for="item in recipeCommunityData" :key="item.title">
+        <template v-if="recipeCommunityData" v-for="item in recipeCommunityData" :key="item.title">
           <RecipePostList
-            :author="item.author"
-            :title="item.title"
-            :content="item.content"
+            :author="JSON.parse(item.author.fullName).nickname"
+            :title="JSON.parse(item.title).title"
+            :content="JSON.parse(item.title).content"
             :image="item.image"
+            @click="() => router.push(`/community/recipe/post/${item._id}`)"
           />
         </template>
       </div>

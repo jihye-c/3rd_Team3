@@ -7,41 +7,113 @@
   import {useAuthStore} from '@/stores/auth';
   import type {Post} from '@/types/PostResponse';
   import {programmersApiInstance} from '@/utils/axiosInstance';
-  import {ref, watch} from 'vue';
-  import {useRoute, useRouter} from 'vue-router';
+  import {computed, onMounted, ref, watch} from 'vue';
+  import {useRouter} from 'vue-router';
+  import districtData from '@/assets/data/district.json';
+  import {useUserStore} from '@/stores/userStore';
 
-  const route = useRoute();
+  type DistrictKeys = keyof typeof districtData;
+
   const router = useRouter();
   const authStore = useAuthStore();
+  const UserStore = useUserStore();
+  const {userLocation} = UserStore;
+
+  // 지역 필터
+  const guList = Object.keys(districtData);
+  const selectedGu = ref<string>(userLocation?.address || '강남구');
+  const dongList = computed(() => districtData[selectedGu.value as DistrictKeys]);
+  const selectedDong = ref<string | null>(null);
+  watch(selectedGu, () => {
+    selectedDong.value = null;
+  });
+  const selectedTag = ref<string | null>(null);
 
   // 검색 기준
   const selectedSearchCriteria = ref('제목');
   // 검색어
-  const searchQuery = ref('');
+  const searchKeyword = ref('');
   // 정렬기준
   const selectedOrder = ref('recent');
 
   const postList = ref<Post[]>([]);
   const isLoading = ref<boolean>(false);
+  const init = ref<boolean>(true);
 
-  watch(
-    () => JSON.stringify(route.query),
-    async (newQuery, oldQuery) => {
-      try {
+  const filteredPostList = computed(() => {
+    const filteredData = postList.value.filter((data: Post) => {
+      const parsedData = JSON.parse(data.title);
+      // 구 필터링
+      const matchesGu = selectedGu.value ? parsedData.region.gu === selectedGu.value : true;
+
+      // 동 필터링
+      const matchesDong = selectedDong.value ? parsedData.region.dong === selectedDong.value : true;
+
+      // 태그 필터링
+      const matchesTag = selectedTag.value ? parsedData.tags.includes(selectedTag.value) : true;
+
+      // 검색어 필터링
+      const matchesText = searchKeyword.value
+        ? selectedSearchCriteria.value === '제목'
+          ? parsedData.title.includes(searchKeyword.value)
+          : parsedData.content.includes(searchKeyword.value)
+        : true;
+
+      return matchesGu && matchesDong && matchesTag && matchesText;
+    });
+    // 정렬
+    return filteredData.sort((a, b) => {
+      if (selectedOrder.value === 'popular') {
+        return b.likes.length - a.likes.length; // 'likes'가 많은 순으로 정렬
+      } else {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // 최신순 정렬
+      }
+    });
+  });
+
+  const updateQuery = () => {
+    if (init.value) {
+      router.replace({
+        name: 'community-review',
+        query: {
+          gu: selectedGu.value,
+          dong: selectedDong.value,
+          tag: selectedTag.value,
+          keyword: searchKeyword.value,
+          order: selectedOrder.value,
+        },
+      });
+    } else {
+      router.push({
+        name: 'community-review',
+        query: {
+          gu: selectedGu.value,
+          dong: selectedDong.value,
+          tag: selectedTag.value,
+          keyword: searchKeyword.value,
+          order: selectedOrder.value,
+        },
+      });
+    }
+  };
+
+  onMounted(async () => {
+    try {
+      if (init.value) {
         isLoading.value = true;
         const response = await programmersApiInstance.get<Post[]>(
           `/posts/channel/${REVIEW_CHANNEL_ID}`,
         );
         postList.value = response.data;
-        console.log(JSON.parse(response.data[0].title).title);
-      } catch (error) {
-        console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
-      } finally {
-        isLoading.value = false;
+        updateQuery();
+        init.value = false;
       }
-    },
-    {immediate: true},
-  );
+    } catch (error) {
+      console.error('질문 데이터를 불러오는 중 문제가 생겼습니다.', error);
+    } finally {
+      isLoading.value = false;
+    }
+  });
 </script>
 
 <template>
@@ -61,22 +133,43 @@
 
     <div class="container">
       <!-- 검색 -->
-      <div class="flex justify-between items-center pb-[60px]">
+      <div class="flex justify-between items-center pb-[60px] gap-4">
         <div class="flex gap-6">
-          <v-select label="구 선택" variant="outlined" width="134" rounded="lg" density="compact" />
-          <v-select label="동 선택" variant="outlined" width="134" rounded="lg" density="compact" />
           <v-select
-            label="태그 선택"
+            v-model="selectedGu"
+            :items="guList"
+            label="구 선택"
             variant="outlined"
             width="134"
             rounded="lg"
             density="compact"
+            @update:modelValue="updateQuery"
+          />
+          <v-select
+            v-model="selectedDong"
+            :items="dongList"
+            label="동 선택"
+            variant="outlined"
+            width="134"
+            rounded="lg"
+            density="compact"
+            @update:modelValue="updateQuery"
+          />
+          <v-select
+            v-model="selectedTag"
+            label="태그 선택"
+            :items="['맛집', '생활편의', '교통', '주거', '문화']"
+            variant="outlined"
+            width="134"
+            rounded="lg"
+            density="compact"
+            @update:modelValue="updateQuery"
           />
         </div>
         <SearchBar
           v-model:searchCriteria="selectedSearchCriteria"
-          v-model:searchQuery="searchQuery"
-          @search=""
+          v-model:searchQuery="searchKeyword"
+          @search="updateQuery"
           :width="900"
         />
       </div>
@@ -84,8 +177,18 @@
       <div class="flex justify-between items-center">
         <!-- 정렬 -->
         <div class="flex gap-7">
-          <OrderRadioButton v-model="selectedOrder" value="recent" label="최신순" />
-          <OrderRadioButton v-model="selectedOrder" value="popular" label="인기순" />
+          <OrderRadioButton
+            v-model="selectedOrder"
+            value="recent"
+            label="최신순"
+            @update:modelValue="updateQuery"
+          />
+          <OrderRadioButton
+            v-model="selectedOrder"
+            value="popular"
+            label="인기순"
+            @update:modelValue="updateQuery"
+          />
         </div>
         <!-- 글작성 버튼 -->
         <v-btn
@@ -99,11 +202,11 @@
 
       <!-- 리스트 -->
       <div class="flex flex-col gap-[28px] pt-[28px] pb-[100px] leading-[32px]">
-        <template v-for="item in postList">
+        <template v-if="filteredPostList.length" v-for="item in filteredPostList">
           <CommunityPostList
             :title="JSON.parse(item.title).title"
             :content="JSON.parse(item.title).content"
-            :dong="JSON.parse(item.title).region"
+            :dong="JSON.parse(item.title).region.dong"
             :tags="JSON.parse(item.title).tags"
             :bookmarks="item.likes.length"
             :comments="item.comments.length"
@@ -116,6 +219,7 @@
             "
           />
         </template>
+        <!-- {{ filteredPostList[0] }} -->
       </div>
 
       <!-- 페이지네이션 -->
@@ -134,7 +238,7 @@
     color: var(--color-mono-050);
     height: 40px;
   }
-  :deep(.v-label) {
+  /* :deep(.v-label) {
     font-size: 18px;
-  }
+  } */
 </style>

@@ -115,6 +115,7 @@
   watchEffect(async () => {
     data.value = subscriptionStore.SubscriptionList;
     filterData.value = subscriptionStore.filteredDayhDatas;
+    console.log(filterData.value);
   });
 
   onUpdated(() => {

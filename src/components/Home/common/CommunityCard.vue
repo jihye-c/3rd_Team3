@@ -23,7 +23,6 @@
     item:Object
   })
   onMounted(()=>{
-    console.log(props.item)
   })
 </script>
 

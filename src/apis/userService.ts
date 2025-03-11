@@ -67,6 +67,15 @@ export async function createScrapPost(userId: string, postData: any, channel: st
       price: postData.price || "",
       available: postData.available || true,
 
+      // userId: userId, // ✅ 유저 ID 저장 유지
+      // content_id: festivalData.content_id,
+      // name: festivalData.name,
+      // category3: festivalData.category3,
+      // homepage: festivalData.homepage,
+      // event_start_date: festivalData.event_start_date,
+      // event_end_date: festivalData.event_end_date,
+      // gu_name: festivalData.gu_name,
+      // overview: festivalData.overview,
     });
 
     const res = await axiosApi.post(`${apiRoot}/posts/create`, {
@@ -81,7 +90,6 @@ export async function createScrapPost(userId: string, postData: any, channel: st
     throw error;
   }
 }
-
 
 export const getUserScrapList = async (userId: string) => {
   try {
@@ -255,3 +263,46 @@ export async function updateUserProfile(formData: FormData) {
   }
   return response.data;
 }
+export async function postFollow(id:string){
+  const response = await axiosApi.post(`${apiRoot}/follow/create`,{userId:id});
+  console.log(response);
+  if (response.status !== 200) {
+    throw 'state : ' + response.status;
+  }
+  return response.data;
+}
+export async function deleteFollow(id:string){
+  const response = await axiosApi.delete(`${apiRoot}/follow/delete`,{
+    data: {id: id},
+  });
+  console.log(id);
+  if (response.status !== 200) {
+    throw 'state : ' + response.status;
+  }
+  return response.data;
+}
+export async function updateInfo(payload:{fullName:string}){
+  const response = await axiosApi.put(`${apiRoot}/settings/update-user`,payload);
+  if (response.status !== 200) {
+    throw 'state : ' + response.status;
+  }
+  return response.data;
+}
+export async function updatePasswordInfo(payload:{password:string}){
+  const response = await axiosApi.put(`${apiRoot}/settings/update-password`,payload);
+  if (response.status !== 200) {
+    throw 'state : ' + response.status;
+  }
+  return response.data;
+}
+export async function deleteUser(userId:string){
+  const response = await axiosApi.delete(`${apiRoot}/users/delete-user`,{
+    data: {id: userId},
+  });
+  if (response.status !== 200) {
+    throw 'state : ' + response.status;
+  }
+  return response.data;
+}
+
+

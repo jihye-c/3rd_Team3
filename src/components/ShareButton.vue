@@ -1,4 +1,8 @@
 <script setup lang="ts">
+  const props = defineProps<{
+    class?: string | string[];
+  }>();
+
   const emit = defineEmits<{
     (event: 'share'): void;
   }>();
@@ -15,15 +19,17 @@
 </script>
 
 <template>
-  <v-btn
-    variant="outlined"
-    block
-    height="52"
-    @click="handleClick"
-    :style="{borderColor: 'var(--color-mono-300)'}"
-  >
-    <v-icon size="24">mdi-share-variant</v-icon>
-  </v-btn>
+  <div :class="props.class">
+    <v-btn
+      variant="outlined"
+      block
+      height="52"
+      @click="handleClick"
+      :style="{borderColor: 'var(--color-mono-300)'}"
+    >
+      <v-icon size="24">mdi-share-variant</v-icon>
+    </v-btn>
+  </div>
 </template>
 
 <style scoped>

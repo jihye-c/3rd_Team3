@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref, computed, onMounted, watchEffect } from 'vue';
+import { ref, computed, onMounted, watchEffect, watch } from 'vue';
 import RecipeCard from '@/components/community/RecipeCard.vue';
 import ResaleCard from '@/components/community/ResaleCard.vue';
 import CommunityPostList from '@/components/community/CommunityPostList.vue';
@@ -305,7 +305,7 @@ const isBookmarked = (contentId) => {
           </div>
           <div class="w-[800px]">
             <p class="text-[28px] font-medium text-mono-900">
-              {{ userInfo?.fullName.name }}님 안녕하세요
+              {{ userInfo?.fullName.nickname }}님 안녕하세요
             </p>
             <p class="text-[16px] text-mono-600">{{ userInfo?.email }}</p>
             <div class="flex items-center gap-4 mt-2 py-2">
@@ -313,20 +313,22 @@ const isBookmarked = (contentId) => {
                 @click="openModal('follower')"
                 class="text-mono-900 font-medium flex items-center gap-2"
               >
-                <span class="text-2xl">{{ userInfo?.followers.length }}</span>
+                <span class="text-2xl">{{ userFollowerInfo?.length }}</span>
                 <p class="text-mono-400 font-normal">팔로워</p>
               </div>
               <div
                 @click="openModal('following')"
                 class="text-mono-900 font-medium flex items-center gap-2"
               >
-                <span class="text-2xl">{{ userInfo?.following.length }}</span>
+                <span class="text-2xl">{{ userFollowingInfo?.length }}</span>
                 <p class="text-mono-400 font-normal">팔로잉</p>
               </div>
             </div>
             <!-- 자기 소개 -->
             <div class="mt-4 w-full">
-              <p class="text-mono-600 text-wrap text-[16px]">{{ bio }}</p>
+              <p v-if="userInfo?.fullName.introduction" class="text-mono-600 text-wrap text-[16px]">{{ userInfo?.fullName.introduction }}</p>
+              <p v-else class="text-mono-600 text-wrap text-[16px]">사용자의 소개가 아직 없습니다:)</p>
+
             </div>
           </div>
         </div>
@@ -340,12 +342,20 @@ const isBookmarked = (contentId) => {
             <img src="/images/mypage/alert.png" alt="Alert" class="w-full h-full object-contain" />
           </button>
         </div>
-        <div v-else class="absolute top-6 right-6 flex gap-4">
+        <div v-else-if="!followCheck()" class="absolute top-6 right-6 flex gap-4">
           <button
-            @click="router.push('/mypage/user-update')"
+          @click=" followHandeler"
             class="w-[120px] text-main-50 cursor-pointer hover:bg-main-400/80 bg-main-400 py-2 rounded-md"
           >
             <span class="text-md">팔로우</span>
+          </button>
+        </div>
+        <div v-else class="absolute top-6 right-6 flex gap-4">
+          <button
+          @click=" deleteFollowHandeler"
+            class="w-[120px] text-main-400 cursor-pointer hover:bg-main-400/80 border-main-400 border-1 py-2 rounded-md"
+          >
+            <span class="text-md">팔로우 취소</span>
           </button>
         </div>
       </div>

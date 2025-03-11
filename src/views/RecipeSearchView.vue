@@ -27,7 +27,7 @@
   const searchKeyword = ref<string>('');
   const searchCategory = ref<string>('');
   const searchIngredients = ref<string[]>([]);
-  const isInit = ref(false);
+  // const isInit = ref(false);
 
   // api 관련
   const recipeList = ref<Recipe[]>();
@@ -85,18 +85,6 @@
     async (newQuery, oldQuery) => {
       // 쿼리가 변경되었을 때만 실행
       if (JSON.stringify(newQuery) === JSON.stringify(oldQuery)) return;
-
-      // 처음에 url query 설정 하기
-      if (!isInit.value) {
-        isInit.value = true;
-        page.value = route.query.page ? Number(route.query.page) : 1;
-        searchKeyword.value = route.query.keyword ? String(route.query.keyword) : '';
-        searchCategory.value = route.query.category ? String(route.query.category) : '';
-        searchIngredients.value = route.query.ingredients
-          ? String(route.query.ingredients).split(',')
-          : [];
-        updateQuery();
-      }
 
       // url 변경 시(뒤로가기)에 검색어 및 필터값 변경
       page.value = JSON.parse(newQuery).page ? Number(JSON.parse(newQuery).page) : 1;

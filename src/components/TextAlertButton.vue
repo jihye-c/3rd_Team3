@@ -3,20 +3,22 @@
 </script>
 
 <template>
-  <v-btn
-    variant="outlined"
-    block
-    height="52"
-    :style="{borderColor: 'var(--color-mono-300)'}"
-    class="relative"
-  >
-    <v-icon size="24">mdi-message-text-outline</v-icon>
-    <div
-      class="absolute flex size-5 rounded-2xl bg-main-400 right-[-10px] top-[-10px] justify-center items-center text-mono-050"
+  <div>
+    <v-btn
+      variant="outlined"
+      block
+      height="52"
+      :style="{borderColor: 'var(--color-mono-300)'}"
+      class="relative"
     >
-      {{ props.commentleng }}
-    </div>
-  </v-btn>
+      <v-icon size="24">mdi-message-text-outline</v-icon>
+      <div
+        class="absolute flex size-5 rounded-2xl bg-main-400 right-[-10px] top-[-10px] justify-center items-center text-mono-050"
+      >
+        {{ props.commentleng }}
+      </div>
+    </v-btn>
+  </div>
 </template>
 
 <style scoped>

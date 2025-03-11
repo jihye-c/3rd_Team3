@@ -10,13 +10,13 @@
   import {programmersApiInstance} from '@/utils/axiosInstance';
   import {ref, onMounted, nextTick, computed, watch} from 'vue';
   import {useRoute, useRouter} from 'vue-router';
+  import districtData from '@/assets/data/district.json';
 
   interface Channel {
     name: string;
     id: string;
     type: string;
   }
-  type PostType = 'question' | 'review' | 'recipe' | 'resale';
 
   const channels: Channel[] = [
     {name: '질문게시판', type: 'question', id: QUESTION_CHANNEL_ID},
@@ -34,8 +34,15 @@
   const route = useRoute();
   const router = useRouter();
 
+  // 토큰 가져오기
+  const authStore = useAuthStore();
+  const {token} = authStore;
+
+  // 지역 가져오기
+  const userStore = useUserStore();
+  const {userLocation} = userStore;
+
   const paramType = ref(route.params.type);
-  console.log(paramType.value);
   const defaultChannel = channels.find((c) => c.type === paramType.value)?.id || REVIEW_CHANNEL_ID;
   const selectedChannelId = ref<string>(defaultChannel);
   const selectedTags = ref<string[]>([]);
@@ -50,13 +57,16 @@
     selectedChannel.value ? tags[selectedChannel.value.type] || [] : [],
   );
 
-  // 토큰 가져오기
-  const authStore = useAuthStore();
-  const {token} = authStore;
+  // 지역 선택 관련
+  const GuList = Object.keys(districtData);
+  const selectedGu = ref<string>(userLocation?.address || '강남구');
 
-  // 지역 가져오기
-  const userStore = useUserStore();
-  const {userLocation} = userStore;
+  type DistrictKeys = keyof typeof districtData;
+  const dongList = computed(() => districtData[selectedGu.value as DistrictKeys]);
+  const selectedDong = ref<string>(dongList.value[0]);
+  watch(selectedGu, () => {
+    selectedDong.value = dongList.value[0];
+  });
 
   const handleImageUpload = (event: Event) => {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -87,7 +97,7 @@
           tags: selectedTags.value,
           price: price.value,
           available: true,
-          region: userLocation?.address,
+          region: {gu: selectedGu.value, dong: selectedDong.value},
         }),
       );
 
@@ -124,10 +134,36 @@
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center pt-40 pb-12">
+  <div id="communityCreateContent" class="w-full flex flex-col items-center pt-40 pb-12">
     <!-- 페이지 제목 -->
     <h1 class="text-[48px] font-medium text-mono-900">글 작성하기</h1>
     <form class="w-full flex flex-col items-center" @submit.prevent="handleSubmit">
+      <!-- 지역 선택 -->
+      <div class="mt-8 w-full flex flex-col gap-4 max-w-[1000px]">
+        <h2 class="text-[28px] font-medium text-mono-900">지역 선택하기</h2>
+        <div class="flex gap-5 w-[500px]">
+          <v-select
+            variant="outlined"
+            v-model="selectedGu"
+            :items="GuList"
+            item-title="name"
+            item-value="id"
+            rounded="lg"
+            class="custom-select w-[200px] text-[20px]"
+          >
+          </v-select>
+          <v-select
+            variant="outlined"
+            v-model="selectedDong"
+            :items="dongList"
+            item-title="name"
+            item-value="id"
+            rounded="lg"
+            class="custom-select w-[200px] text-[20px]"
+          >
+          </v-select>
+        </div>
+      </div>
       <!-- 채널 선택 -->
       <div class="mt-8 w-full flex flex-col gap-4 max-w-[1000px]">
         <h2 class="text-[28px] font-medium text-mono-900">게시판 선택하기</h2>

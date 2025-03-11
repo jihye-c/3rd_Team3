@@ -9,6 +9,9 @@
   import { toggleScrap, getUserScrapList } from '@/apis/userService';
   import { useCommunityStore } from '@/stores/communityStore';
   import BookmarkButton from '@/components/BookmarkButton.vue';
+  import ShareButton from '@/components/ShareButton.vue';
+  import LikeButton from '@/components/LikeButton.vue';
+  import TextAlertButton from '@/components/TextAlertButton.vue';
 
   const communityChannels = {
     question: {
@@ -50,6 +53,13 @@
   const error = ref<string | null>(null);
   const comment = ref('');
   const isBookmarked = ref(false);
+
+  // 북마크 상태 관리
+  const isBookmarked = ref(false);
+
+  const toggleBookmark = () => {
+    isBookmarked.value = !isBookmarked.value;
+  };
 
   const submitComment = async () => {
     if (!authStore.isAuthenticated) {
@@ -160,23 +170,11 @@ const handleScrapToggle = async () => {
   <div class="w-full flex justify-center pt-16">
     <div class="flex gap-8 max-w-[1600px] w-full px-6">
       <!-- 좌측 버튼 -->
-      <div class="flex flex-col gap-4">
-        <BookmarkButton :isBookmarked="isBookmarked" @toggle="handleScrapToggle" />
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/comment.png" alt="Comment" class="w-[20px] h-[20px]" />
-        </button>
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/scrap.png" alt="Scrap" class="w-[20px] h-[20px]" />
-        </button>
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/share.png" alt="Share" class="w-[20px] h-[20px]" />
-        </button>
+      <div class="flex flex-col gap-4 w-[52px]">
+        <LikeButton :is-liked="false" />
+        <TextAlertButton :commentleng="commentStore.comments.length" />
+        <BookmarkButton :is-bookmarked="isBookmarked" @toggle="handleScrapToggle" />
+        <ShareButton />
       </div>
 
       <!-- 게시물 상세 -->
@@ -200,6 +198,7 @@ const handleScrapToggle = async () => {
         <!-- 작성자 정보 -->
         <div class="flex items-center gap-4 mt-4">
           <v-avatar
+          @click="router.push(`/mypage/${postData.author._id}`)"
             :image="
               postData.author.image
                 ? postData.author.image

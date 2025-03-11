@@ -1,11 +1,16 @@
 <script setup lang="ts">
-  import {onMounted, ref} from 'vue';
+  import {computed, onMounted, ref} from 'vue';
   import BannerComponent from '@/components/BannerComponent.vue';
   import {useRoute, useRouter} from 'vue-router';
   import type {Post} from '@/types/PostResponse';
   import {programmersApiInstance} from '@/utils/axiosInstance';
   import {useAuthStore} from '@/stores/auth';
   import {useCommentStore} from '@/stores/commentStore';
+  import LikeButton from '@/components/LikeButton.vue';
+  import TextAlertButton from '@/components/TextAlertButton.vue';
+  import BookmarkButton from '@/components/BookmarkButton.vue';
+  import ShareButton from '@/components/ShareButton.vue';
+  import {before} from 'node:test';
 
   const route = useRoute();
   const router = useRouter();
@@ -18,6 +23,17 @@
   const isLoading = ref(false);
   const error = ref<string | null>(null);
   const comment = ref('');
+
+  const available = computed(() => {
+    return JSON.parse(postData.value?.title!).available;
+  });
+
+  // 북마크 상태 관리
+  const isBookmarked = ref(false);
+
+  const toggleBookmark = () => {
+    isBookmarked.value = !isBookmarked.value;
+  };
 
   const submitComment = async () => {
     if (!authStore.isAuthenticated) {
@@ -33,6 +49,43 @@
       console.error('Failed to submit comment:', error);
     }
   };
+
+  // 유저가 작성자인지 확인
+  const isAuthor = (authorId: string) => {
+    // @ts-ignore
+    return authStore.user?.user._id === authorId;
+  };
+
+  // 판매 완료 처리
+  const updateItemStatusToSold = async () => {
+    try {
+      isLoading.value = true;
+
+      if (postData.value) {
+        const beforeData = JSON.parse(postData.value.title);
+        const updatedData = {...beforeData, available: false};
+
+        const formData = new FormData();
+        formData.append('postId', postData.value._id);
+        formData.append('title', JSON.stringify(updatedData));
+        formData.append('image', postData.value.image);
+        formData.append('channelId', postData.value.channel._id);
+
+        const response = await programmersApiInstance.put('/posts/update', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${authStore.token}`,
+          },
+        });
+        postData.value = response.data;
+      }
+    } catch (err) {
+      error.value = '데이터를 업데이트 하는 중 오류가 발생했습니다.';
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   onMounted(async () => {
     // api 호출
     try {
@@ -56,7 +109,12 @@
     background="#f89a00"
     title="중고 거래 상세"
     subtitle="우리 동네 사람들과 믿을 수 있는 중고거래를 시작하세요"
-    :breadcrumbs="[{title: '홈', href: '/'}, {title: '커뮤니티'}, {title: '중고거래'}]"
+    :breadcrumbs="[
+      {title: '홈', href: '/'},
+      {title: '커뮤니티'},
+      {title: '중고거래', href: '/community/resale'},
+      {title: '상세 페이지'},
+    ]"
     ><img
       src="/images/community/community_resale_illustration.svg"
       alt="illustration"
@@ -67,27 +125,11 @@
   <div class="w-full flex justify-center pt-16">
     <div class="flex gap-8 max-w-[1600px] w-full px-6">
       <!-- 좌측 버튼 -->
-      <div class="flex flex-col gap-4">
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/like.png" alt="Like" class="w-[20px] h-[20px]" />
-        </button>
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/comment.png" alt="Comment" class="w-[20px] h-[20px]" />
-        </button>
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/scrap.png" alt="Scrap" class="w-[20px] h-[20px]" />
-        </button>
-        <button
-          class="w-[52px] h-[52px] flex items-center justify-center border border-mono-200 rounded-lg"
-        >
-          <img src="/images/post/share.png" alt="Share" class="w-[20px] h-[20px]" />
-        </button>
+      <div class="flex flex-col gap-4 w-[52px]">
+        <LikeButton :is-liked="false" />
+        <TextAlertButton :commentleng="commentStore.comments.length" />
+        <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
+        <ShareButton />
       </div>
 
       <!-- 게시물 상세 (이미지 + 정보) -->
@@ -97,7 +139,16 @@
       >
         <!-- 좌측 이미지 -->
         <div class="w-[496px] h-[496px] overflow-hidden rounded-lg bg-gray-200">
-          <img :src="postData.image" alt="Product Image" class="w-full h-full object-cover" />
+          <div
+            :style="{
+              background: `url(${postData.image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }"
+            class="w-full h-full"
+          >
+            <div v-if="!available" class="w-full h-full bg-mono-900/50" />
+          </div>
         </div>
 
         <!-- 우측 게시글 정보 -->
@@ -122,17 +173,29 @@
                 {{ new Date(postData.createdAt).toLocaleString() }}
               </p>
             </div>
-            <p class="text-[32px] font-bold text-mono-900 mt-8">
+            <p v-if="available" class="text-[32px] font-bold text-mono-900 mt-8">
               {{ Number(JSON.parse(postData.title).price).toLocaleString() }}원
             </p>
+            <p v-else class="text-[32px] font-bold text-mono-900 mt-8">판매완료</p>
+
             <p class="content-text text-[18px] text-mono-700 leading-7 mt-5">
               {{ JSON.parse(postData.title).content }}
             </p>
           </div>
           <button
-            class="w-full py-3 bg-main-400 text-mono-050 text-lg font-semibold rounded-lg mt-6"
+            v-if="!isAuthor(postData.author._id)"
+            class="w-full py-3 bg-main-400 text-mono-050 text-lg font-semibold rounded-lg mt-6 disabled:cursor-not-allowed disabled:opacity-60"
+            :disabled="!available"
           >
             채팅 보내기
+          </button>
+          <button
+            v-else
+            class="w-full py-3 bg-main-400 text-mono-050 text-lg font-semibold rounded-lg mt-6 disabled:cursor-not-allowed disabled:opacity-60"
+            @click="updateItemStatusToSold"
+            :disabled="!available"
+          >
+            판매 완료
           </button>
         </div>
       </div>
