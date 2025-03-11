@@ -394,6 +394,7 @@ export default class Supabase {
     if (!supabase) return [];
 
     let tableName = '';
+    let passFlag = false;
 
     switch (type) {
       case 'comm_sale':
@@ -411,28 +412,85 @@ export default class Supabase {
       case 'subscription':
         tableName = 'scrap_subscription';
         break;
+case 'recipe':
+        passFlag = true;
+        break;
       default:
         console.error('허용되지 않은 scrap type입니다.');
         return [];
     }
+    if (passFlag) {
+      const {data, error} = await supabase
+        .from('scrap_default')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('type', type);
+
+      if (error) {
+        console.error('스크랩 데이터 조회 중 에러 발생:', error);
+        return [];
+      }
+      if (!data) {
+        return [];
+      } else {
+        return data.map((item) => ({
+          ...item,
+        }));
+      }
+    } else {
+      const {data, error} = await supabase
+        .from('scrap_default')
+        .select(`*, ${tableName}(*)`)
+        .eq('user_id', userId)
+        .eq('type', type);
+
+      if (error) {
+        console.error('스크랩 데이터 조회 중 에러 발생:', error);
+        return [];
+      }
+      if (!data) {
+        return [];
+      } else {
+        return data.map((item) => ({
+          ...item,
+          ...item[tableName],
+        }));
+      }
+    }
+  }
+  static async checkScrap(userId: string, fullPath: string): Promise<boolean> {
+    const supabase = this.init();
+    if (!supabase) return false;
 
     const {data, error} = await supabase
       .from('scrap_default')
-      .select(`*, ${tableName}(*)`)
+      .select('post_url')
+      .eq('post_url', fullPath)
+      .eq('user_id', userId);
+    if (error) {
+      console.error('데이터 조회 중 에러가 발생했습니다.', error);
+      return false;
+    }
+    if (data && data.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  static async removeScrap(userId: string, fullPath: string): Promise<void> {
+    const supabase = this.init();
+    if (!supabase) return;
+
+    const {error} = await supabase
+      .from('scrap_default')
+      .delete()
       .eq('user_id', userId)
-      .eq('type', type);
+      .eq('post_url', fullPath);
 
     if (error) {
-      console.error('스크랩 데이터 조회 중 에러 발생:', error);
-      return [];
-    }
-    if (!data) {
-      return [];
+      console.log('삭제 중 에러가 발생했습니다', error);
     } else {
-      return data.map((item) => ({
-        ...item,
-        ...item[tableName],
-      }));
+      console.log('스크랩을 삭제했습니다.');
     }
   }
 }
@@ -440,7 +498,7 @@ export default class Supabase {
 type InsertScrapData<T extends ScrapType> = {
   type: T;
   defaultData: ScrapDefaultData;
-  additionalData: ScrapDataMap[T];
+  additionalData?: ScrapDataMap[T];
 };
 
 type ScrapType =
@@ -485,9 +543,11 @@ interface ScrapCommQnA {
   tags: string[];
 }
 interface ScrapCulture {
-  author_img: string;
-  author_name: string;
   tags: string[];
+  contentId: string;
+  eventEndDate: string;
+  eventStartDate: string;
+  location: string;
 }
 interface scrapSubscription {
   date: string[];

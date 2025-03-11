@@ -27,23 +27,24 @@
     console.log(data);
   };
   const handleScrapGet = async () => {
-    const res = await Supabase.getScrapData('test','comm_qna');
+    const res = await Supabase.getScrapData('test', 'comm_qna');
     console.log(res);
   };
 
   const handleScrapAdd = async () => {
     const defaultData = {
-      user_id: 'test',
-      image_src: 'test',
+      user_id: 'jihyec22',
+      image_src: '.jpg',
       post_url: 'url test',
       title: 'title test',
       content: 'content test',
     };
     const additionalData = {
-      dong: '동 이름',
-      tags: ['태그1', '태그2'],
+      author_img: 'abcd',
+      author_name: 'abcd',
+      tags: ['tag1', 'tag2'],
     };
-    await Supabase.addScrapData({type:'comm_qna', defaultData, additionalData});
+    await Supabase.addScrapData({type: 'culture', defaultData, additionalData});
   };
 </script>
 
@@ -87,8 +88,8 @@
     </div>
     <v-divider></v-divider>
     <div>
-    <v-btn @click="handleScrapAdd" color="success">스크랩 추가 확인</v-btn>
-    <v-btn @click="handleScrapGet" color="success">스크랩 로드 확인</v-btn>
+      <v-btn @click="handleScrapAdd" color="success">스크랩 추가 확인</v-btn>
+      <v-btn @click="handleScrapGet" color="success">스크랩 로드 확인</v-btn>
     </div>
   </main>
 </template>
