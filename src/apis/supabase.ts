@@ -1,8 +1,5 @@
 import type {MapData} from '@/types/kakao.d';
-import type {
-  FullHospitalRes,
-  HospitalFullData
-} from '@/types/hospitalType';
+import type {FullHospitalRes, HospitalFullData} from '@/types/hospitalType';
 import {createClient, SupabaseClient} from '@supabase/supabase-js';
 import Papa from 'papaparse'; // PapaParse 라이브러리 사용
 import symptomsList from '@/assets/data/symptoms.json';
@@ -220,7 +217,7 @@ export default class Supabase {
     if (page < 1) page = 1; //1부터 시작
 
     //기본 쿼리
-    console.log('🔎 Supabase 검색 시작 ')
+    console.log('🔎 Supabase 검색 시작 ');
     console.log('위치 기준 : ', location.bounds);
     console.log('병원 타입 : ', hospitalType);
     console.log('증상 정보 : ', symptomsQuery);
@@ -238,10 +235,10 @@ export default class Supabase {
 
     //기타 조건부 쿼리들
     if (hospitalType) {
-      if(hospitalType == '치과'){
-      dbQuery.ilike('type', "%치과%");
-      }else{
-      dbQuery.eq('type', hospitalType);
+      if (hospitalType == '치과') {
+        dbQuery.ilike('type', '%치과%');
+      } else {
+        dbQuery.eq('type', hospitalType);
       }
     }
 
@@ -277,7 +274,7 @@ export default class Supabase {
     }
     return {length: count, data: hospitals};
   }
-  static async getDetailHospitalData(id: string): Promise<HospitalFullData | null> {
+  static async getDetailHospitalData(id: ScrapType): Promise<HospitalFullData | null> {
     try {
       //supabase load
       const supabase = this.init();
@@ -301,7 +298,7 @@ export default class Supabase {
         .eq('id', id)
         .maybeSingle();
       if (!detailError && hospitalDetail) {
-        totalData = {...totalData, detail:hospitalDetail};
+        totalData = {...totalData, detail: hospitalDetail};
       }
 
       //교통 정보 불러오기
@@ -328,4 +325,170 @@ export default class Supabase {
       return null;
     }
   }
+  static async addScrapData<T extends ScrapType>({
+    type,
+    defaultData,
+    additionalData,
+  }: InsertScrapData<T>): Promise<void> {
+    const supabase = this.init();
+    if (!supabase) return;
+
+    const insertData = {...defaultData, type};
+    const {data: defaultInsertRes, error: defaultErr} = await supabase
+      .from('scrap_default')
+      .insert([insertData])
+      .select('id')
+      .single();
+
+    if (defaultErr) {
+      console.log('기본 정보 insert 중 에러가 발생했습니다. :', defaultErr);
+      return;
+    }
+
+    const scrapDefaultId = defaultInsertRes.id;
+
+    let tableName = '';
+    let passFlag = false;
+    const additionalDataWithFK = {...additionalData, default_data: scrapDefaultId};
+
+    switch (type) {
+      case 'comm_sale':
+        tableName = 'scrap_comm_sale';
+        break;
+      case 'comm_recipe':
+        tableName = 'scrap_comm_recipe';
+        break;
+      case 'comm_qna':
+      case 'comm_review':
+        tableName = 'scrap_comm_qna';
+        break;
+      case 'culture':
+        break;
+      case 'subscription':
+        break;
+      case 'recipe':
+        passFlag = true;
+        break;
+      default:
+        console.log('허용되지 않은 scrap type입니다.');
+        return;
+    }
+
+    if (!passFlag) {
+      const {error: additionalError} = await supabase
+        .from(tableName)
+        .insert([additionalDataWithFK]);
+
+      if (additionalError?.message) {
+        console.error('추가 데이터 insert 중 에러가 발생했습니다. :', additionalError);
+      } else {
+        console.log('정상적으로 스크랩 되었습니다.');
+      }
+    }
+  }
+  static async getScrapData<T extends keyof ScrapDataMap>(
+    userId: string,
+    type: T,
+  ): Promise<(ScrapDefaultData & ScrapDataMap[T])[]> {
+    const supabase = this.init();
+    if (!supabase) return [];
+
+    let tableName = '';
+
+    switch (type) {
+      case 'comm_sale':
+        tableName = 'scrap_comm_sale';
+        break;
+      case 'comm_recipe':
+        tableName = 'scrap_comm_recipe';
+        break;
+      case 'comm_qna':
+        tableName = 'scrap_comm_qna';
+        break;
+      case 'culture':
+        tableName = 'scrap_culture';
+        break;
+      case 'subscription':
+        tableName = 'scrap_subscription';
+        break;
+      default:
+        console.error('허용되지 않은 scrap type입니다.');
+        return [];
+    }
+
+    const {data, error} = await supabase
+      .from('scrap_default')
+      .select(`*, ${tableName}(*)`)
+      .eq('user_id', userId)
+      .eq('type', type);
+
+    if (error) {
+      console.error('스크랩 데이터 조회 중 에러 발생:', error);
+      return [];
+    }
+    if (!data) {
+      return [];
+    } else {
+      return data.map((item) => ({
+        ...item,
+        ...item[tableName],
+      }));
+    }
+  }
+}
+
+type InsertScrapData<T extends ScrapType> = {
+  type: T;
+  defaultData: ScrapDefaultData;
+  additionalData: ScrapDataMap[T];
+};
+
+type ScrapType =
+  | 'comm_sale'
+  | 'comm_recipe'
+  | 'comm_qna'
+  | 'comm_review'
+  | 'culture'
+  | 'subscription'
+  | 'recipe';
+
+interface ScrapDefaultData {
+  user_id: string;
+  image_src?: string;
+  post_url: string;
+  title: string;
+  content?: string;
+}
+
+type ScrapDataMap = {
+  comm_sale: ScrapCommSale;
+  comm_recipe: ScrapCommRecipe;
+  comm_qna: ScrapCommQnA;
+  comm_review: ScrapCommQnA;
+  culture: ScrapCulture;
+  subscription: scrapSubscription;
+  recipe: null;
+};
+
+interface ScrapCommSale {
+  price: number;
+  dong: string;
+  tags: string[];
+}
+interface ScrapCommRecipe {
+  author_img: string;
+  author_name: string;
+  tags: string[];
+}
+interface ScrapCommQnA {
+  dong: string;
+  tags: string[];
+}
+interface ScrapCulture {
+  author_img: string;
+  author_name: string;
+  tags: string[];
+}
+interface scrapSubscription {
+  date: string[];
 }
