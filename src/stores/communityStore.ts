@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { getUserScrapList, toggleScrap } from "@/apis/userService";
+// import { getUserScrapList, toggleScrap } from "@/apis/userService";
 import type { Post } from "@/types/PostResponse";
 import axios from "axios";
 

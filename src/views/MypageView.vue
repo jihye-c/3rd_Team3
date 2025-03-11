@@ -10,8 +10,8 @@ import {onBeforeRouteUpdate, useRoute, useRouter} from 'vue-router';
 import Modal from '@/components/ModalComponent.vue';
 import FollowComponent from '@/components/mypage/FollowComponent.vue';
 import { useCultureStore } from "../stores/cultureStore";
-import { getUserScrapList, toggleScrap } from "@/apis/userService";
-import { useCommunityStore } from "@/stores/communityStore";
+// import { getUserScrapList, toggleScrap } from "@/apis/userService";
+// import { useCommunityStore } from "@/stores/communityStore";
 import BookmarkButton from '@/components/BookmarkButton.vue';
 
 const route = useRoute<string>();
@@ -26,7 +26,7 @@ const cultureStore = useCultureStore()
 const id = localStorage.getItem('userId');
 const routeId =  route.params.id
 const userStore = useUserStore()
-const communityStore = useCommunityStore();
+// const communityStore = useCommunityStore();
 
 const bio = ref(
   `안녕하세요! :house_with_garden: 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
@@ -200,10 +200,10 @@ const closeModal = () => {
   followCategory.value = '';
 };
 
-const totalCulturePages = computed(() => {
-  console.log(":memo: 현재 스크랩된 문화생활 개수:", cultureStore.bookmarkedFestivals?.length);
-  return Math.ceil((cultureStore.bookmarkedFestivals?.length || 0) / itemsPerPage);
-});
+// const totalCulturePages = computed(() => {
+//   console.log(":memo: 현재 스크랩된 문화생활 개수:", cultureStore.bookmarkedFestivals?.length);
+//   return Math.ceil((cultureStore.bookmarkedFestivals?.length || 0) / itemsPerPage);
+// });
 const paginatedFestivals = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return (cultureStore.bookmarkedFestivals ?? []).slice(start, start + itemsPerPage);
@@ -225,41 +225,41 @@ watchEffect(async () => {
   userFollowerInfo.value = userStore.followerInfo;
   userFollowingInfo.value = userStore.followingInfo;
 
-  const scrapList = await getUserScrapList(id);
+  // const scrapList = await getUserScrapList(id);
   const hasChannel = (post: any): post is { channel: { name: string } } => {
   return post.channel && typeof post.channel.name === "string";
   };
 
-  communityStore.bookmarkedPosts = {
-    recipeScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "recipe"),
-    tradeScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "trade"),
-    reviewScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "review"),
-    QnAScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "QnA"),
-    cultureScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "culture"),
-  };
+  // communityStore.bookmarkedPosts = {
+  //   recipeScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "recipe"),
+  //   tradeScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "trade"),
+  //   reviewScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "review"),
+  //   QnAScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "QnA"),
+  //   cultureScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "culture"),
+  // };
 });
 
-const handleScrapToggle = async (festival) => {
-  try {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      console.warn("로그인이 필요합니다.");
-      return;
-    }
+// const handleScrapToggle = async (festival) => {
+//   try {
+//     const userId = localStorage.getItem("userId");
+//     if (!userId) {
+//       console.warn("로그인이 필요합니다.");
+//       return;
+//     }
 
-    console.log("마이페이지에서 북마크 추가/삭제 요청:", festival);
+//     console.log("마이페이지에서 북마크 추가/삭제 요청:", festival);
 
-    await toggleScrap(userId, festival);
+//     await toggleScrap(userId, festival);
 
-    // ✅ 최신 북마크 목록 다시 불러오기
-    const updatedScrapList = await getUserScrapList(userId);
-    cultureStore.bookmarkedFestivals = updatedScrapList.filter(post => post.channel?.name === "culture");
+//     // 최신 북마크 목록 다시 불러오기
+//     const updatedScrapList = await getUserScrapList(userId);
+//     cultureStore.bookmarkedFestivals = updatedScrapList.filter(post => post.channel?.name === "culture");
 
-    console.log("마이페이지 북마크 업데이트 완료!");
-  } catch (error) {
-    console.error("북마크 저장 실패:", error);
-  }
-};
+//     console.log("마이페이지 북마크 업데이트 완료!");
+//   } catch (error) {
+//     console.error("북마크 저장 실패:", error);
+//   }
+// };
 
 
 onMounted(async () => {
@@ -273,12 +273,12 @@ onMounted(async () => {
   }
 
   if (userId) {
-    await communityStore.loadBookmarks(userId);
-    console.log("[유저별] 커뮤니티 북마크 목록 정리 완료:", communityStore.bookmarkedPosts);
+    // await communityStore.loadBookmarks(userId);
+    // console.log("[유저별] 커뮤니티 북마크 목록 정리 완료:", communityStore.bookmarkedPosts);
 
-    const scrapList = await getUserScrapList(userId);
-    cultureStore.bookmarkedFestivals = scrapList.filter(post => post.channel?.name === "culture");
-    console.log("[유저별] 문화생활 북마크 불러오기 완료:", cultureStore.bookmarkedFestivals);
+    // const scrapList = await getUserScrapList(userId);
+    // cultureStore.bookmarkedFestivals = scrapList.filter(post => post.channel?.name === "culture");
+    // console.log("[유저별] 문화생활 북마크 불러오기 완료:", cultureStore.bookmarkedFestivals);
   }
 });
 

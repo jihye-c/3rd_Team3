@@ -91,86 +91,86 @@ export async function createScrapPost(userId: string, postData: any, channel: st
   }
 }
 
-export const getUserScrapList = async (userId: string) => {
-  try {
-    console.log(`스크랩 목록 불러오기 (userId: ${userId})`);
+// export const getUserScrapList = async (userId: string) => {
+//   try {
+//     console.log(`스크랩 목록 불러오기 (userId: ${userId})`);
 
-    // scrap 채널의 전체 게시물 가져오기
-    const scrapChannelRes = await axios.get(
-      'http://13.125.143.126:5003/posts/channel/67bfdc61ff075444a9c22ebd',
-    );
+//     // scrap 채널의 전체 게시물 가져오기
+//     const scrapChannelRes = await axios.get(
+//       'http://13.125.143.126:5003/posts/channel/67bfdc61ff075444a9c22ebd',
+//     );
 
-    if (!scrapChannelRes.data || !Array.isArray(scrapChannelRes.data)) {
-      console.warn('⚠️ 스크랩 목록이 없거나 데이터가 올바르지 않습니다.');
-      return [];
-    }
+//     if (!scrapChannelRes.data || !Array.isArray(scrapChannelRes.data)) {
+//       console.warn('⚠️ 스크랩 목록이 없거나 데이터가 올바르지 않습니다.');
+//       return [];
+//     }
 
-    const allScrapPosts = scrapChannelRes.data; // 전체 스크랩된 게시물 리스트
+//     const allScrapPosts = scrapChannelRes.data; // 전체 스크랩된 게시물 리스트
 
-    // 특정 유저의 스크랩만 필터링
-    const userScrapPosts = allScrapPosts.filter((post) => {
-      try {
-        const titleData = JSON.parse(post.title);
-        return titleData.userId === userId;
-      } catch (error) {
-        console.warn('JSON 파싱 오류 발생:', post.title);
-        return false;
-      }
-    });
+//     // 특정 유저의 스크랩만 필터링
+//     const userScrapPosts = allScrapPosts.filter((post) => {
+//       try {
+//         const titleData = JSON.parse(post.title);
+//         return titleData.userId === userId;
+//       } catch (error) {
+//         console.warn('JSON 파싱 오류 발생:', post.title);
+//         return false;
+//       }
+//     });
 
-    // `_id` 값을 포함한 새로운 객체 배열로 변환
-    const filteredScrapList = await Promise.all(
-      userScrapPosts.map(async (post) => {
-        try {
-          const res = await axios.get(`http://13.125.143.126:5003/posts/${post._id}`);
-          const originalPost = res.data;
+//     // `_id` 값을 포함한 새로운 객체 배열로 변환
+//     const filteredScrapList = await Promise.all(
+//       userScrapPosts.map(async (post) => {
+//         try {
+//           const res = await axios.get(`http://13.125.143.126:5003/posts/${post._id}`);
+//           const originalPost = res.data;
 
-          return {
-            _id: post._id, // 스크랩된 ID 유지
-            originalContentId: originalPost._id, // 원본 게시글 ID
-            title: originalPost.title, // 제목
-            content: originalPost.content || "",
-            image: originalPost.image || "",
-            category3: originalPost.category3 || "",
-            originalChannel: originalPost.channel?.name || "scrap",
-          };
-        } catch (error) {
-          console.warn(`[스크랩] 원본 게시글 조회 실패 (_id: ${post._id})`, error);
-          return {
-            _id: post._id,
-            title: "삭제된 게시물",
-            content: "이 게시글은 삭제되었거나 접근할 수 없습니다.",
-            image: "",
-            originalChannel: "scrap",
-          };
-        }
-      })
-    );
+//           return {
+//             _id: post._id, // 스크랩된 ID 유지
+//             originalContentId: originalPost._id, // 원본 게시글 ID
+//             title: originalPost.title, // 제목
+//             content: originalPost.content || "",
+//             image: originalPost.image || "",
+//             category3: originalPost.category3 || "",
+//             originalChannel: originalPost.channel?.name || "scrap",
+//           };
+//         } catch (error) {
+//           console.warn(`[스크랩] 원본 게시글 조회 실패 (_id: ${post._id})`, error);
+//           return {
+//             _id: post._id,
+//             title: "삭제된 게시물",
+//             content: "이 게시글은 삭제되었거나 접근할 수 없습니다.",
+//             image: "",
+//             originalChannel: "scrap",
+//           };
+//         }
+//       })
+//     );
 
-    console.log('[유저별] 스크랩 목록 불러오기 성공:', filteredScrapList);
-    return filteredScrapList;
-  } catch (error) {
-    console.error('스크랩 목록 불러오기 실패:', error);
-    return [];
-  }
-};
+//     console.log('[유저별] 스크랩 목록 불러오기 성공:', filteredScrapList);
+//     return filteredScrapList;
+//   } catch (error) {
+//     console.error('스크랩 목록 불러오기 실패:', error);
+//     return [];
+//   }
+// };
 
-export async function testScrapChannelAPI() {
-  try {
-    const response = await axios.get(
-      'http://13.125.143.126:5003/channels/67bfdc61ff075444a9c22ebd',
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      },
-    );
+// export async function testScrapChannelAPI() {
+//   try {
+//     const response = await axios.get(
+//       'http://13.125.143.126:5003/channels/67bfdc61ff075444a9c22ebd',
+//       {
+//         headers: {
+//           Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+//         },
+//       },
+//     );
 
-    console.log('스크랩 채널 API 응답:', response.data);
-  } catch (error) {
-    console.error('스크랩 채널 API 요청 실패:', error);
-  }
-}
+//     console.log('스크랩 채널 API 응답:', response.data);
+//   } catch (error) {
+//     console.error('스크랩 채널 API 요청 실패:', error);
+//   }
+// }
 
 // testScrapChannelAPI();
 
@@ -194,47 +194,62 @@ export async function deleteScrapPost(scrapId: string) {
   }
 }
 
+// export async function toggleScrap(userId: string, festivalData: any, context: string = 'default') {
+//   try {
+//     // 유저의 현재 스크랩 목록 가져오기
+//     const userScraps = await getUserScrapList(userId);
+//     const existingScrap = userScraps.find((scrap) => scrap.content_id === festivalData.content_id);
+//     let updatedScrapList = [];
+
+//     if (existingScrap) {
+//       if (!existingScrap._id) {
+//         // 삭제할 `_id` 값이 있는지 확인
+//         console.error(`삭제할 스크랩 ID가 없습니다. (content_id: ${existingScrap.content_id})`);
+//         return userScraps;
+//       }
+
+//       console.log(`스크랩 삭제 요청 (scrapId: ${existingScrap._id})`);
+//       const isDeleted = await deleteScrapPost(existingScrap._id);
+
+//       if (!isDeleted) {
+//         console.error(`스크랩 삭제 실패 (scrapId: ${existingScrap._id})`);
+//         return userScraps;
+//       }
+
+//       console.log(`[유저별] 스크랩 삭제 완료 (userId: ${userId})`);
+//       updatedScrapList = userScraps.filter((scrap) => scrap.content_id !== festivalData.content_id);
+//     } else {
+//       const newScrapId = await createScrapPost(userId, festivalData);
+//       console.log(`[유저별] 스크랩 추가 완료 (userId: ${userId})`);
+//       updatedScrapList = [...userScraps, {...festivalData, _id: newScrapId}];
+//     }
+//     // 마이페이지에서는 이동하지 않음
+//     if (context !== 'mypage') {
+//       console.log('페이지 이동 필요 (마이페이지 제외)');
+//       return updatedScrapList;
+//     }
+//     console.log('마이페이지 내에서 스크랩 변경 완료!');
+//     return updatedScrapList;
+//   } catch (error) {
+//     console.error(`[유저별] 스크랩 토글 실패 (userId: ${userId}):`, error);
+//     return [];
+//   }
+// }
+
+// 임시로 주석 처리된 toggleScrap
 export async function toggleScrap(userId: string, festivalData: any, context: string = 'default') {
   try {
-    // 유저의 현재 스크랩 목록 가져오기
-    const userScraps = await getUserScrapList(userId);
-    const existingScrap = userScraps.find((scrap) => scrap.content_id === festivalData.content_id);
+    // 스크랩 목록을 실제로 가져오지 않고 빈 배열 반환 (임시 대체)
     let updatedScrapList = [];
-
-    if (existingScrap) {
-      if (!existingScrap._id) {
-        // 삭제할 `_id` 값이 있는지 확인
-        console.error(`삭제할 스크랩 ID가 없습니다. (content_id: ${existingScrap.content_id})`);
-        return userScraps;
-      }
-
-      console.log(`스크랩 삭제 요청 (scrapId: ${existingScrap._id})`);
-      const isDeleted = await deleteScrapPost(existingScrap._id);
-
-      if (!isDeleted) {
-        console.error(`스크랩 삭제 실패 (scrapId: ${existingScrap._id})`);
-        return userScraps;
-      }
-
-      console.log(`[유저별] 스크랩 삭제 완료 (userId: ${userId})`);
-      updatedScrapList = userScraps.filter((scrap) => scrap.content_id !== festivalData.content_id);
-    } else {
-      const newScrapId = await createScrapPost(userId, festivalData);
-      console.log(`[유저별] 스크랩 추가 완료 (userId: ${userId})`);
-      updatedScrapList = [...userScraps, {...festivalData, _id: newScrapId}];
-    }
-    // 마이페이지에서는 이동하지 않음
-    if (context !== 'mypage') {
-      console.log('페이지 이동 필요 (마이페이지 제외)');
-      return updatedScrapList;
-    }
-    console.log('마이페이지 내에서 스크랩 변경 완료!');
-    return updatedScrapList;
+    console.log("임시 대체: 스크랩 처리 로직 생략");
+    
+    return updatedScrapList;  // 빈 배열 반환
   } catch (error) {
     console.error(`[유저별] 스크랩 토글 실패 (userId: ${userId}):`, error);
-    return [];
+    return [];  // 빈 배열 반환
   }
 }
+
 
 // 좌표를 주소로 받아오는 API
 export async function getGeolocationAddress(locations: {latitude: number; longitude: number}) {

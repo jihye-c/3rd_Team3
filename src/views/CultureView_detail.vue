@@ -13,7 +13,7 @@ import KakaoMap_festival from "@/components/KakaoMap_festival.vue";
 import BookmarkButton from '@/components/BookmarkButton.vue';
 import ShareButton from '@/components/ShareButton.vue';
 
-import { getUserScrapList } from "@/apis/userService"; // ✅ 추가
+// import { getUserScrapList } from "@/apis/userService"; 
 
 const router = useRouter();
 const route = useRoute();
@@ -98,22 +98,22 @@ const subCategories = [
   { name: "기타행사", code: "A02081300" },
 ];
 
-// ✅ 북마크 목록을 불러오는 함수 추가
-const loadBookmarks = async () => {
-  if (userId.value) {
-    await cultureStore.loadBookmarks(userId.value);
-  }
-};
+
+// const loadBookmarks = async () => {
+//   if (userId.value) {
+//     await cultureStore.loadBookmarks(userId.value);
+//   }
+// };
 onMounted(async () => {
   console.log("🔑 Kakao API Key:", import.meta.env.VITE_KAKAO_MAP_KEY);
   
   fetchFestivalDetails(); // ✅ 행사 정보 불러오기
 
   // ✅ 유저가 로그인 되어 있다면 스크랩 목록 불러오기
-  if (userId.value) {
-    const scrapList = await getUserScrapList(userId.value);
-    cultureStore.bookmarkedFestivals = scrapList;
-  }
+  // if (userId.value) {
+  //   const scrapList = await getUserScrapList(userId.value);
+  //   cultureStore.bookmarkedFestivals = scrapList;
+  // }
 });
 
   // ✅ 서브카테고리 코드 → 한글 이름 변환 함수
