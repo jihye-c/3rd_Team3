@@ -485,9 +485,11 @@ interface ScrapCommQnA {
   tags: string[];
 }
 interface ScrapCulture {
-  author_img: string;
-  author_name: string;
-  tags: string[];
+  tags:string[],
+  contentId:string,
+  eventEndDate:string,
+  eventStartDate:string
+  location:string,
 }
 interface scrapSubscription {
   date: string[];
