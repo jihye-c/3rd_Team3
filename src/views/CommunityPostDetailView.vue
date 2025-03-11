@@ -137,6 +137,7 @@
         <!-- 작성자 정보 -->
         <div class="flex items-center gap-4 mt-4">
           <v-avatar
+          @click="router.push(`/mypage/${postData.author._id}`)"
             :image="
               postData.author.image
                 ? postData.author.image

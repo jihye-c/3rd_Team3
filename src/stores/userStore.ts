@@ -1,5 +1,14 @@
 import {getUserInfo} from '@/apis/auth';
-import {deleteFollow, deleteUser, getGeolocationAddress, postFollow, updateInfo, updatePasswordInfo, updateUserProfile} from '@/apis/userService';
+import {
+  deleteFollow,
+  deleteUser,
+  getGeolocationAddress,
+  postFollow,
+  updateInfo,
+  updatePasswordInfo,
+  updateUserProfile,
+} from '@/apis/userService';
+import {address_select_items} from '@/config/config';
 import type User from '@/types/User';
 import type {UserAddress} from '@/types/User';
 import {defineStore} from 'pinia';
@@ -12,46 +21,56 @@ export const useUserStore = defineStore('user', () => {
   const userInfo = ref();
   const followerInfo = ref([]);
   const followingInfo = ref([]);
-  const userProfileImage = ref<string>("")
+  const userProfileImage = ref<string>('');
 
   //유저 위치 정보 조회
   const getUserAddress = async (location: {latitude: number; longitude: number}) => {
     try {
       const data = await getGeolocationAddress(location);
-      const address = data.documents[0].region_3depth_name;
+      const address = data.documents[0].region_2depth_name;
       const latitude = data.documents[0].y;
       const longitude = data.documents[0].x;
-      const newAddress = {address, latitude, longitude};
-      localStorage.setItem('userAddress', JSON.stringify(newAddress));
-      userLocation.value = newAddress;
+      const filterAddress = address_select_items.some((item) => item.address === address);
+      if (filterAddress) {
+        const newAddress = {address, latitude, longitude};
+        localStorage.setItem('userAddress', JSON.stringify(newAddress));
+        userLocation.value = newAddress;
+      } else {
+        const newAddress = address_select_items[0];
+        localStorage.setItem('userAddress', JSON.stringify(newAddress));
+        userLocation.value = newAddress;
+        alert('현재 위치하고 계신 곳은 서울이 아닙니다.');
+      }
     } catch (e) {
       console.log(e);
     }
   };
   const getUser = async (id: string) => {
     try {
+      followerInfo.value = [];
+      followingInfo.value = [];
       const data = await getUserInfo(id);
       const fullName = JSON.parse(data.fullName);
       userInfo.value = {...data, fullName};
-      followerInfo.value = []
-      followingInfo.value = []
-      if(userInfo.value.image){
-        localStorage.setItem('userImage', userInfo.value.image)
+      if (userInfo.value.image) {
+        localStorage.setItem('userImage', userInfo.value.image);
       }
       if (data.followers.length > 0) {
         for (const item of data.followers) {
           const userData = await getUserInfo(item.follower);
           const fullName = JSON.parse(userData.fullName);
-          followerInfo.value.push({...userData, fullName,id:userData._id});
+          followerInfo.value.push({...userData, fullName, id: userData._id});
         }
       }
       if (data.following.length > 0) {
         for (const item of data.following) {
           const userData = await getUserInfo(item.user ?? item.follower);
           const fullName = JSON.parse(userData.fullName);
-          followingInfo.value.push({...userData, fullName,id:userData._id});
+          followingInfo.value.push({...userData, fullName, id: userData._id});
         }
       }
+      console.log(followingInfo.value);
+      console.log(followerInfo.value);
     } catch (e) {
       console.log(e);
     }
@@ -60,61 +79,60 @@ export const useUserStore = defineStore('user', () => {
   const postUserProfile = async (formData: FormData) => {
     try {
       const data = await updateUserProfile(formData);
-      localStorage.setItem('userImage', data.image)
+      localStorage.setItem('userImage', data.image);
 
-      userProfileImage.value = data.image
+      userProfileImage.value = data.image;
       console.log(data);
     } catch (e) {
       console.log(e);
     }
-
-
   };
 
-  const postFollowUser = async (id:string) =>{
-    try{
-    const data = await postFollow(id)
-    console.log(data);
-    await getUser(data.user)
-  }catch(e){
-    console.log(e);
-  }
-  }
-  const deleteFollowUser = async (id:string) =>{
-    try{
-    const data = await deleteFollow(id)
-    console.log(data);
-    await getUser(data.user)
-  }catch(e){
-    console.log(e);
-  }
-  }
-  const updateUserInfo = async (payload:{fullName:string}) =>{
-    try{
-    const data = await updateInfo(payload)
-    const fullName = JSON.parse(data.fullName);
-    userInfo.value = {...data, fullName};
-    console.log(data);
-  }catch(e){
-    console.log(e);
-  }
-  }
-  const changePassword = async (payload:{password:string}) =>{
-    try{
-    const data = await updatePasswordInfo(payload)
-    console.log(data);
-  }catch(e){
-    console.log(e);
-  }
-  }
-  const deleteAccount = async (id:string) =>{
-    try{
-    const data = await deleteUser(id)
-    console.log(data);
-  }catch(e){
-    console.log(e);
-  }
-  }
+  const postFollowUser = async (id: string) => {
+    try {
+      const data = await postFollow(id);
+      console.log(data);
+      await getUser(data.user);
+      followerInfo.value.push({...userData});
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const deleteFollowUser = async (id: string) => {
+    try {
+      const data = await deleteFollow(id);
+      console.log(data);
+      await getUser(data.user);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const updateUserInfo = async (payload: {fullName: string}) => {
+    try {
+      const data = await updateInfo(payload);
+      const fullName = JSON.parse(data.fullName);
+      userInfo.value = {...data, fullName};
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const changePassword = async (payload: {password: string}) => {
+    try {
+      const data = await updatePasswordInfo(payload);
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const deleteAccount = async (id: string) => {
+    try {
+      const data = await deleteUser(id);
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   //유저 위치정보 업데이트
   const updateUserAddress = (newAddress: UserAddress | null) => {
     localStorage.setItem('userAddress', JSON.stringify(newAddress));
@@ -135,6 +153,6 @@ export const useUserStore = defineStore('user', () => {
     deleteFollowUser,
     updateUserInfo,
     changePassword,
-    deleteAccount
+    deleteAccount,
   };
 });

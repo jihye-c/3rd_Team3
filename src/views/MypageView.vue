@@ -216,6 +216,10 @@ const followHandeler = async () => {
       await userStore.postFollowUser(id)
       userFollowerInfo.value = userStore.followerInfo;
       userFollowingInfo.value = userStore.followingInfo;
+      console.log(userStore.followingInfo)
+      console.log(userStore.followerInfo)
+
+      followCheck()
     }catch(e) {
       console.log(e)
     }
@@ -254,7 +258,9 @@ const handleScrapToggle = async (festival) => {
   }
 };
 const followCheck = ()=>{
-  return userInfo.value?.followers.some((item) => item.follower === id)
+  if(userFollowerInfo.value){
+    return userFollowerInfo.value.some((item) => item.id === id)
+  }
 
 }
 watchEffect(async () => {
@@ -271,10 +277,6 @@ watchEffect(async () => {
       const scrapList = await getUserScrapList(id);
       cultureStore.bookmarkedFestivals = scrapList;
       console.log('✅ [유저별] 북마크 불러오기 완료:', cultureStore.bookmarkedFestivals);
-      console.log('✅ 111111:', userFollowerInfo.value);
-      followCheck()
-      console.log('✅ 22222', userFollowingInfo.value);
-
     }
   });
 
@@ -310,14 +312,14 @@ const isBookmarked = (contentId) => {
                 @click="openModal('follower')"
                 class="text-mono-900 font-medium flex items-center gap-2"
               >
-                <span class="text-2xl">{{ userInfo?.followers.length }}</span>
+                <span class="text-2xl">{{ userFollowerInfo?.length }}</span>
                 <p class="text-mono-400 font-normal">팔로워</p>
               </div>
               <div
                 @click="openModal('following')"
                 class="text-mono-900 font-medium flex items-center gap-2"
               >
-                <span class="text-2xl">{{ userInfo?.following.length }}</span>
+                <span class="text-2xl">{{ userFollowingInfo?.length }}</span>
                 <p class="text-mono-400 font-normal">팔로잉</p>
               </div>
             </div>

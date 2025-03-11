@@ -231,7 +231,9 @@ export async function postFollow(id:string){
   return response.data;
 }
 export async function deleteFollow(id:string){
-  const response = await axiosApi.delete(`${apiRoot}/follow/delete`,{id:id});
+  const response = await axiosApi.delete(`${apiRoot}/follow/delete`,{
+    data: {id: id},
+  });
   console.log(id);
   if (response.status !== 200) {
     throw 'state : ' + response.status;
@@ -253,7 +255,9 @@ export async function updatePasswordInfo(payload:{password:string}){
   return response.data;
 }
 export async function deleteUser(userId:string){
-  const response = await axiosApi.delete(`${apiRoot}/users/delete-user`,{id:userId});
+  const response = await axiosApi.delete(`${apiRoot}/users/delete-user`,{
+    data: {id: userId},
+  });
   if (response.status !== 200) {
     throw 'state : ' + response.status;
   }

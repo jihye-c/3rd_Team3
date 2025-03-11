@@ -114,9 +114,7 @@ async function fetchChannelData(channelId: string) {
     return [];
   }
 }
-onUpdated(()=>{
-  console.log(selectedData.value)
-})
+
 onBeforeMount(async () => {
   try {
     const channelIds = Object.keys(channelDataRefs);

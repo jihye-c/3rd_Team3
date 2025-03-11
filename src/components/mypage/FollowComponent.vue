@@ -5,7 +5,7 @@ const defaultImage = "/images/mypage/mypage_default_img.png";
 const router = useRouter()
 
 const props = defineProps<{
-  items: { email: string; fullName: { name: string }; image?: string,id:string }[];
+  items: { email: string; fullName: { name: string,nickname:string }; image?: string,id:string }[];
   title: string;
   isOpen: boolean,
 }>();
@@ -45,13 +45,13 @@ onMounted(()=>{
       <template v-slot:default="{ item }">
         <v-list-item
           :subtitle="item.email"
-          :title="item.fullName.name"
+          :title="item.fullName.nickname"
           @click.stop="pushRouter(item.id)"
 
         >
           <template v-slot:prepend>
           <div class="w-8 h-8 rounded-full flex items-center overflow-hidden object-cover justify-center mr-3 bg-main-400">
-            <img :src="item.image ?? defaultImage" alt="">
+            <img class="w-full h-full object-cover" :src="item.image ?? defaultImage" alt="">
           </div>
           </template>
 
