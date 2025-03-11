@@ -52,11 +52,8 @@
   const isLoading = ref(false);
   const error = ref<string | null>(null);
   const comment = ref('');
-  const isBookmarked = ref(false);
-
   // 북마크 상태 관리
   const isBookmarked = ref(false);
-
   const toggleBookmark = () => {
     isBookmarked.value = !isBookmarked.value;
   };

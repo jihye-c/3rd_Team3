@@ -10,6 +10,7 @@ export const useCommunityStore = defineStore("communityStore", {
       trade: [] as any[],   // 중고거래 북마크
       review: [] as any[],  // 동네 리뷰 북마크
       QnA: [] as any[],     // 질문 게시판 북마크
+      culture: [] as any[],     // 질문 게시판 북마크
     },
     scrapCache: [] as Post[],  // 스크랩된 게시글 캐시 (API 요청 최소화)
     lastUpdated: null as number | null, // 마지막 업데이트 시간 (캐싱 유효성 검사)
