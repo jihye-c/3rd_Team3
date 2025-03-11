@@ -8,13 +8,6 @@
   import {useRoute} from 'vue-router';
   import SubscriptionMap from '@/components/Subscription/SubscriptionMap.vue';
 
-  // 북마크 상태 관리
-  const isBookmarked = ref(false);
-
-  const toggleBookmark = () => {
-    isBookmarked.value = !isBookmarked.value;
-  };
-
   const currentRoute = useRoute();
   const id = currentRoute.params.id as string;
 
@@ -89,7 +82,6 @@
     <div class="container flex gap-55">
       <div class="border-mono-200 w-[52px] h-[104px] flex flex-col gap-[12px]">
         <!-- 스크랩, 공유 버튼 -->
-        <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
         <ShareButton />
       </div>
 
@@ -153,7 +145,8 @@
                 <div class="flex w-163 text-[28px] justify-between">
                   <div class="text-mono-400">특별 공급 접수</div>
                   <div class="w-98">
-                    {{ detailData.SPSPLY_RCEPT_BGNDE }} ~ {{ detailData.SPSPLY_RCEPT_ENDDE }}
+                    {{ detailData.SPSPLY_RCEPT_BGNDE }} ~
+                    {{ detailData.SPSPLY_RCEPT_ENDDE }}
                   </div>
                 </div>
               </div>
