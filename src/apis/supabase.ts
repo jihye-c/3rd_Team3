@@ -421,7 +421,6 @@ export default class Supabase {
         console.error('허용되지 않은 scrap type입니다.');
         return [];
     }
-
     if (passFlag) {
       const {data, error} = await supabase
         .from('scrap_default')
