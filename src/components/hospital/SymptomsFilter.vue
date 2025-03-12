@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import {ref, watch} from 'vue';
+  import {onMounted, ref, watch} from 'vue';
   import type {Symptoms} from '@/types/hospitalType.ts';
   import symptomsData from '@/assets/data/symptoms.json';
   import {useRoute, useRouter} from 'vue-router';
@@ -14,17 +14,17 @@
   const symptoms: Symptoms[] = symptomsData as Symptoms[];
   const checkedSymptoms = ref([]);
   const handleChange = () => {
-    if(checkedSymptoms.value.length){
+    if (checkedSymptoms.value.length) {
       const query = {...route.query, sym: checkedSymptoms.value};
       router.push({path: route.path, query});
-    }else{
+    } else {
       router.push({
-          query: (() => {
-            const newQuery = {...route.query};
-            delete newQuery.sym;
-            return newQuery;
-          })(),
-        });
+        query: (() => {
+          const newQuery = {...route.query};
+          delete newQuery.sym;
+          return newQuery;
+        })(),
+      });
     }
   };
   watch(

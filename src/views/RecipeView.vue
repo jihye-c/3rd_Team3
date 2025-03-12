@@ -191,7 +191,11 @@
     <div class="flex flex-col gap-[28px]">
       <div class="ft-point text-[48px] text-mono-700">리얼 자취생 레시피</div>
       <div class="grid grid-cols-2 gap-[24px] justify-between">
-        <template v-if="recipeCommunityData" v-for="item in recipeCommunityData" :key="item.title">
+        <template
+          v-if="recipeCommunityData"
+          v-for="item in recipeCommunityData.slice(0, 4)"
+          :key="item.title"
+        >
           <RecipePostList
             :author="JSON.parse(item.author.fullName).nickname"
             :title="JSON.parse(item.title).title"
