@@ -43,6 +43,8 @@ import { askForLocation } from '@/utils/location';
   const userStore = useUserStore();
   const subscriptionStore = useSubscriptionStore()
   onMounted(async () => {
+    const id = localStorage.getItem('userId');
+    await userStore.getUserInfomation(id);
     const address = localStorage.getItem('userAddress');
     await subscriptionStore.getSubscription()
     console.log('실행')

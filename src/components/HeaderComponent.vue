@@ -18,7 +18,7 @@
   const defaultImage = '/images/mypage/mypage_default_img.png';
   const userData = ref({});
   const profileImg = ref('');
-  const id = localStorage.getItem('userId');
+  const id = ref() ;
   const props = defineProps({
     backgroundOpacity: {
       type: Boolean,
@@ -34,17 +34,15 @@
   const logoutHandler = () => {
     authStore.logout();
   };
-  const getUserData = async () => {
-    const id = localStorage.getItem('userId');
-    // console.log(user)
-    const data = await getUserInfo(id);
-    userData.value = data;
-  };
+
   watchEffect(async () => {
-    profileImg.value = userStore.userProfileImage;
+    id.value = localStorage.getItem('userId');
     if (localStorage.getItem('token')) {
-      await getUserData();
-      profileImg.value = localStorage.getItem('userImage') || userData.value?.image;
+      if(userStore.userProfileImage){
+        profileImg.value = userStore.userProfileImage;
+      }else{
+        profileImg.value = localStorage.getItem('userImage') || ''
+      }
     }
   });
 </script>

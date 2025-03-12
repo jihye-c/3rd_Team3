@@ -66,25 +66,28 @@ export const useUserStore = defineStore('user', () => {
         for (const item of data.following) {
           const userData = await getUserInfo(item.user ?? item.follower);
           const fullName = JSON.parse(userData.fullName);
-          console.log(fullName)
-
           followingInfo.value.push({...userData, fullName, id: userData._id});
         }
       }
-      console.log(followingInfo.value);
-      console.log(followerInfo.value);
+
     } catch (e) {
       console.log(e);
     }
   };
+  const getUserInfomation = async (id: string) => {
+    try {
 
+      const data = await getUserInfo(id);
+      userProfileImage.value = data.image
+    } catch (e) {
+      console.log(e);
+    }
+  };
   const postUserProfile = async (formData: FormData) => {
     try {
       const data = await updateUserProfile(formData);
       localStorage.setItem('userImage', data.image);
-
       userProfileImage.value = data.image;
-      console.log(data);
     } catch (e) {
       console.log(e);
     }
@@ -93,7 +96,6 @@ export const useUserStore = defineStore('user', () => {
   const postFollowUser = async (id: string | string[]) => {
     try {
       const data = await postFollow(id);
-      console.log(data);
       await getUser(data.user);
       followerInfo.value.push({...userData});
     } catch (e) {
@@ -103,7 +105,6 @@ export const useUserStore = defineStore('user', () => {
   const deleteFollowUser = async (id: string | string[]) => {
     try {
       const data = await deleteFollow(id);
-      console.log(data);
       await getUser(data.user);
     } catch (e) {
       console.log(e);
@@ -155,6 +156,7 @@ export const useUserStore = defineStore('user', () => {
     deleteFollowUser,
     updateUserInfo,
     changePassword,
+    getUserInfomation,
     deleteAccount,
   };
 });
