@@ -1,106 +1,99 @@
 <script setup lang="ts">
-  import {computed, onMounted, ref} from 'vue';
-  import BannerComponent from '@/components/BannerComponent.vue';
-  import {useRoute, useRouter} from 'vue-router';
-  import type {Post} from '@/types/PostResponse';
-  import {programmersApiInstance} from '@/utils/axiosInstance';
-  import {useAuthStore} from '@/stores/auth';
-  import {useCommentStore} from '@/stores/commentStore';
-  import LikeButton from '@/components/LikeButton.vue';
-  import TextAlertButton from '@/components/TextAlertButton.vue';
-  import BookmarkButton from '@/components/BookmarkButton.vue';
-  import ShareButton from '@/components/ShareButton.vue';
-  import {before} from 'node:test';
+import { computed, onMounted, ref } from "vue";
+import BannerComponent from "@/components/BannerComponent.vue";
+import { useRoute, useRouter } from "vue-router";
+import type { Post } from "@/types/PostResponse";
+import { programmersApiInstance } from "@/utils/axiosInstance";
+import { useAuthStore } from "@/stores/auth";
+import { useCommentStore } from "@/stores/commentStore";
+import LikeButton from "@/components/LikeButton.vue";
+import TextAlertButton from "@/components/TextAlertButton.vue";
+import BookmarkButton from "@/components/BookmarkButton.vue";
+import ShareButton from "@/components/ShareButton.vue";
+import { before } from "node:test";
 
-  const route = useRoute();
-  const router = useRouter();
-  const postId = route.params.id;
+const route = useRoute();
+const router = useRouter();
+const postId = route.params.id;
 
-  const authStore = useAuthStore();
-  const commentStore = useCommentStore();
+const authStore = useAuthStore();
+const commentStore = useCommentStore();
 
-  const postData = ref<Post | null>();
-  const isLoading = ref(false);
-  const error = ref<string | null>(null);
-  const comment = ref('');
+const postData = ref<Post | null>();
+const isLoading = ref(false);
+const error = ref<string | null>(null);
+const comment = ref("");
 
-  const available = computed(() => {
-    return JSON.parse(postData.value?.title!).available;
-  });
+const available = computed(() => {
+  return JSON.parse(postData.value?.title!).available;
+});
 
-  // 북마크 상태 관리
-  const isBookmarked = ref(false);
+const submitComment = async () => {
+  if (!authStore.isAuthenticated) {
+    alert("로그인이 필요합니다.");
+    router.push("/auth");
+    return;
+  }
 
-  const toggleBookmark = () => {
-    isBookmarked.value = !isBookmarked.value;
-  };
+  try {
+    await commentStore.addComment(comment.value, route.params.id as string);
+    comment.value = "";
+  } catch (error) {
+    console.error("Failed to submit comment:", error);
+  }
+};
 
-  const submitComment = async () => {
-    if (!authStore.isAuthenticated) {
-      alert('로그인이 필요합니다.');
-      router.push('/auth');
-      return;
-    }
+// 유저가 작성자인지 확인
+const isAuthor = (authorId: string) => {
+  // @ts-ignore
+  return authStore.user?.user._id === authorId;
+};
 
-    try {
-      await commentStore.addComment(comment.value, route.params.id as string);
-      comment.value = '';
-    } catch (error) {
-      console.error('Failed to submit comment:', error);
-    }
-  };
+// 판매 완료 처리
+const updateItemStatusToSold = async () => {
+  try {
+    isLoading.value = true;
 
-  // 유저가 작성자인지 확인
-  const isAuthor = (authorId: string) => {
-    // @ts-ignore
-    return authStore.user?.user._id === authorId;
-  };
+    if (postData.value) {
+      const beforeData = JSON.parse(postData.value.title);
+      const updatedData = { ...beforeData, available: false };
 
-  // 판매 완료 처리
-  const updateItemStatusToSold = async () => {
-    try {
-      isLoading.value = true;
+      const formData = new FormData();
+      formData.append("postId", postData.value._id);
+      formData.append("title", JSON.stringify(updatedData));
+      formData.append("image", postData.value.image);
+      formData.append("channelId", postData.value.channel._id);
 
-      if (postData.value) {
-        const beforeData = JSON.parse(postData.value.title);
-        const updatedData = {...beforeData, available: false};
-
-        const formData = new FormData();
-        formData.append('postId', postData.value._id);
-        formData.append('title', JSON.stringify(updatedData));
-        formData.append('image', postData.value.image);
-        formData.append('channelId', postData.value.channel._id);
-
-        const response = await programmersApiInstance.put('/posts/update', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${authStore.token}`,
-          },
-        });
-        postData.value = response.data;
-      }
-    } catch (err) {
-      error.value = '데이터를 업데이트 하는 중 오류가 발생했습니다.';
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  onMounted(async () => {
-    // api 호출
-    try {
-      isLoading.value = true;
-      // post 데이터 불러오기
-      const response = await programmersApiInstance.get(`/posts/${postId}`);
+      const response = await programmersApiInstance.put("/posts/update", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      });
       postData.value = response.data;
-      // console.log(postData.value);
-      await commentStore.fetchComments(postId as string);
-    } catch (err) {
-      error.value = '데이터를 불러오는 중 오류가 발생했습니다.';
-    } finally {
-      isLoading.value = false;
     }
-  });
+  } catch (err) {
+    error.value = "데이터를 업데이트 하는 중 오류가 발생했습니다.";
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(async () => {
+  // api 호출
+  try {
+    isLoading.value = true;
+    // post 데이터 불러오기
+    const response = await programmersApiInstance.get(`/posts/${postId}`);
+    postData.value = response.data;
+    // console.log(postData.value);
+    await commentStore.fetchComments(postId as string);
+  } catch (err) {
+    error.value = "데이터를 불러오는 중 오류가 발생했습니다.";
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <template>
@@ -110,10 +103,10 @@
     title="중고 거래 상세"
     subtitle="우리 동네 사람들과 믿을 수 있는 중고거래를 시작하세요"
     :breadcrumbs="[
-      {title: '홈', href: '/'},
-      {title: '커뮤니티'},
-      {title: '중고거래', href: '/community/resale'},
-      {title: '상세 페이지'},
+      { title: '홈', href: '/' },
+      { title: '커뮤니티' },
+      { title: '중고거래', href: '/community/resale' },
+      { title: '상세 페이지' },
     ]"
     ><img
       src="/images/community/community_resale_illustration.svg"
@@ -128,7 +121,11 @@
       <div class="flex flex-col gap-4 w-[52px]">
         <LikeButton :is-liked="false" />
         <TextAlertButton :commentleng="commentStore.comments.length" />
-        <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
+        <BookmarkButton
+          v-if="postData"
+          :commData="postData.title"
+          :image="postData.image"
+        />
         <ShareButton />
       </div>
 
@@ -229,10 +226,10 @@
       <div>{{ comment.comment }}</div>
       <div>
         {{
-          new Date(comment.createdAt).toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
+          new Date(comment.createdAt).toLocaleDateString("ko-KR", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
           })
         }}
       </div>
@@ -255,7 +252,10 @@
         </div>
       </div>
       <div class="h-13 border-t-1 border-mono-200 flex items-center justify-end">
-        <button @click="submitComment" class="bg-main-400 py-2 px-6 mr-4 rounded-lg text-mono-050">
+        <button
+          @click="submitComment"
+          class="bg-main-400 py-2 px-6 mr-4 rounded-lg text-mono-050"
+        >
           작성하기
         </button>
       </div>
@@ -264,7 +264,7 @@
 </template>
 
 <style scoped>
-  .content-text {
-    white-space: pre-line;
-  }
+.content-text {
+  white-space: pre-line;
+}
 </style>
