@@ -1,20 +1,27 @@
-
 <script setup lang="ts">
-  const {src,alt,caption} = defineProps({
+import {useRouter } from 'vue-router';
+  const router = useRouter()
+  const {src, alt, caption, link} = defineProps({
     src: String,
     alt: String,
-    caption: String
-  })
+    caption: String,
+    link:String,
+  });
+  function handleLink() {
+    if(link){
+    router.push(link);
+    }
+  }
 </script>
 
 <template>
-  <div class="w-[94px] h-[94px] bg-[#fff] border-main-400 border-1 rounded-lg flex flex-col justify-center items-center gap-1">
-    <img :src="src" :alt="alt">
+  <button
+    class="w-[94px] h-[94px] bg-[#fff] hover:bg-main-300 transition-all border-main-400 border-1 rounded-lg flex flex-col justify-center items-center gap-1"
+    @click.prevent="handleLink"
+  >
+    <img :src="src" :alt="alt" />
     <p>{{ caption }}</p>
-  </div>
+  </button>
 </template>
 
-
-<style scoped>
-
-</style>
+<style scoped></style>

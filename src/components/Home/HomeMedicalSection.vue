@@ -3,31 +3,39 @@ import MedicalItem from '../ui/MedicalItem.vue';
  const items = [{
    src:"/home/main_medical1.webp",
    alt:"복통 아이콘",
-   caption:"복통"
+   caption:"복통",
+   link : "/hospital?type=clinic&sym=abdominal_pain"
  },{
    src:"/home/main_medical2.webp",
    alt:"열나는 사진",
-   caption:"열/오한"
+   caption:"열/오한",
+   link:"hospital?type=clinic&sym=fever"
  },{
    src:"/home/main_medical3.webp",
    alt:"화상 사진",
-   caption:"화상"
+   caption:"화상",
+   link:"/hospital?type=clinic&sym=burn"
+
  },{
    src:"/home/main_medical4.webp",
    alt:"이명 사진",
-   caption:"이명"
+   caption:"이명",
+   link:"/hospital?type=clinic&sym=tinnitus"
  },{
    src:"/home/main_medical5.webp",
    alt:"구토 사진",
-   caption:"구토"
+   caption:"구토",
+   link:"/hospital?type=clinic&sym=vomiting"
  },{
    src:"/home/main_medical6.webp",
    alt:"기침 사진",
-   caption:"기침"
+   caption:"기침",
+   link:"/hospital?type=clinic&sym=cough"
  },{
    src:"/home/main_medical7.webp",
    alt:"골절 사진",
-   caption:"골절"
+   caption:"골절",
+   link:"/hospital?type=clinic&sym=fracture"
  },]
 
 </script>
@@ -59,7 +67,7 @@ import MedicalItem from '../ui/MedicalItem.vue';
           <p class="py-2 pb-6 text-2xl font-semibold">어디가 아프신가요?</p>
           <ul class="flex gap-4">
             <li v-for="(item,index) in items" :key="index">
-              <MedicalItem :src="item.src" :alt="item.alt" :caption="item.caption" />
+              <MedicalItem :src="item.src" :alt="item.alt" :caption="item.caption" :link="item.link" />
             </li>
           </ul>
         </div>
@@ -67,8 +75,8 @@ import MedicalItem from '../ui/MedicalItem.vue';
           <p class="py-2 pb-6 text-2xl font-semibold">어느 병원이 궁금하세요?</p>
           <div>
             <ul class="flex gap-2">
-            <li class=" bg-[#fff] flex items-center leading-10px px-3 py-1 rounded-lg border-1 border-main-400"> 대학병원 </li>
-            <li class=" bg-[#fff] flex items-center leading-10px px-3 py-1 rounded-lg border-1 border-main-400"> 동네병원 </li>
+            <li class=" bg-[#fff]  hover:bg-main-300 transition-all flex items-center leading-10px px-3 py-1 rounded-lg border-1 border-main-400"> 대학병원 </li>
+            <li class=" bg-[#fff]  hover:bg-main-300 transition-all flex items-center leading-10px px-3 py-1 rounded-lg border-1 border-main-400"> 동네병원 </li>
 
             </ul>
           </div>
