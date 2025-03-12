@@ -11,6 +11,7 @@
   import {useRouter} from 'vue-router';
   import districtData from '@/assets/data/district.json';
   import {useUserStore} from '@/stores/userStore';
+  import PaginationComponent from '@/components/PaginationComponent.vue';
 
   type DistrictKeys = keyof typeof districtData;
 
@@ -39,6 +40,9 @@
   const postList = ref<Post[]>([]);
   const isLoading = ref<boolean>(false);
   const init = ref<boolean>(true);
+
+  const currentPage = ref(1);
+  const itemsPerPage = 10;
 
   const filteredPostList = computed(() => {
     const filteredData = postList.value.filter((data: Post) => {
@@ -71,6 +75,16 @@
     });
   });
 
+  const paginatedPostList = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return filteredPostList.value.slice(start, start + itemsPerPage);
+  });
+
+  const totalPages = computed(() => Math.ceil(filteredPostList.value.length / itemsPerPage));
+  const handlePageChange = (page: number) => {
+    currentPage.value = page;
+  };
+
   const updateQuery = () => {
     if (init.value) {
       router.replace({
@@ -81,6 +95,7 @@
           tag: selectedTag.value,
           keyword: searchKeyword.value,
           order: selectedOrder.value,
+          page: currentPage.value,
         },
       });
     } else {
@@ -92,6 +107,7 @@
           tag: selectedTag.value,
           keyword: searchKeyword.value,
           order: selectedOrder.value,
+          page: currentPage.value,
         },
       });
     }
@@ -202,7 +218,7 @@
 
       <!-- 리스트 -->
       <div class="flex flex-col gap-[28px] pt-[28px] pb-[100px] leading-[32px]">
-        <template v-if="filteredPostList.length">
+        <template v-if="paginatedPostList.length">
           <CommunityPostList
             v-for="item in filteredPostList"
             :key="item._id"
@@ -225,7 +241,7 @@
       </div>
 
       <!-- 페이지네이션 -->
-      <v-pagination length="4"></v-pagination>
+      <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="handlePageChange" />
     </div>
   </div>
 </template>
