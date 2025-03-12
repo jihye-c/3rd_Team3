@@ -66,6 +66,8 @@ export const useUserStore = defineStore('user', () => {
         for (const item of data.following) {
           const userData = await getUserInfo(item.user ?? item.follower);
           const fullName = JSON.parse(userData.fullName);
+          console.log(fullName)
+
           followingInfo.value.push({...userData, fullName, id: userData._id});
         }
       }
@@ -88,7 +90,7 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-  const postFollowUser = async (id: string) => {
+  const postFollowUser = async (id: string | string[]) => {
     try {
       const data = await postFollow(id);
       console.log(data);
@@ -98,7 +100,7 @@ export const useUserStore = defineStore('user', () => {
       console.log(e);
     }
   };
-  const deleteFollowUser = async (id: string) => {
+  const deleteFollowUser = async (id: string | string[]) => {
     try {
       const data = await deleteFollow(id);
       console.log(data);
@@ -125,7 +127,7 @@ export const useUserStore = defineStore('user', () => {
       console.log(e);
     }
   };
-  const deleteAccount = async (id: string) => {
+  const deleteAccount = async (id: string |string []) => {
     try {
       const data = await deleteUser(id);
       console.log(data);

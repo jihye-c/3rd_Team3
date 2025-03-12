@@ -406,6 +406,7 @@ export default class Supabase {
         tableName = 'scrap_comm_recipe';
         break;
       case 'comm_qna':
+      case 'comm_review':
         tableName = 'scrap_comm_qna';
         break;
       case 'culture':
