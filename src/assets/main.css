@@ -34,3 +34,5 @@ body,
 .ft-point {
   font-family: 'neurimboGothic', sans-serif !important;
 }
+
+#homeMain * { cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9W+dUuQAAAAASUVORK5CYII="), auto;}

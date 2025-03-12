@@ -1,5 +1,5 @@
 <template>
-  <div class="text-mono-900">
+  <div id="homeMain" class="text-mono-900">
     <HeroSlide />
     <CustomCursor/>
     <div class="container">
@@ -55,4 +55,6 @@ import { askForLocation } from '@/utils/location';
 
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>
