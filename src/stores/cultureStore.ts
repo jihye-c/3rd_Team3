@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { getUserScrapList, toggleScrap } from "@/apis/userService";
+// import { getUserScrapList, toggleScrap } from "@/apis/userService";
 
 export const useCultureStore = defineStore("cultureStore", {
   state: () => ({
@@ -39,25 +39,25 @@ export const useCultureStore = defineStore("cultureStore", {
       this.currentPage = page;
     },
 
-    async loadBookmarks(userId) {
-      try {
-        const bookmarks = await getUserScrapList(userId);
-        this.bookmarkedFestivals = bookmarks;
-        console.log("✅ 북마크 불러오기 성공:", bookmarks);
-      } catch (error) {
-        console.error("❌ 북마크 불러오기 실패:", error);
-      }
-    },
+    // async loadBookmarks(userId) {
+    //   try {
+    //     const bookmarks = await getUserScrapList(userId);
+    //     this.bookmarkedFestivals = bookmarks;
+    //     console.log("북마크 불러오기 성공:", bookmarks);
+    //   } catch (error) {
+    //     console.error("북마크 불러오기 실패:", error);
+    //   }
+    // },
 
-    // ✅ 북마크 추가/삭제
-    async toggleBookmark(userId, festivalData) {
-      try {
-        this.bookmarkedFestivals = await toggleScrap(userId, festivalData);
-        console.log("✅ 북마크 업데이트 완료");
-      } catch (error) {
-        console.error("❌ 북마크 업데이트 실패:", error);
-      }
-    }
+    // 북마크 추가/삭제
+    // async toggleBookmark(userId, festivalData) {
+    //   try {
+    //     this.bookmarkedFestivals = await toggleScrap(userId, festivalData);
+    //     console.log("북마크 업데이트 완료");
+    //   } catch (error) {
+    //     console.error("북마크 업데이트 실패:", error);
+    //   }
+    // }
   },
 
   // 🛠 **persist 활성화 (상태 유지)**

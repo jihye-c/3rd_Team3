@@ -5,7 +5,7 @@
     tags?: string[];
     image?: string;
     available?: boolean;
-    authorName: string;
+    authorName?: string;
     price?: number;
     region?: {
       gu: string;
@@ -69,6 +69,7 @@
     reviewList: REVIEW_CHANNEL_ID,
     // cultureList: CULT_CHANNEL_ID,
   };
+
 
   const goToCultureDetail = (contentId: string) => {
     router.push(`/culture/${contentId}`);
@@ -135,32 +136,33 @@
       console.log(e);
     }
   };
-  const handleScrapToggle = async (festival) => {
-    try {
-      const userId = localStorage.getItem('userId');
-      if (!userId) {
-        console.warn(':warning: 로그인이 필요합니다.');
-        return;
-      }
+  // const handleScrapToggle = async (festival) => {
+  //   try {
+  //     const userId = localStorage.getItem('userId');
+  //     if (!userId) {
+  //       console.warn(':warning: 로그인이 필요합니다.');
+  //       return;
+  //     }
 
-      console.log(':white_check_mark: 마이페이지에서 북마크 추가/삭제 요청:', festival);
+  //     console.log(':white_check_mark: 마이페이지에서 북마크 추가/삭제 요청:', festival);
 
-      // :white_check_mark: scrap 채널에 저장 or 삭제 (서버에 요청)
-      const updatedScraps = await toggleScrap(userId, festival);
+  //     // :white_check_mark: scrap 채널에 저장 or 삭제 (서버에 요청)
+  //     const updatedScraps = await toggleScrap(userId, festival);
 
-      // :white_check_mark: 최신 북마크 목록으로 업데이트
-      cultureStore.bookmarkedFestivals = updatedScraps;
+  //     // :white_check_mark: 최신 북마크 목록으로 업데이트
+  //     cultureStore.bookmarkedFestivals = updatedScraps;
 
-      console.log(':white_check_mark: 마이페이지 북마크 업데이트 완료!');
-    } catch (error) {
-      console.error(':x: 북마크 저장 실패:', error);
-    }
-  };
+  //     console.log(':white_check_mark: 마이페이지 북마크 업데이트 완료!');
+  //   } catch (error) {
+  //     console.error(':x: 북마크 저장 실패:', error);
+  //   }
+  // };
   const followCheck = () => {
     if (userFollowerInfo.value) {
       return userFollowerInfo.value.some((item) => item.id === id);
     }
   };
+
   watchEffect(async () => {
     routeId.value = route.params.id;
     const id = localStorage.getItem('userId');
@@ -172,9 +174,9 @@
       userFollowingInfo.value = userStore.followingInfo;
       // ✅ 유저별 스크랩 목록 가져오기
       if (path === id) {
-        const scrapList = await getUserScrapList(id);
-        cultureStore.bookmarkedFestivals = scrapList;
-        console.log('✅ [유저별] 북마크 불러오기 완료:', cultureStore.bookmarkedFestivals);
+        // const scrapList = await getUserScrapList(id);
+        // cultureStore.bookmarkedFestivals = scrapList;
+        // console.log('✅ [유저별] 북마크 불러오기 완료:', cultureStore.bookmarkedFestivals);
       } else if (path !== id) {
         Object.keys(channelMap).forEach((key) => {
           const channelId = channelMap[key];
@@ -209,6 +211,7 @@
   const isBookmarked = (contentId: string) => {
     return cultureStore.bookmarkedFestivals.some((festival) => festival.content_id === contentId);
   };
+
 </script>
 
 <template>
@@ -424,5 +427,3 @@
     </div>
   </div>
 </template>
-
-<style scoped></style>

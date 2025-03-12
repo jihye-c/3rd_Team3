@@ -4,8 +4,18 @@
   import {useRoute} from 'vue-router';
   const route = useRoute();
   interface Props {
+    thumb?: string;
     small?: boolean;
     class?: string | string[];
+    cultureData: {
+      title: string;
+      contentId: string;
+      eventEndDate: string;
+      eventStartDate: string;
+      location: string;
+      image_src: string;
+      content: string;
+    };
   }
   const bookmarked = ref(false);
   const splitPath = route.path.split('/');
@@ -19,26 +29,58 @@
     if (!userId) return;
     if (!bookmarked.value) {
       //북마크 넣기
+      let imgSrc: string | undefined = undefined;
+
       switch (splitPath[1]) {
         case 'subscription':
+          const subscriptionTitle = document.getElementById('subscriptionNewsTitle');
+          const subscriptionDate = document.getElementById('subscriptionNewsDate');
+          imgSrc = props.thumb;
+          await Supabase.addScrapData({
+            type: 'subscription',
+            defaultData: {
+              user_id: userId,
+              image_src: imgSrc,
+              post_url: route.fullPath,
+              title: subscriptionTitle?.innerText || '청약 카드 뉴스',
+            },
+            additionalData: {date: subscriptionDate?.innerText || ''},
+          });
           break;
         case 'recipe':
           const imgEl = document.querySelector('img[alt="recipe_image"]');
-          const titleEl = document.getElementById('recipeName');
-          let imgSrc: string | undefined = undefined;
+          const recipeTitle = document.getElementById('recipeName');
           if (imgEl) {
             imgSrc = imgEl.getAttribute('src') || undefined;
           }
-          const defaultData = {
-            user_id: userId,
-            image_src: imgSrc,
-            post_url: route.fullPath,
-            title: titleEl?.innerText || '레시피',
-          };
-          await Supabase.addScrapData({type: 'recipe', defaultData});
+          await Supabase.addScrapData({
+            type: 'recipe',
+            defaultData: {
+              user_id: userId,
+              image_src: imgSrc,
+              post_url: route.fullPath,
+              title: recipeTitle?.innerText || '레시피',
+            },
+          });
           break;
         case 'culture':
-          console.log('문화 페이지');
+          console.log(props.cultureData);
+          imgSrc = props.thumb;
+          await Supabase.addScrapData({
+            type: 'culture',
+            defaultData: {
+              user_id: userId,
+              image_src: props.cultureData.image_src,
+              post_url: route.fullPath,
+              title: props.cultureData.title,
+            },
+            additionalData: {
+              contentId: props.cultureData.contentId,
+              eventEndDate: props.cultureData.eventEndDate,
+              eventStartDate: props.cultureData.eventStartDate,
+              location: props.cultureData.location,
+            },
+          });
           break;
         case 'community':
           if (splitPath[2] == 'review') {

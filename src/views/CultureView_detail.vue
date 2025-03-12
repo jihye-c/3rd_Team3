@@ -13,7 +13,7 @@ import KakaoMap_festival from "@/components/KakaoMap_festival.vue";
 import BookmarkButton from '@/components/BookmarkButton.vue';
 import ShareButton from '@/components/ShareButton.vue';
 
-import { getUserScrapList } from "@/apis/userService"; // ✅ 추가
+// import { getUserScrapList } from "@/apis/userService"; 
 
 const router = useRouter();
 const route = useRoute();
@@ -62,6 +62,7 @@ const toggleBookmark = async () => {
           ? eventIntro.value.event_end_date
           : "날짜 미정",
         gu_name: festivalDetail.value.address || "주소 정보 없음",
+        channel: "culture", // ✅ 채널 정보 추가 (문화생활)
       };
 
       console.log("✅ 북마크 추가/삭제 요청:", newBookmark);
@@ -97,22 +98,22 @@ const subCategories = [
   { name: "기타행사", code: "A02081300" },
 ];
 
-// ✅ 북마크 목록을 불러오는 함수 추가
-const loadBookmarks = async () => {
-  if (userId.value) {
-    await cultureStore.loadBookmarks(userId.value);
-  }
-};
+
+// const loadBookmarks = async () => {
+//   if (userId.value) {
+//     await cultureStore.loadBookmarks(userId.value);
+//   }
+// };
 onMounted(async () => {
   console.log("🔑 Kakao API Key:", import.meta.env.VITE_KAKAO_MAP_KEY);
   
   fetchFestivalDetails(); // ✅ 행사 정보 불러오기
 
   // ✅ 유저가 로그인 되어 있다면 스크랩 목록 불러오기
-  if (userId.value) {
-    const scrapList = await getUserScrapList(userId.value);
-    cultureStore.bookmarkedFestivals = scrapList;
-  }
+  // if (userId.value) {
+  //   const scrapList = await getUserScrapList(userId.value);
+  //   cultureStore.bookmarkedFestivals = scrapList;
+  // }
 });
 
   // ✅ 서브카테고리 코드 → 한글 이름 변환 함수
@@ -244,7 +245,6 @@ onMounted(async () => {
     console.log('🔑 Kakao API Key:', import.meta.env.VITE_KAKAO_MAP_KEY); // ✅ API 키 출력 확인
     fetchFestivalDetails(); // ✅ 행사 정보 불러오기
   });
-
 </script>
 
 <template>
@@ -274,7 +274,16 @@ onMounted(async () => {
       <!-- 좌측 버튼들 -->
       <div class="border-mono-200 w-[52px] h-[104px] flex flex-col gap-[12px]">
         <!-- 스크랩, 공유 버튼 -->
-        <BookmarkButton :isBookmarked="isBookmarked" @toggle="toggleBookmark"/>
+        <BookmarkButton
+          :cultureData="{
+            title: title,
+            contentId: festivalId,
+            eventEndDate: eventIntro.event_start_date,
+            eventStartDate: eventIntro.event_end_date,
+            location: location,
+            image_src: festivalImages[0],
+          }"
+        />
         <ShareButton />
       </div>
 
@@ -287,7 +296,7 @@ onMounted(async () => {
           :loop="true"
           :speed="2000"
         >
-        <SwiperSlide v-for="(image, index) in festivalImages" :key="index" >
+          <SwiperSlide v-for="(image, index) in festivalImages" :key="index">
             <img
               :src="image"
               alt="Festival Image"
