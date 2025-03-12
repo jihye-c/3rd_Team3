@@ -1,77 +1,75 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import BannerComponent from "@/components/BannerComponent.vue";
-import { useRoute, useRouter } from "vue-router";
-import type { Post } from "@/types/PostResponse";
-import { programmersApiInstance } from "@/utils/axiosInstance";
-import { useAuthStore } from "@/stores/auth";
-import { useCommentStore } from "@/stores/commentStore";
-import BookmarkButton from "@/components/BookmarkButton.vue";
-import ShareButton from "@/components/ShareButton.vue";
-import LikeButton from "@/components/LikeButton.vue";
-import TextAlertButton from "@/components/TextAlertButton.vue";
+  import { onMounted, ref } from "vue";
+  import BannerComponent from "@/components/BannerComponent.vue";
+  import { useRoute, useRouter } from "vue-router";
+  import type { Post } from "@/types/PostResponse";
+  import { programmersApiInstance } from "@/utils/axiosInstance";
+  import { useAuthStore } from "@/stores/auth";
+  import { useCommentStore } from "@/stores/commentStore";
+  import BookmarkButton from "@/components/BookmarkButton.vue";
+  import ShareButton from "@/components/ShareButton.vue";
+  import LikeButton from "@/components/LikeButton.vue";
+  import TextAlertButton from "@/components/TextAlertButton.vue";
 
-const communityChannels = {
-  question: {
-    name: "질문 게시판",
-    title: "질문 상세",
-    subtitle: "궁금한 건 무엇이든 질문하고, 함께 해결해요",
-  },
-  recipe: {
-    name: "나만의 레시피",
-    title: "나만의 레시피 상세",
-    subtitle: "이웃과 함께 나누는 나만의 레시피 이야기",
-  },
-  review: {
-    name: "동네 리뷰",
-    title: "동네 리뷰 상세",
-    subtitle: "이웃 주민과 동네의 소식을 공유해보세요",
-  },
-};
+  const communityChannels = {
+    question: {
+      name: "질문 게시판",
+      title: "질문 상세",
+      subtitle: "궁금한 건 무엇이든 질문하고, 함께 해결해요",
+    },
+    recipe: {
+      name: "나만의 레시피",
+      title: "나만의 레시피 상세",
+      subtitle: "이웃과 함께 나누는 나만의 레시피 이야기",
+    },
+    review: {
+      name: "동네 리뷰",
+      title: "동네 리뷰 상세",
+      subtitle: "이웃 주민과 동네의 소식을 공유해보세요",
+    },
+  };
 
-const route = useRoute();
-const router = useRouter();
-const CommunityType = route.params.type;
-const postId = route.params.id;
-const userId = ref(localStorage.getItem("userId") || "");
-const authStore = useAuthStore();
-const commentStore = useCommentStore();
+  const route = useRoute();
+  const router = useRouter();
+  const CommunityType = route.params.type;
+  const postId = route.params.id;
+  const userId = ref(localStorage.getItem("userId") || "");
+  const authStore = useAuthStore();
+  const commentStore = useCommentStore();
+  const postData = ref<Post | null>();
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
+  const comment = ref("");
+  const submitComment = async () => {
+    if (!authStore.isAuthenticated) {
+      alert("로그인이 필요합니다.");
+      router.push("/auth");
+      return;
+    }
 
-const postData = ref<Post | null>();
-const isLoading = ref(false);
-const error = ref<string | null>(null);
-const comment = ref("");
+    try {
+      await commentStore.addComment(comment.value, route.params.id as string);
+      comment.value = "";
+    } catch (error) {
+      console.error("Failed to submit comment:", error);
+    }
+  };
 
-const submitComment = async () => {
-  if (!authStore.isAuthenticated) {
-    alert("로그인이 필요합니다.");
-    router.push("/auth");
-    return;
-  }
-
-  try {
-    await commentStore.addComment(comment.value, route.params.id as string);
-    comment.value = "";
-  } catch (error) {
-    console.error("Failed to submit comment:", error);
-  }
-};
-
-onMounted(async () => {
-  // api 호출
-  try {
-    isLoading.value = true;
-    // post 데이터 불러오기
-    const response = await programmersApiInstance.get(`/posts/${postId}`);
-    postData.value = response.data;
-    await commentStore.fetchComments(postId as string);
-    console.log(postData.value);
-  } catch (err) {
-    error.value = `데이터를 불러오는 중 오류가 발생했습니다. : ${err}`;
-  } finally {
-    isLoading.value = false;
-  }
-});
+  onMounted(async () => {
+    // api 호출
+    try {
+      isLoading.value = true;
+      // post 데이터 불러오기
+      const response = await programmersApiInstance.get(`/posts/${postId}`);
+      postData.value = response.data;
+      await commentStore.fetchComments(postId as string);
+      // console.log(postData.value);
+    } catch (err) {
+      error.value = `데이터를 불러오는 중 오류가 발생했습니다. : ${err}`;
+    } finally {
+      isLoading.value = false;
+    }
+  });;
 </script>
 
 <template>
@@ -89,11 +87,7 @@ onMounted(async () => {
       },
       {title: '상세 페이지'},
     ]"
-    ><img
-      src="/images/community/community_question.svg"
-      alt="illustration"
-      class="h-full"
-    />
+    ><img src="/images/community/community_question.svg" alt="illustration" class="h-full" />
   </BannerComponent>
   <div class="w-full flex justify-center pt-16">
     <div class="flex gap-8 max-w-[1600px] w-full px-6">
@@ -104,8 +98,8 @@ onMounted(async () => {
         <BookmarkButton
           v-if="postData"
           :commData="postData.title"
-          :authorId="JSON.parse(postData.author.fullName).nickname"
-          :authorImg="postData.author.image || ''"
+          :authorName="JSON.parse(postData.author.fullName).nickname"
+          :authorImg="postData.author.image"
           :image="postData.image"
         />
         <ShareButton />
@@ -159,10 +153,7 @@ onMounted(async () => {
         <div class="w-full h-[2px] bg-mono-200 my-6"></div>
 
         <!-- 게시물 내용 -->
-        <div
-          v-if="postData.image"
-          class="w-full h-[500px] overflow-hidden rounded-2xl mb-6"
-        >
+        <div v-if="postData.image" class="w-full h-[500px] overflow-hidden rounded-2xl mb-6">
           <img :src="postData.image" alt="img" class="w-full h-full object-cover" />
         </div>
         <p class="content-text text-[20px] text-mono-700 leading-8">
@@ -195,10 +186,10 @@ onMounted(async () => {
           <div>{{ comment.comment }}</div>
           <div>
             {{
-              new Date(comment.createdAt).toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
+              new Date(comment.createdAt).toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
               })
             }}
           </div>
@@ -235,13 +226,13 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.content-text {
-  white-space: pre-line;
-}
-.custom :deep(.v-btn__content) {
-  color: var(--color-mono-050);
-}
-.custom :deep(.v-btn__prepend) {
-  color: var(--color-mono-050);
-}
+  .content-text {
+    white-space: pre-line;
+  }
+  .custom :deep(.v-btn__content) {
+    color: var(--color-mono-050);
+  }
+  .custom :deep(.v-btn__prepend) {
+    color: var(--color-mono-050);
+  }
 </style>
