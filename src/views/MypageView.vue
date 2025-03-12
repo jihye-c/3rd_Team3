@@ -13,7 +13,7 @@
     };
     likes?: string[];
     comments?: string[];
-    author?:string;
+    author?: string;
   };
 
   import {ref, computed, watchEffect} from 'vue';
@@ -35,6 +35,7 @@
     RESALE_CHANNEL_ID,
     REVIEW_CHANNEL_ID,
   } from '@/constants/channelId';
+  import Supabase from '@/apis/supabase';
 
   const route = useRoute<string>();
   const showModal = ref(false);
@@ -163,11 +164,16 @@
     }
   };
 
+  // 스크랩 목록 데이터
+  const commRecipeData = ref<object[]>([]);
+
+  //
+
   watchEffect(async () => {
     routeId.value = route.params.id;
-    const id:string | null = localStorage.getItem('userId');
+    const id: string | null = localStorage.getItem('userId');
     const path = route.params.id;
-    console.log(path)
+    console.log(path);
     if (path) {
       await userStore.getUser(path as string);
       userInfo.value = userStore.userInfo;
@@ -175,6 +181,10 @@
       userFollowingInfo.value = userStore.followingInfo;
       // ✅ 유저별 스크랩 목록 가져오기
       if (path === id) {
+        const response = await Supabase.getScrapData(id, 'comm_recipe');
+        commRecipeData.value = response;
+        console.log(commRecipeData.value[0]);
+
         // 스크랩 불러오는 거 여기서 하시면 됩니다!!!
         // const scrapList = await getUserScrapList(id);
         // cultureStore.bookmarkedFestivals = scrapList;
@@ -293,7 +303,13 @@
         <!-- 기존 탭 -->
         <div class="flex border-b border-mono-200 mt-6">
           <button
-            v-for="tab in ['동네리뷰', '중고거래', '질문게시판', '나만의 레시피', routeId === id ?  '문화생활' : '']"
+            v-for="tab in [
+              '동네리뷰',
+              '중고거래',
+              '질문게시판',
+              '나만의 레시피',
+              routeId === id ? '문화생활' : '',
+            ]"
             :key="tab"
             @click="selectedTab = tab"
             class="px-6 py-3 text-[20px] font-medium text-mono-600 transition-colors duration-200"
@@ -347,18 +363,21 @@
           <!-- "나만의 레시피" 탭 - 카드 리스트 -->
           <div v-if="selectedTab === '나만의 레시피'" class="grid grid-cols-4 gap-6">
             <RecipeCard
-              v-for="(recipe, index) in recipeList"
+              v-for="(recipe, index) in commRecipeData"
               :key="index"
               :title="recipe.title ?? ''"
-              :image="recipe.image ?? ''"
-              :author="recipe.author"
-              :tag="recipe.tags"
-
+              :image="recipe.image_src ?? ''"
+              :author-img="null"
+              author-name="나혼자산다"
+              :tag="recipe[0].tags"
             />
           </div>
           <div class="mt-6">
             <!-- ✅ 문화생활 탭 추가 -->
-            <div v-if="selectedTab === '문화생활' && routeId === id" class="grid grid-cols-3 gap-4 w-full">
+            <div
+              v-if="selectedTab === '문화생활' && routeId === id"
+              class="grid grid-cols-3 gap-4 w-full"
+            >
               <div
                 v-for="(festival, index) in paginatedFestivals"
                 :key="index"
