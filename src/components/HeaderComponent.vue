@@ -39,7 +39,6 @@
     // console.log(user)
     const data = await getUserInfo(id);
     userData.value = data;
-    console.log(data);
   };
   watchEffect(async () => {
     profileImg.value = userStore.userProfileImage;
@@ -120,7 +119,7 @@
 
             <!-- <RouterLink class="tw:flex tw:items-center" to="/mypage"> </RouterLink> -->
             <v-badge v-if="authStore.isAuthenticated" content="5" color="var(--color-main-400)">
-              <v-speed-dial key="133" scrim="true" location="bottom center" transition="fade-transition">
+              <v-speed-dial key="133" scrim="true" location="bottom center" transition="">
                 <template v-slot:activator="{props: activatorProps}">
                   <v-avatar v-bind="activatorProps" :image="profileImg || defaultImage"></v-avatar>
                 </template>
@@ -158,7 +157,6 @@
                   </template>
                   <span>닫기</span>
                 </v-tooltip>
-
               </v-speed-dial>
             </v-badge>
 

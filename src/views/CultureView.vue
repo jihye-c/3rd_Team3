@@ -406,11 +406,11 @@ onMounted(() => {
 
               <!-- 행사 제목 -->
               <div class="mt-4">
-                <p class="font-bold text-mono-900">{{ festival.name }}</p>
+                <p class="font-bold text-xl text-mono-900 text-ellipsis w-full truncate h-[28px]">{{ festival.name  }}</p>
               </div>
 
               <!-- 일정 & 지역 -->
-              <div class="mt-4 text-[12px] text-mono-600">
+              <div class="mt-2 text-[12px] text-mono-600">
                 {{ formatDate(festival.event_start_date) }} ~ {{ formatDate(festival.event_end_date) }}
                 <br />
                 {{ festival.gu_name }}
