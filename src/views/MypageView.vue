@@ -13,7 +13,7 @@
     };
     likes?: string[];
     comments?: string[];
-    author?:string;
+    author?: string;
   };
 
   import {ref, computed, watchEffect} from 'vue';
@@ -26,6 +26,7 @@
   import Modal from '@/components/ModalComponent.vue';
   import FollowComponent from '@/components/mypage/FollowComponent.vue';
   import {useCultureStore} from '../stores/cultureStore';
+  import SubscriptionCard from '@/components/Subscription/NewsCardComponent.vue';
   // import {getUserScrapList, toggleScrap} from '@/apis/userService';
 
   import BookmarkButton from '@/components/BookmarkButton.vue';
@@ -35,6 +36,9 @@
     RESALE_CHANNEL_ID,
     REVIEW_CHANNEL_ID,
   } from '@/constants/channelId';
+  import Supabase from '@/apis/supabase';
+  import type ScrapItem from '@/types/ScrapRespnse';
+  import RecipeRectangleCard from '@/components/recipe/RecipeRectangleCard.vue';
 
   const route = useRoute<string>();
   const showModal = ref(false);
@@ -163,11 +167,21 @@
     }
   };
 
+  // 스크랩 목록 데이터
+  const commRecipeData = ref<object[]>([]);
+  const commReviewData = ref<object[]>([]);
+  const commQuestionData = ref<object[]>([]);
+  const commResaleData = ref<object[]>([]);
+  const cultureData = ref<object[]>([]);
+  const recipeData = ref<object[]>([]);
+  const subscriptionData = ref<object[]>([]);
+  //
+
   watchEffect(async () => {
     routeId.value = route.params.id;
-    const id:string | null = localStorage.getItem('userId');
+    const id: string | null = localStorage.getItem('userId');
     const path = route.params.id;
-    console.log(path)
+    console.log(path);
     if (path) {
       await userStore.getUser(path as string);
       userInfo.value = userStore.userInfo;
@@ -175,6 +189,29 @@
       userFollowingInfo.value = userStore.followingInfo;
       // ✅ 유저별 스크랩 목록 가져오기
       if (path === id) {
+        const commRecipeResponse = await Supabase.getScrapData(id, 'comm_recipe');
+        commRecipeData.value = commRecipeResponse;
+        const commReviewResponse = await Supabase.getScrapData(id, 'comm_review');
+        commReviewData.value = commReviewResponse;
+        const commQuestionResponse = await Supabase.getScrapData(id, 'comm_qna');
+        commQuestionData.value = commQuestionResponse;
+        const commResaleResponse = await Supabase.getScrapData(id, 'comm_sale');
+        commResaleData.value = commResaleResponse;
+        const cultureResponse = await Supabase.getScrapData(id, 'culture');
+        cultureData.value = cultureResponse;
+        const recipeResponse = await Supabase.getScrapData(id, 'recipe');
+        recipeData.value = recipeResponse;
+        const subscriptionResponse = await Supabase.getScrapData(id, 'subscription');
+        subscriptionData.value = subscriptionResponse;
+
+        // console.log('레시피', JSON.stringify(commRecipeResponse, null, 2));
+        // console.log('리뷰', commReviewData.value);
+        // console.log('질문', commQuestionData.value);
+        // console.log('중고거래', commResaleData.value);
+        // console.log('문화', cultureData.value);
+        console.log('레시피', recipeData.value);
+        console.log('청약', subscriptionData.value);
+
         // 스크랩 불러오는 거 여기서 하시면 됩니다!!!
         // const scrapList = await getUserScrapList(id);
         // cultureStore.bookmarkedFestivals = scrapList;
@@ -293,7 +330,14 @@
         <!-- 기존 탭 -->
         <div class="flex border-b border-mono-200 mt-6">
           <button
-            v-for="tab in ['동네리뷰', '중고거래', '질문게시판', '나만의 레시피', routeId === id ?  '문화생활' : '']"
+            v-for="tab in [
+              '동네리뷰',
+              '중고거래',
+              '질문게시판',
+              '나만의 레시피',
+              '문화생활',
+              '레시피',
+            ]"
             :key="tab"
             @click="selectedTab = tab"
             class="px-6 py-3 text-[20px] font-medium text-mono-600 transition-colors duration-200"
@@ -303,106 +347,122 @@
           </button>
         </div>
         <!-- 탭 컨텐츠 -->
-        <div class="mt-6">
+        <div class="mt-6 mb-[120px]">
           <!-- 동네 리뷰 탭 -->
           <div v-if="selectedTab === '동네리뷰'" class="grid grid-cols-2 gap-6">
             <CommunityPostList
-              v-for="(post, index) in reviewList"
+              v-for="(post, index) in commReviewData"
               :key="index"
               :title="post.title"
               :content="post.content"
-              :dong="post.region?.dong ?? ''"
-              :tags="post.tags ?? []"
-              :bookmarks="post.likes?.length ?? 0"
-              :comments="post.comments?.length ?? 0"
-              :image="post.image"
+              :dong="post[0].dong"
+              :tags="post[0].tags"
+              :image="post.image_src"
               class="w-full"
+              @click="router.push(post.post_url)"
             />
           </div>
           <div v-if="selectedTab === '중고거래'" class="grid grid-cols-4 gap-6">
             <ResaleCard
-              v-for="(post, index) in resaleList"
+              v-for="(post, index) in commResaleData"
               :key="index"
               :title="post.title"
-              :image="post.image ?? ''"
-              :price="post.price ?? 0"
-              :dong="post.region?.dong ?? ''"
-              :available="post.available ?? false"
+              :image="post.image_src"
+              :price="post[0].price"
+              :dong="post[0].dong"
+              :available="true"
+              @click="router.push(post.post_url)"
             />
           </div>
           <div v-if="selectedTab === '질문게시판'" class="grid grid-cols-2 gap-6">
             <CommunityPostList
-              v-for="(post, index) in questionList"
+              v-for="(post, index) in commQuestionData"
               :key="index"
               :title="post.title"
               :content="post.content"
-              :dong="post.region?.dong ?? ''"
-              :tags="post.tags ?? []"
-              :bookmarks="post.likes?.length ?? 0"
-              :comments="post.comments?.length ?? 0"
-              :image="post.image"
+              :dong="post[0].dong"
+              :tags="post.tags"
+              :image="post.image_src"
               class="w-full"
+              @click="router.push(post.post_url)"
             />
           </div>
           <!-- "나만의 레시피" 탭 - 카드 리스트 -->
           <div v-if="selectedTab === '나만의 레시피'" class="grid grid-cols-4 gap-6">
             <RecipeCard
-              v-for="(recipe, index) in recipeList"
+              v-for="(recipe, index) in commRecipeData"
               :key="index"
               :title="recipe.title ?? ''"
-              :image="recipe.image ?? ''"
-              :author="recipe.author"
-              :tag="recipe.tags"
-
+              :image="recipe.image_src ?? ''"
+              :author-img="null"
+              :author-name="recipe[0].author_name"
+              :tag="recipe[0].tags"
+              @click="router.push(recipe.post_url)"
             />
           </div>
+          <!-- "레시피" 탭 - 카드 리스트 -->
+          <div v-if="selectedTab === '레시피'" class="grid grid-cols-3 gap-6">
+            <RecipeRectangleCard
+              v-for="(recipe, index) in recipeData"
+              :key="index"
+              :title="recipe.title"
+              :image="recipe.image_src"
+              @click="router.push(recipe.post_url)"
+            />
+          </div>
+          <!-- "청약뉴스" 탭 - 카드 리스트 -->
+          <!-- <div v-if="selectedTab === '청약뉴스'" class="grid grid-cols-4 gap-6">
+            <SubscriptionCard
+              v-for="(card, index) in subscriptionData"
+              :key="card.id" :card="card"
+              @click="router.push(recipe.post_url)"
+            />
+            <SubscriptionCard v-for="card in paginatedCards" :key="card.id" :card="card" />
+          </div> -->
           <div class="mt-6">
             <!-- ✅ 문화생활 탭 추가 -->
-            <div v-if="selectedTab === '문화생활' && routeId === id" class="grid grid-cols-3 gap-4 w-full">
+            <div
+              v-if="selectedTab === '문화생활' && routeId === id"
+              class="grid grid-cols-4 gap-6 w-full"
+            >
               <div
-                v-for="(festival, index) in paginatedFestivals"
+                v-for="(festival, index) in cultureData"
                 :key="index"
-                class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer"
-                @click="goToCultureDetail(festival.content_id)"
+                class="p-4 rounded-lg shadow border border-mono-300 cursor-pointer w-[380px]"
+                @click="router.push(festival.post_url)"
               >
                 <div class="flex justify-between items-center mb-4">
                   <!-- 카테고리 태그 -->
                   <p class="text-sm text-mono-600 flex items-center">
-                    <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span
-                    >{{ getCategoryName(festival.category3) }}
+                    <span class="w-2 h-2 bg-main-400 rounded-full mr-2"></span>일반축제
                   </p>
                   <!-- ✅ BookmarkButton 크기 제한 적용 -->
-                  <BookmarkButton
+                  <!-- <BookmarkButton
                     :isBookmarked="isBookmarked(festival.content_id)"
                     @toggle="handleScrapToggle(festival)"
                     :small="true"
-                  />
+                  /> -->
                 </div>
 
-                <img
-                  :src="
-                    festival.homepage &&
-                    typeof festival.homepage === 'string' &&
-                    festival.homepage.startsWith('http')
-                      ? festival.homepage
-                      : '/images/default-image.jpg'
-                  "
-                  class="h-[340px] w-full object-cover rounded-lg"
-                />
+                <img :src="festival.image_src" class="h-[340px] w-full object-cover rounded-lg" />
                 <div class="mt-4">
-                  <p class="font-bold text-mono-900">{{ festival.name }}</p>
+                  <p class="font-bold text-mono-900">{{ festival.title }}</p>
                 </div>
                 <div class="mt-4 text-[12px] text-mono-600">
-                  {{ formatDate(festival.event_start_date) }} ~
-                  {{ formatDate(festival.event_end_date) }}
+                  {{ festival[0].eventStartDate }} ~
+                  {{ festival[0].eventEndDate }}
                   <br />
-                  {{ festival.gu_name }}
+                  {{ festival[0].location }}
                 </div>
               </div>
             </div>
           </div>
           <!-- 페이지네이션 추가 -->
-          <PaginationComponent :totalPages="totalPages" @pageChange="handlePageChange" />
+          <!-- <PaginationComponent
+            :totalPages="totalPages"
+            @pageChange="handlePageChange"
+            class="my-[100px]"
+          /> -->
           <Modal :isOpen="showModal" @close="closeModal">
             <FollowComponent
               v-if="followCategory === 'follower'"
