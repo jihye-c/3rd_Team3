@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import SubscriptionView from '@/views/SubscriptionView.vue';
 import CultureView from '@/views/CultureView.vue';
@@ -10,6 +10,8 @@ import UserAuthView from '@/views/UserAuthView.vue';
 import AdminView from '@/views/AdminView.vue';
 import CultureViewDetail from '@/views/CultureView_detail.vue';
 import UserEditInformationView from '@/views/UserEditInformationView.vue';
+import ErrorRoute from '@/views/ErrorRoute.vue'; // ErrorRoute.vue 임포트
+import ErrorRoute from '@/views/ErrorRoute.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -69,7 +71,7 @@ const router = createRouter({
       name: 'CultureView',
       component: CultureView,
     },
-    {path: '/culture/:id', name: 'CultureViewDetail', component: CultureViewDetail},
+    { path: '/culture/:id', name: 'CultureViewDetail', component: CultureViewDetail },
     {
       path: '/community/resale',
       name: 'community-resale',
@@ -135,12 +137,17 @@ const router = createRouter({
       name: 'admin',
       component: AdminView,
     },
+    {
+      path: '/:catchAll(.*)',  // 모든 경로에 해당하지 않는 경우
+      name: 'error',
+      component: ErrorRoute,  // ErrorRoute.vue 페이지
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition;
     } else {
-      return {top: 0};
+      return { top: 0 };
     }
   },
 });
