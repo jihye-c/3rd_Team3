@@ -32,7 +32,12 @@
     {to: '/culture', label: '문화 생활'},
   ];
   const logoutHandler = () => {
-    authStore.logout();
+    try{
+       authStore.logout();
+      router.push('/auth')
+    }catch(e){
+      console.error(e)
+    }
   };
 
   watchEffect(async () => {

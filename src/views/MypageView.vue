@@ -20,16 +20,14 @@
   import RecipeCard from '@/components/community/RecipeCard.vue';
   import ResaleCard from '@/components/community/ResaleCard.vue';
   import CommunityPostList from '@/components/community/CommunityPostList.vue';
-  import PaginationComponent from '@/components/PaginationComponent.vue';
+  import { reviewData,resaleData,questionData,recipData } from '@/config/config';
   import {useUserStore} from '@/stores/userStore';
   import {useRoute, useRouter} from 'vue-router';
   import Modal from '@/components/ModalComponent.vue';
   import FollowComponent from '@/components/mypage/FollowComponent.vue';
   import {useCultureStore} from '../stores/cultureStore';
-  import SubscriptionCard from '@/components/Subscription/NewsCardComponent.vue';
   // import {getUserScrapList, toggleScrap} from '@/apis/userService';
 
-  import BookmarkButton from '@/components/BookmarkButton.vue';
   import {
     QUESTION_CHANNEL_ID,
     RECIPE_CHANNEL_ID,
@@ -225,7 +223,7 @@
               try {
                 const parsedTitle = JSON.parse(item.title);
                 return {
-                  image: item.image,
+                  image_src: item.image,
                   likes: item.likes,
                   comments: item.comments,
                   ...parsedTitle,
@@ -351,7 +349,7 @@
           <!-- 동네 리뷰 탭 -->
           <div v-if="selectedTab === '동네리뷰'" class="grid grid-cols-2 gap-6">
             <CommunityPostList
-              v-for="(post, index) in commReviewData"
+              v-for="(post, index) in routeId === id ?  commReviewData :reviewData"
               :key="index"
               :title="post.title"
               :content="post.content"
@@ -364,7 +362,7 @@
           </div>
           <div v-if="selectedTab === '중고거래'" class="grid grid-cols-4 gap-6">
             <ResaleCard
-              v-for="(post, index) in commResaleData"
+              v-for="(post, index) in routeId === id ? commResaleData: resaleData"
               :key="index"
               :title="post.title"
               :image="post.image_src"
@@ -376,7 +374,7 @@
           </div>
           <div v-if="selectedTab === '질문게시판'" class="grid grid-cols-2 gap-6">
             <CommunityPostList
-              v-for="(post, index) in commQuestionData"
+              v-for="(post, index) in routeId === id ?  commQuestionData :questionData"
               :key="index"
               :title="post.title"
               :content="post.content"
@@ -390,7 +388,7 @@
           <!-- "나만의 레시피" 탭 - 카드 리스트 -->
           <div v-if="selectedTab === '나만의 레시피'" class="grid grid-cols-4 gap-6">
             <RecipeCard
-              v-for="(recipe, index) in commRecipeData"
+              v-for="(recipe, index) in routeId === id ?  commRecipeData : recipData"
               :key="index"
               :title="recipe.title ?? ''"
               :image="recipe.image_src ?? ''"
