@@ -244,6 +244,7 @@ export async function toggleScrap(userId: string, festivalData: any, context: st
   try {
     // 스크랩 목록을 실제로 가져오지 않고 빈 배열 반환 (임시 대체)
     let updatedScrapList = [];
+
     console.log('임시 대체: 스크랩 처리 로직 생략');
 
     return updatedScrapList; // 빈 배열 반환
@@ -280,6 +281,7 @@ export async function updateUserProfile(formData: FormData) {
   }
   return response.data;
 }
+
 export async function postFollow(id: string | string[]) {
   const response = await axiosApi.post(`${apiRoot}/follow/create`, {userId: id});
   console.log(response);
@@ -288,6 +290,7 @@ export async function postFollow(id: string | string[]) {
   }
   return response.data;
 }
+
 export async function deleteFollow(id: string | string[]) {
   const response = await axiosApi.delete(`${apiRoot}/follow/delete`, {
     data: {id: id},
@@ -312,8 +315,10 @@ export async function updatePasswordInfo(payload: {password: string}) {
   }
   return response.data;
 }
+
 export async function deleteUser(userId: string | string[]) {
   const response = await axiosApi.delete(`${apiRoot}/users/delete-user`, {
+
     data: {id: userId},
   });
   if (response.status !== 200) {

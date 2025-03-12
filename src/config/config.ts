@@ -75,3 +75,107 @@ export const sub_categories = [
   { name: "스포츠경기", code: "A02081200" },
   { name: "기타행사", code: "A02081300" }
 ];
+
+export const reviewData = [
+  {
+    title: "동네 카페 추천",
+    content: "아침에 산책하다 발견한 작은 카페인데 분위기 너무 좋아요!",
+    image_src: "https://media.istockphoto.com/id/1428594094/ko/%EC%82%AC%EC%A7%84/%EB%82%98%EB%AC%B4-%ED%85%8C%EC%9D%B4%EB%B8%94-%EC%BB%A4%ED%94%BC-%EB%A9%94%EC%9D%B4%EC%BB%A4-%ED%8C%A8%EC%8A%A4%ED%8A%B8%EB%A6%AC-%EB%B0%8F-%ED%8E%9C%EB%8D%98%ED%8A%B8-%EC%A1%B0%EB%AA%85%EC%9D%B4%EC%9E%88%EB%8A%94-%EB%B9%88-%EC%BB%A4%ED%94%BC-%EC%88%8D-%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4.jpg?s=612x612&w=0&k=20&c=5bHJXVEZ4D9zsN_ZV-XVZsTxwxL5GdUOo5D0PPs3fsI=",
+    post_url: "/community/review/1",
+    0: {
+      dong: "삼성동",
+      tags: ["카페", "산책", "분위기"],
+    },
+  },
+  {
+    title: "깨끗한 세탁소 발견!",
+    content: "옷을 맡겼는데 너무 깔끔하고 친절해요!",
+    image_src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSe92J5r758M8c_GK4RNUGYL9axeRLWeMFXpQ&s",
+    post_url: "/community/review/2",
+    0: {
+      dong: "역삼동",
+      tags: ["세탁소", "친절", "깨끗함"],
+    },
+  },
+];
+
+export const resaleData = [
+  {
+    title: "중고 아이패드 판매",
+    image_src: "https://cdn.bizwatch.co.kr/news/photo/2022/12/09/2bcdd98d1355f02d43a2bfd7eba60165.jpg",
+    post_url: "/community/resale/1",
+    0: {
+      price: "300,000원",
+      dong: "신사동",
+    },
+  },
+  {
+    title: "자전거 중고로 팔아요",
+    image_src: "https://hellovelo.co.kr/web/product/big/202410/61b018175cd209217a532d4d97e2a6e7.jpg",
+    post_url: "/community/resale/2",
+    0: {
+      price: "100,000원",
+      dong: "압구정동",
+    },
+  },
+];
+
+export const questionData = [
+  {
+    title: "삼성동 근처 괜찮은 맛집 추천 부탁드려요!",
+    content: "이번 주말에 친구랑 갈만한 곳 추천해주세요!",
+    post_url: "/community/question/1",
+    0: {
+      dong: "삼성동",
+    },
+    tags: ["맛집", "추천", "삼성동"],
+  },
+  {
+    title: "자취 첫날에 필요한 물품은 뭐가 있을까요?",
+    content: "혼자 사는 건 처음이라 필요한 물건이 많을 것 같아요.",
+    post_url: "/community/question/2",
+    0: {
+      dong: "역삼동",
+    },
+    tags: ["자취", "필수템", "초보"],
+  },
+];
+
+export const recipData = [
+  {
+    title: "초간단 크림 카레",
+    image_src: "/images/recipe/recipe_popular1.webp",
+    post_url: "/community/recipe/1",
+    0: {
+      tags: ["한식", "볶음밥", "간단"],
+    },
+  },
+  {
+    title: "매콤 비빔밥",
+    image_src: "/images/recipe/recipe_popular3.webp",
+    post_url: "/community/recipe/2",
+    0: {
+      author_name: "매운맛 사랑꾼",
+      tags: ["한식", "닭볶음탕", "매운맛"],
+    },
+  },
+];
+
+export const rectangleRecipeData = [
+  {
+    title: "토마토 파스타",
+    image_src: "https://example.com/tomato-pasta.jpg",
+    post_url: "/recipe/1",
+  },
+  {
+    title: "크림 리조또",
+    image_src: "https://example.com/cream-risotto.jpg",
+    post_url: "/recipe/2",
+  },
+  {
+    title: "간장찜닭",
+    image_src: "https://example.com/chicken.jpg",
+    post_url: "/recipe/3",
+  },
+];
+
