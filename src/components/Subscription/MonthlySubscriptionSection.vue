@@ -48,7 +48,10 @@
     </div>
   </div>
 
-  <SubscriptionMap class="h-136 rounded-2xl border-2 mt-8 border-main-400" :address="loca" />
+  <SubscriptionMap
+    class="h-136 rounded-2xl border-2 mt-8 border-main-400"
+    address="서울특별시 성북구 석관동 338-18"
+  />
 </template>
 
 <script setup lang="ts">
@@ -64,6 +67,7 @@
 
   import {useSubscriptionStore} from '@/stores/subscriptionStore.ts';
   import {getLocalDate} from '@/utils/format';
+  import HomeTitle from '@/components/Home/common/HomeTitle.vue';
   import SubscriptionSlideCard from '@/components/SubscriptionSlideCard.vue';
 
   import 'v-calendar/style.css';
@@ -92,7 +96,6 @@
         visibility: 'click',
       },
       dates: [new Date(house.RCRIT_PBLANC_DE)],
-      loca: house.HSSPLY_ADRES,
     })),
   );
 
@@ -100,17 +103,8 @@
     swipers.value = instance;
   };
 
-  const loca = ref(''); // Initialize `loca` with an empty string or default value
-
-  watchEffect(() => {
-    if (data.value && data.value.length > 0) {
-      loca.value = data.value[0].HSSPLY_ADRES; // Default to the first item's address
-    }
-  });
-
   const onSlideChange = (swiper: Swiper) => {
     activeIndex.value = swiper.activeIndex;
-    loca.value = data.value ? data.value[swiper.activeIndex!].HSSPLY_ADRES : ''; // Update `loca` when the slide changes
   };
 
   const handleDayClick = (calendarDay: CalendarDay) => {

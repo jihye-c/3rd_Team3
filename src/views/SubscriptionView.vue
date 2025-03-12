@@ -4,9 +4,6 @@
   import SubscriptionCategoryCard from '@/components/Subscription/SubscriptionCategoryCard.vue';
   import TodaySubscriptionSection from '@/components/Subscription/TodaySubscriptionSection.vue';
   import NewsCardComponent from '@/components/Subscription/NewsCardComponent.vue';
-  import HomeSubscriptionSection from '@/components/Home/HomeSubscriptionSection.vue';
-  import HomeSection from '@/components/Home/common/HomeSection.vue';
-  import SubscriptionMap from '@/components/Subscription/SubscriptionMap.vue';
   import MonthlySubscriptionSection from '@/components/Subscription/MonthlySubscriptionSection.vue';
 
   const SubscriptionCategoryData = [

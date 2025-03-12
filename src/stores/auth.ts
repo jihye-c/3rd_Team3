@@ -38,20 +38,6 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const newUser = await userRegister(formData);
       console.log('new user : ', newUser);
-      //스크랩 포스트 생성
-      await login(newUser.email, formData.password);
-      const scrapId = await createScrapPost(newUser._id);
-      console.log('scrap id : ', scrapId);
-
-      if (typeof newUser.fullName !== 'string') return
-      const prevFullName = JSON.parse(newUser.fullName);
-      const updateForm = {
-        ...prevFullName,
-        scrapId: scrapId,
-      };
-      const updatedUser = await updateUser(updateForm);
-      console.log('updated user : ', updatedUser);
-      user.value = updatedUser;
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;
