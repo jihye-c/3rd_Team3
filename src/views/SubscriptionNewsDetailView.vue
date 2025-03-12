@@ -23,12 +23,14 @@
   interface PostData {
     title: string;
     date: string;
+    thumbnail:string;
     images: string[];
   }
 
   const postData = ref<PostData>({
     title: '',
     date: '',
+    thumbnail:'',
     images: [],
   });
 
@@ -78,6 +80,7 @@
       const parsedTitle = JSON.parse(post.title);
       postData.value = {
         title: parsedTitle.title,
+        thumbnail:parsedTitle.thumbnail,
         date: new Date(post.createdAt).toLocaleDateString('ko-KR', {
           year: 'numeric',
           month: 'long',
@@ -112,7 +115,7 @@
       <div class="border-mono-200 w-[52px] h-[104px] flex flex-col gap-[12px]">
         <LikeButton :is-liked="isLiked" @toggle="toggleLike" />
         <TextAlertButton :commentleng="commentStore.comments.length" />
-        <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
+        <BookmarkButton :thumb="postData.thumbnail" />
         <ShareButton />
       </div>
 
@@ -124,8 +127,8 @@
           <v-icon>mdi-chevron-left</v-icon>
           <div>목록 보기</div>
         </RouterLink>
-        <div class="font-bold text-5xl mb-2">{{ postData.title }}</div>
-        <div class="text-mono-500">{{ postData.date }}</div>
+        <div id="subscriptionNewsTitle" class="font-bold text-5xl mb-2">{{ postData.title }}</div>
+        <div id="subscriptionNewsDate" class="text-mono-500">{{ postData.date }}</div>
 
         <div class="border-y-1 border-mono-200 mt-10 mb-6 py-12">
           <Swiper

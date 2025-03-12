@@ -6,8 +6,10 @@
   import {programmersApiInstance} from '@/utils/axiosInstance';
   import {useAuthStore} from '@/stores/auth';
   import {useCommentStore} from '@/stores/commentStore';
-  import ShareButton from '@/components/ShareButton.vue';
+  // import { toggleScrap, getUserScrapList } from '@/apis/userService';
+  // import { useCommunityStore } from '@/stores/communityStore';
   import BookmarkButton from '@/components/BookmarkButton.vue';
+  import ShareButton from '@/components/ShareButton.vue';
   import LikeButton from '@/components/LikeButton.vue';
   import TextAlertButton from '@/components/TextAlertButton.vue';
 
@@ -33,9 +35,10 @@
   const router = useRouter();
   const CommunityType = route.params.type;
   const postId = route.params.id;
-
+  const userId = ref(localStorage.getItem("userId") || "");
   const authStore = useAuthStore();
   const commentStore = useCommentStore();
+  // const communityStore = useCommunityStore();
 
   // const comments = ref([
   //   {author: '도형', content: '정말 흥미로운 주제네요!', date: '2025.02'},
@@ -49,8 +52,6 @@
   const isLoading = ref(false);
   const error = ref<string | null>(null);
   const comment = ref('');
-
-  // 북마크 상태 관리
   const isBookmarked = ref(false);
 
   const toggleBookmark = () => {
@@ -72,6 +73,62 @@
     }
   };
 
+// 스크랩 상태 확인 함수
+// const checkIfBookmarked = async () => {
+//   const userId = localStorage.getItem("userId");
+//   if (!userId) return;
+
+//   const scrapList = await getUserScrapList(userId);
+//   isBookmarked.value = scrapList.some((scrap) => scrap._id === postId);
+// };
+
+// 스크랩 추가/삭제 기능
+// const handleScrapToggle = async () => {
+//   if (!userId.value) {
+//     alert("로그인이 필요합니다.");
+//     router.push("/auth");
+//     return;
+//   }
+
+//   try {
+//     console.log("스크랩 토글 요청:", postData.value);
+
+//     if (!postData.value) return;
+
+//     // title이 JSON이 아니라면 변환
+//     let postTitle = postData.value.title;
+//     try {
+//       postTitle = typeof postData.value.title === "string" ? JSON.parse(postData.value.title) : postData.value.title;
+//     } catch (error) {
+//       console.warn("⚠️ postTitle JSON 변환 오류:", postData.value.title, error);
+//       postTitle = { title: postData.value.title, content: "" }; // 기본 값 설정
+//     }
+
+//     // 새로운 북마크 데이터 생성
+//     const newBookmark = {
+//       content_id: postData.value._id,
+//       title: postTitle.title,
+//       content: postTitle.content || "",
+//       image: postData.value.image || "/images/default-image.jpg",
+//       channel: postData.value.channel.name,
+//       createdAt: postData.value.createdAt,
+//     };
+
+//     // 스크랩 저장 (서버에 요청)
+//     const updatedScraps = await toggleScrap(userId.value, newBookmark);
+
+//     // 최신 스크랩 목록 업데이트
+//     communityStore.bookmarkedPosts = updatedScraps;
+//     isBookmarked.value = !isBookmarked.value;
+
+//     console.log("스크랩 업데이트 완료!");
+//   } catch (error) {
+//     console.error("스크랩 토글 실패:", error);
+//   }
+// };
+
+
+
   onMounted(async () => {
     // api 호출
     try {
@@ -80,6 +137,7 @@
       const response = await programmersApiInstance.get(`/posts/${postId}`);
       postData.value = response.data;
       // console.log(postData.value);
+      await checkIfBookmarked();
       await commentStore.fetchComments(postId as string);
     } catch (err) {
       error.value = '데이터를 불러오는 중 오류가 발생했습니다.';
@@ -112,7 +170,7 @@
       <div class="flex flex-col gap-4 w-[52px]">
         <LikeButton :is-liked="false" />
         <TextAlertButton :commentleng="commentStore.comments.length" />
-        <BookmarkButton :is-bookmarked="isBookmarked" @toggle="toggleBookmark" />
+        <BookmarkButton :is-bookmarked="isBookmarked" @toggle="handleScrapToggle" />
         <ShareButton />
       </div>
 

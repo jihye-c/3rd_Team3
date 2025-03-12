@@ -10,8 +10,8 @@ import {onBeforeRouteUpdate, useRoute, useRouter} from 'vue-router';
 import Modal from '@/components/ModalComponent.vue';
 import FollowComponent from '@/components/mypage/FollowComponent.vue';
 import { useCultureStore } from "../stores/cultureStore";
-import { getUserScrapList, toggleScrap } from "@/apis/userService";
-
+// import { getUserScrapList, toggleScrap } from "@/apis/userService";
+// import { useCommunityStore } from "@/stores/communityStore";
 import BookmarkButton from '@/components/BookmarkButton.vue';
 
 const route = useRoute<string>();
@@ -24,10 +24,17 @@ const userFollowingInfo = ref();
 const defaultImage = '/images/mypage/mypage_default_img.png';
 const cultureStore = useCultureStore()
 const id = localStorage.getItem('userId');
-const routeId =  ref()
+const routeId =  route.params.id
 const userStore = useUserStore()
+// const communityStore = useCommunityStore();
 
-
+const bio = ref(
+  `안녕하세요! :house_with_garden: 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
+  안녕하세요! :house_with_garden: 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
+  안녕하세요! :house_with_garden: 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
+  안녕하세요! :house_with_garden: 자취 3년 차, 이제는 라면 하나도 예술처럼 끓이는 자취생입니다.
+:ramen: `
+);
 
 const selectedTab = ref('동네리뷰'); // 기본 탭
 const currentPage = ref(1);
@@ -193,10 +200,10 @@ const closeModal = () => {
   followCategory.value = '';
 };
 
-const totalCulturePages = computed(() => {
-  console.log(":memo: 현재 스크랩된 문화생활 개수:", cultureStore.bookmarkedFestivals?.length);
-  return Math.ceil((cultureStore.bookmarkedFestivals?.length || 0) / itemsPerPage);
-});
+// const totalCulturePages = computed(() => {
+//   console.log(":memo: 현재 스크랩된 문화생활 개수:", cultureStore.bookmarkedFestivals?.length);
+//   return Math.ceil((cultureStore.bookmarkedFestivals?.length || 0) / itemsPerPage);
+// });
 const paginatedFestivals = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return (cultureStore.bookmarkedFestivals ?? []).slice(start, start + itemsPerPage);
@@ -210,77 +217,71 @@ const handlePageChange = (page: number) => {
   console.log(":white_check_mark: 변경된 현재 페이지:", currentPage.value);
 };
 
-const followHandeler = async () => {
-    const id = route.params.id
-    try{
-      await userStore.postFollowUser(id)
-      userFollowerInfo.value = userStore.followerInfo;
-      userFollowingInfo.value = userStore.followingInfo;
-      console.log(userStore.followingInfo)
-      console.log(userStore.followerInfo)
-
-      followCheck()
-    }catch(e) {
-      console.log(e)
-    }
-
-}
-const deleteFollowHandeler = async () => {
-    const id = route.params.id
-    try{
-      await userStore.deleteFollowUser(id)
-      userFollowerInfo.value = userStore.followerInfo;
-      userFollowingInfo.value = userStore.followingInfo;
-    }catch(e) {
-      console.log(e)
-    }
-
-}
-const handleScrapToggle = async (festival) => {
-  try {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      console.warn(":warning: 로그인이 필요합니다.");
-      return;
-    }
-
-    console.log(":white_check_mark: 마이페이지에서 북마크 추가/삭제 요청:", festival);
-
-    // :white_check_mark: scrap 채널에 저장 or 삭제 (서버에 요청)
-    const updatedScraps = await toggleScrap(userId, festival);
-
-    // :white_check_mark: 최신 북마크 목록으로 업데이트
-    cultureStore.bookmarkedFestivals = updatedScraps;
-
-    console.log(":white_check_mark: 마이페이지 북마크 업데이트 완료!");
-  } catch (error) {
-    console.error(":x: 북마크 저장 실패:", error);
-  }
-};
-const followCheck = ()=>{
-  if(userFollowerInfo.value){
-    return userFollowerInfo.value.some((item) => item.id === id)
-  }
-
-}
 watchEffect(async () => {
-  routeId.value = route.params.id
-    const id = localStorage.getItem('userId');
-    const path =route.params.id
-    if (path) {
-      await userStore.getUser(path);
-      userInfo.value = userStore.userInfo
-      console.log('✅ 유저 정보 불러오기 완료:', userInfo.value);
-      userFollowerInfo.value = userStore.followerInfo;
-      userFollowingInfo.value = userStore.followingInfo;
-      // ✅ 유저별 스크랩 목록 가져오기
-      const scrapList = await getUserScrapList(id);
-      cultureStore.bookmarkedFestivals = scrapList;
-      console.log('✅ [유저별] 북마크 불러오기 완료:', cultureStore.bookmarkedFestivals);
-    }
-  });
+  if (!id) return;
 
-// :white_check_mark: 북마크 상태 확인 (현재 스크랩 여부)
+  await userStore.getUser(routeId);
+  userInfo.value = userStore.userInfo;
+  userFollowerInfo.value = userStore.followerInfo;
+  userFollowingInfo.value = userStore.followingInfo;
+
+  // const scrapList = await getUserScrapList(id);
+  const hasChannel = (post: any): post is { channel: { name: string } } => {
+  return post.channel && typeof post.channel.name === "string";
+  };
+
+  // communityStore.bookmarkedPosts = {
+  //   recipeScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "recipe"),
+  //   tradeScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "trade"),
+  //   reviewScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "review"),
+  //   QnAScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "QnA"),
+  //   cultureScraps: scrapList.filter(post => hasChannel(post) && post.channel.name === "culture"),
+  // };
+});
+
+// const handleScrapToggle = async (festival) => {
+//   try {
+//     const userId = localStorage.getItem("userId");
+//     if (!userId) {
+//       console.warn("로그인이 필요합니다.");
+//       return;
+//     }
+
+//     console.log("마이페이지에서 북마크 추가/삭제 요청:", festival);
+
+//     await toggleScrap(userId, festival);
+
+//     // 최신 북마크 목록 다시 불러오기
+//     const updatedScrapList = await getUserScrapList(userId);
+//     cultureStore.bookmarkedFestivals = updatedScrapList.filter(post => post.channel?.name === "culture");
+
+//     console.log("마이페이지 북마크 업데이트 완료!");
+//   } catch (error) {
+//     console.error("북마크 저장 실패:", error);
+//   }
+// };
+
+
+onMounted(async () => {
+  const userId = localStorage.getItem("userId");
+  const profileId = route.params.id; // 방문한 유저의 ID
+
+  if (profileId) {
+    await userStore.getUser(profileId);
+    userInfo.value = { ...userStore.userInfo };
+    console.log("유저 정보 불러오기 완료:", userInfo.value);
+  }
+
+  if (userId) {
+    // await communityStore.loadBookmarks(userId);
+    // console.log("[유저별] 커뮤니티 북마크 목록 정리 완료:", communityStore.bookmarkedPosts);
+
+    // const scrapList = await getUserScrapList(userId);
+    // cultureStore.bookmarkedFestivals = scrapList.filter(post => post.channel?.name === "culture");
+    // console.log("[유저별] 문화생활 북마크 불러오기 완료:", cultureStore.bookmarkedFestivals);
+  }
+});
+
 const isBookmarked = (contentId) => {
   return cultureStore.bookmarkedFestivals.some(festival => festival.content_id === contentId);
 };
@@ -496,5 +497,3 @@ const isBookmarked = (contentId) => {
     </div>
   </div>
 </template>
-
-<style scoped></style>
