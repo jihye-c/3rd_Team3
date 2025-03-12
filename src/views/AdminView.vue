@@ -75,7 +75,7 @@
     <hr class="my-12" />
 
     <div>
-      <v-btn @click="handleListLoad" color="success">전체 병원 데이터 로드</v-btn>
+      <v-btn class="mr-2" @click="handleListLoad" color="success">전체 병원 데이터 로드</v-btn>
       <v-btn
         @click="
           handleDetailLoad(
@@ -86,11 +86,11 @@
         >병원 디테일 데이터 로드</v-btn
       >
     </div>
-    <v-divider></v-divider>
+    <!-- <v-divider></v-divider>
     <div>
       <v-btn @click="handleScrapAdd" color="success">스크랩 추가 확인</v-btn>
       <v-btn @click="handleScrapGet" color="success">스크랩 로드 확인</v-btn>
-    </div>
+    </div> -->
   </main>
 </template>
 

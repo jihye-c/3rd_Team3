@@ -10,7 +10,6 @@ import UserAuthView from '@/views/UserAuthView.vue';
 import AdminView from '@/views/AdminView.vue';
 import CultureViewDetail from '@/views/CultureView_detail.vue';
 import UserEditInformationView from '@/views/UserEditInformationView.vue';
-import ErrorRoute from '@/views/ErrorRoute.vue'; // ErrorRoute.vue 임포트
 import ErrorRoute from '@/views/ErrorRoute.vue';
 
 const router = createRouter({
