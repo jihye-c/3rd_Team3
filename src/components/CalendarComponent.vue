@@ -142,6 +142,7 @@ const goToDetail = (contentId) => {
           :selected-date="currentDate"
           @cell-click="selectDate"
           @cell-mouseover="(event, date) => findEventsForDate(event, date)"
+          @cell-mouseleave="hoveredEvents = []"
         />
       </div>
     </div>
@@ -221,7 +222,7 @@ const goToDetail = (contentId) => {
 
 /* 네비게이션 버튼 */
 .nav-btn {
-  background: #FFA500;
+  background: var(--color-main-400);
   border: none;
   padding: 8px 12px;
   border-radius: 5px;
@@ -268,13 +269,15 @@ const goToDetail = (contentId) => {
   font-size: 16px;
   color: black;
 }
-
+.custom-calendar .vuecal__cell:hover {
+  background: var(--color-main-300); /* 연한 오렌지색 */
+  transition: background-color 0.2s ease-in-out;
+}
 /* 선택된 날짜 스타일 */
 .custom-calendar .vuecal__cell--selected {
-  background-color: #ffcc80 !important;
+  background: var(--color-main-400);
   color: black !important;
 }
-
 /* 다가오는 일정 스타일 */
 .upcoming-events {
   background: #f9f9f9;
