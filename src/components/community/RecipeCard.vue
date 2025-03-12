@@ -32,12 +32,14 @@
     <div class="w-[380px] h-[380px] overflow-hidden rounded-[12px]">
       <img :src="image" alt="product" class="w-full h-full object-cover object-center" />
     </div>
-    <div class="text-[28px] text-mono-700 font-bold leading-[32px]">{{ title }}</div>
-    <div
-      v-for="tag in tags"
-      class="text-[18px] text-mono-600 leading-[20px] bg-mono-200 self-start py-1 px-3 rounded-[4px]"
-    >
-      {{ tag }}
+    <div class="text-[28px] text-mono-700 font-bold leading-[32px] line-clamp-1">{{ title }}</div>
+    <div class="flex gap-4">
+      <div
+        v-for="tag in tags"
+        class="text-[18px] text-mono-600 leading-[20px] bg-mono-200 self-start py-1 px-3 rounded-[4px]"
+      >
+        {{ tag }}
+      </div>
     </div>
   </div>
 </template>
