@@ -157,14 +157,14 @@ const setMarker = () => {
 
     // 오버레이 추가
     const overlayId = `${loc.id}_overlay`;
-    const content = `<div id="${overlayId}" class="bg-main-50 border border-main-400 text-main-400" style="opacity:0; transition: opacity 0.3s;">
+    const content = `<div id="${overlayId}" class="bg-mono-100 border-2 border-main-400 rounded-lg px-3 py-1 text-main-400 font-semibold shadow-lg" style="opacity:0; transition: opacity 0.3s;">
       ${loc.name}
     </div>`;
 
     const overlay = new window.kakao.maps.CustomOverlay({
       position: markerPosition,
       content: content,
-      yAnchor: 1.5,
+      yAnchor: 2.2,
     });
     
     overlay.setMap(map.value);
