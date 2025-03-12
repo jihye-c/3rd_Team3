@@ -39,7 +39,6 @@
     // console.log(user)
     const data = await getUserInfo(id);
     userData.value = data;
-    console.log(data);
   };
   watchEffect(async () => {
     profileImg.value = userStore.userProfileImage;

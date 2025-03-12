@@ -13,6 +13,7 @@
     };
     likes?: string[];
     comments?: string[];
+    author?:string;
   };
 
   import {ref, computed, watchEffect} from 'vue';
@@ -25,7 +26,7 @@
   import Modal from '@/components/ModalComponent.vue';
   import FollowComponent from '@/components/mypage/FollowComponent.vue';
   import {useCultureStore} from '../stores/cultureStore';
-  import {getUserScrapList, toggleScrap} from '@/apis/userService';
+  // import {getUserScrapList, toggleScrap} from '@/apis/userService';
 
   import BookmarkButton from '@/components/BookmarkButton.vue';
   import {
@@ -70,7 +71,6 @@
     // cultureList: CULT_CHANNEL_ID,
   };
 
-
   const goToCultureDetail = (contentId: string) => {
     router.push(`/culture/${contentId}`);
   };
@@ -113,7 +113,7 @@
   };
 
   const followHandeler = async () => {
-    const id = route.params.id;
+    const {id} = route.params;
     try {
       await userStore.postFollowUser(id);
       userFollowerInfo.value = userStore.followerInfo;
@@ -127,7 +127,7 @@
     }
   };
   const deleteFollowHandeler = async () => {
-    const id = route.params.id;
+    const {id} = route.params;
     try {
       await userStore.deleteFollowUser(id);
       userFollowerInfo.value = userStore.followerInfo;
@@ -165,15 +165,17 @@
 
   watchEffect(async () => {
     routeId.value = route.params.id;
-    const id = localStorage.getItem('userId');
+    const id:string | null = localStorage.getItem('userId');
     const path = route.params.id;
+    console.log(path)
     if (path) {
-      await userStore.getUser(path);
+      await userStore.getUser(path as string);
       userInfo.value = userStore.userInfo;
       userFollowerInfo.value = userStore.followerInfo;
       userFollowingInfo.value = userStore.followingInfo;
       // ✅ 유저별 스크랩 목록 가져오기
       if (path === id) {
+        // 스크랩 불러오는 거 여기서 하시면 됩니다!!!
         // const scrapList = await getUserScrapList(id);
         // cultureStore.bookmarkedFestivals = scrapList;
         // console.log('✅ [유저별] 북마크 불러오기 완료:', cultureStore.bookmarkedFestivals);
@@ -184,25 +186,20 @@
             .filter((item) => item.channel === channelId)
             .map((item: Post) => {
               try {
-                // JSON 파싱 시도
                 const parsedTitle = JSON.parse(item.title);
                 return {
                   image: item.image,
                   likes: item.likes,
                   comments: item.comments,
                   ...parsedTitle,
+                  author: {...userInfo.value, fullName: JSON.stringify(userInfo.value.fullName)},
                 };
               } catch (error) {
                 console.error('Error parsing item title:', error);
-                // 파싱 실패 시 원본 그대로 반환
                 return item;
               }
             });
         });
-        console.log(recipeList.value);
-        console.log(reviewList.value);
-        console.log(resaleList.value);
-        console.log(questionList.value);
       }
     }
   });
@@ -211,7 +208,6 @@
   const isBookmarked = (contentId: string) => {
     return cultureStore.bookmarkedFestivals.some((festival) => festival.content_id === contentId);
   };
-
 </script>
 
 <template>
@@ -297,7 +293,7 @@
         <!-- 기존 탭 -->
         <div class="flex border-b border-mono-200 mt-6">
           <button
-            v-for="tab in ['동네리뷰', '중고거래', '질문게시판', '나만의 레시피', '문화생활']"
+            v-for="tab in ['동네리뷰', '중고거래', '질문게시판', '나만의 레시피', routeId === id ?  '문화생활' : '']"
             :key="tab"
             @click="selectedTab = tab"
             class="px-6 py-3 text-[20px] font-medium text-mono-600 transition-colors duration-200"
@@ -315,10 +311,10 @@
               :key="index"
               :title="post.title"
               :content="post.content"
-              :dong="post.region?.dong"
-              :tags="post.tags"
-              :bookmarks="post.likes.length"
-              :comments="post.comments.length"
+              :dong="post.region?.dong ?? ''"
+              :tags="post.tags ?? []"
+              :bookmarks="post.likes?.length ?? 0"
+              :comments="post.comments?.length ?? 0"
               :image="post.image"
               class="w-full"
             />
@@ -342,7 +338,7 @@
               :content="post.content"
               :dong="post.region?.dong ?? ''"
               :tags="post.tags ?? []"
-              :bookmarks="post.bookmarks ?? []"
+              :bookmarks="post.likes?.length ?? 0"
               :comments="post.comments?.length ?? 0"
               :image="post.image"
               class="w-full"
@@ -353,15 +349,16 @@
             <RecipeCard
               v-for="(recipe, index) in recipeList"
               :key="index"
-              :title="recipe.name"
-              :image="recipe.image"
+              :title="recipe.title ?? ''"
+              :image="recipe.image ?? ''"
               :author="recipe.author"
-              :tag="recipe.tag"
+              :tag="recipe.tags"
+
             />
           </div>
           <div class="mt-6">
             <!-- ✅ 문화생활 탭 추가 -->
-            <div v-if="selectedTab === '문화생활'" class="grid grid-cols-3 gap-4 w-full">
+            <div v-if="selectedTab === '문화생활' && routeId === id" class="grid grid-cols-3 gap-4 w-full">
               <div
                 v-for="(festival, index) in paginatedFestivals"
                 :key="index"
