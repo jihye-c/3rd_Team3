@@ -254,7 +254,7 @@ export default class Supabase {
     end = Math.min(end, totalCount - 1);
 
     //데이터 타입 한 번 더 거르기
-    if (symptomsQuery && symptomsQuery.length > 0) {
+    if (symptomsQuery && symptomsQuery.length > 1) {
       const korList = new Set<string>();
       const findList = symptomsQuery
         .map((query) => symptomsList.find((symptom) => symptom.id === query)?.departments)

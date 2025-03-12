@@ -202,6 +202,7 @@ const setMarker = () => {
     } else {
       loadMap();
     }
+    isMapChange.value = false;
   });
   const listLoad = () => {
     loading.value = true;

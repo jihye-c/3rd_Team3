@@ -12,8 +12,7 @@
 
   import hospitalIcons from '@/assets/data/hospitalIcons';
   import Supabase from '@/apis/supabase';
-  import {left} from '@popperjs/core';
-import NoDataLottie from '@/components/NoDataLottie.vue';
+  import NoDataLottie from '@/components/NoDataLottie.vue';
 
   const router = useRouter();
   const route = useRoute();
@@ -26,7 +25,7 @@ import NoDataLottie from '@/components/NoDataLottie.vue';
   const selectedHospital = ref<string>('');
 
   // 병원 종류 선택하기
-  
+
   const selectHospitalType = (type: string) => {
     if (selectedHospitalType.value == type) return;
     router.push({path: route.path, query: {type: type}});
@@ -39,7 +38,7 @@ import NoDataLottie from '@/components/NoDataLottie.vue';
     isDetailPageShow.value = false;
   };
 
-  const openDetail = (id:string) => {
+  const openDetail = (id: string) => {
     selectedHospital.value = id;
     isDetailPageShow.value = true;
   };
@@ -117,7 +116,12 @@ import NoDataLottie from '@/components/NoDataLottie.vue';
     let nowSymtoms: string[] = [];
 
     if (route.query.sym && route.query.sym?.length > 0) {
+      console.log('sym 쿼리ㅏ',route.query.sym)
+      if(typeof route.query.sym  == 'string'){
+        nowSymtoms.push(route.query.sym)
+      }else{
       nowSymtoms = route.query.sym as string[];
+      }
     }
     const res = await Supabase.getFullHospitalData(
       mapData.value,
@@ -157,12 +161,18 @@ import NoDataLottie from '@/components/NoDataLottie.vue';
         }
       }
     } catch (err) {
-console.log('키워드 검색 중 에러가 발생했습니다.', err);
+      console.log('키워드 검색 중 에러가 발생했습니다.', err);
     }
   };
 
   onMounted(() => {
-    router.replace({path: route.path, query: {type: 'clinic'}});
+    router.replace({
+      path: route.path,
+      query: {
+        ...route.query,
+        type: 'clinic',
+      },
+    });
   });
   watch(
     () => route.query,
@@ -242,8 +252,12 @@ console.log('키워드 검색 중 에러가 발생했습니다.', err);
               <p class="text-right text-mono-300 absolute right-6">
                 전체 : {{ hospitalList?.length }}개
               </p>
-              <div v-if="hospitalList.data && hospitalList.data.length > 0" id="postList" class="flex flex-col">
-                <template  v-for="(item, idx) in hospitalList?.data" :key="item.id">
+              <div
+                v-if="hospitalList.data && hospitalList.data.length > 0"
+                id="postList"
+                class="flex flex-col"
+              >
+                <template v-for="(item, idx) in hospitalList?.data" :key="item.id">
                   <HospitalPostList
                     :class="{'border-t': idx !== 0}"
                     :data="item"
@@ -262,7 +276,7 @@ console.log('키워드 검색 중 에러가 발생했습니다.', err);
                 ></v-pagination>
               </div>
               <div v-if="!hospitalList.data || hospitalList.data.length < 1">
-                <NoDataLottie/>
+                <NoDataLottie />
               </div>
             </div>
           </div>
@@ -290,10 +304,7 @@ console.log('키워드 검색 중 에러가 발생했습니다.', err);
           v-show="isDetailPageShow"
         >
           <div class="resizer" @mousedown="(e) => startResize(1, e)"></div>
-          <HospitalDetailCard
-          :selectedHospital="selectedHospital"
-            @close="closeDetail"
-          />
+          <HospitalDetailCard :selectedHospital="selectedHospital" @close="closeDetail" />
         </div>
       </div>
       <HospitalMap
