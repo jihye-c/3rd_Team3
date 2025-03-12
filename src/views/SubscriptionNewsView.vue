@@ -77,18 +77,17 @@
 
   // 정렬된 카드 리스트
   const sortedCards = computed(() => {
-    return cards.value.sort((a, b) => {
-      if (selectedOrder.value === 'popular') {
-        // 좋아요순 정렬
-        return b.likes - a.likes;
-      } else if (selectedOrder.value === 'text') {
-        // 댓글순 정렬
-        return b.comments - a.comments;
-      } else {
-        // 최신순 정렬 (기본값)
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      }
-    });
+    if (selectedOrder.value === 'recent') {
+      // 최신순: 기본 상태 그대로 반환
+      return cards.value;
+    } else if (selectedOrder.value === 'popular') {
+      // 좋아요순 정렬
+      return [...cards.value].sort((a, b) => b.likes - a.likes);
+    } else if (selectedOrder.value === 'text') {
+      // 댓글순 정렬
+      return [...cards.value].sort((a, b) => b.comments - a.comments);
+    }
+    return cards.value; // 기본값
   });
 
   // 검색된 카드 리스트 필터링

@@ -64,7 +64,7 @@
     // 정렬
     return filteredData.sort((a, b) => {
       if (selectedOrder.value === 'popular') {
-        return b.likes.length - a.likes.length; // 'likes'가 많은 순으로 정렬
+        return b.comments.length - a.comments.length; // 'comments'가 많은 순으로 정렬
       } else {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // 최신순 정렬
       }

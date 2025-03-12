@@ -64,7 +64,7 @@
     // 정렬
     return filteredData.sort((a, b) => {
       if (selectedOrder.value === 'popular') {
-        return b.likes.length - a.likes.length; // 'likes'가 많은 순으로 정렬
+        return b.comments.length - a.comments.length;
       } else {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // 최신순 정렬
       }
@@ -202,8 +202,10 @@
 
       <!-- 리스트 -->
       <div class="flex flex-col gap-[28px] pt-[28px] pb-[100px] leading-[32px]">
-        <template v-if="filteredPostList.length" v-for="item in filteredPostList">
+        <template v-if="filteredPostList.length">
           <CommunityPostList
+            v-for="item in filteredPostList"
+            :key="item._id"
             :title="JSON.parse(item.title).title"
             :content="JSON.parse(item.title).content"
             :dong="JSON.parse(item.title).region.dong"

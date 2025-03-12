@@ -66,6 +66,8 @@ export const useUserStore = defineStore('user', () => {
         for (const item of data.following) {
           const userData = await getUserInfo(item.user ?? item.follower);
           const fullName = JSON.parse(userData.fullName);
+          console.log(fullName)
+
           followingInfo.value.push({...userData, fullName, id: userData._id});
         }
       }

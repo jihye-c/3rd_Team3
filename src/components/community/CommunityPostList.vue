@@ -5,14 +5,14 @@
     content: string;
     dong: string;
     tags: string[];
-    bookmarks: number;
-    comments: number;
+    bookmarks?: number;
+    comments?: number;
   }
   defineProps<Props>();
 </script>
 
 <template>
-  <div class="flex gap-10 py-[40px]">
+  <div class="flex gap-10 py-[40px] justify-between">
     <div class="flex flex-col gap-10">
       <div class="flex flex-col gap-4">
         <div class="text-[28px] text-mono-700 font-bold">
@@ -33,7 +33,7 @@
           </div>
         </div>
       </div>
-      <div class="flex gap-6">
+      <div v-if="bookmarks != undefined && comments != undefined" class="flex gap-6">
         <div class="flex gap-2 justify-center items-center">
           <v-icon size="28">mdi-bookmark-outline</v-icon>
           <div class="text-[24px] text-mono-400">{{ bookmarks }}개</div>
