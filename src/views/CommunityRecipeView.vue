@@ -204,7 +204,8 @@
       <div class="grid grid-cols-4 gap-x-[24px] gap-y-[32px] pt-[28px] pb-[100px]">
         <template v-if="filteredPostList.length" v-for="item in filteredPostList">
           <RecipeCard
-            :author="item.author"
+            :author-img="item.author.image ? item.author.image : null"
+            :author-name="JSON.parse(item.author.fullName).nickname"
             :image="item.image"
             :title="JSON.parse(item.title).title"
             :tags="JSON.parse(item.title).tags"
@@ -215,6 +216,18 @@
               })
             "
           />
+          <!-- <RecipeCard
+            :author="item.author"
+            :image="item.image"
+            :title="JSON.parse(item.title).title"
+            :tags="JSON.parse(item.title).tags"
+            @click="
+              router.push({
+                name: 'community-post-detail',
+                params: {type: 'recipe', id: item._id},
+              })
+            "
+          /> -->
         </template>
       </div>
 

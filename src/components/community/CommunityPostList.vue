@@ -5,8 +5,8 @@
     content: string;
     dong: string;
     tags: string[];
-    bookmarks: number;
-    comments: number;
+    bookmarks?: number;
+    comments?: number;
   }
   defineProps<Props>();
 </script>
@@ -33,7 +33,7 @@
           </div>
         </div>
       </div>
-      <div class="flex gap-6">
+      <div v-if="bookmarks && comments" class="flex gap-6">
         <div class="flex gap-2 justify-center items-center">
           <v-icon size="28">mdi-bookmark-outline</v-icon>
           <div class="text-[24px] text-mono-400">{{ bookmarks }}개</div>
