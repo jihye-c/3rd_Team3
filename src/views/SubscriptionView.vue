@@ -7,6 +7,7 @@
   import HomeSubscriptionSection from '@/components/Home/HomeSubscriptionSection.vue';
   import HomeSection from '@/components/Home/common/HomeSection.vue';
   import SubscriptionMap from '@/components/Subscription/SubscriptionMap.vue';
+  import MonthlySubscriptionSection from '@/components/Subscription/MonthlySubscriptionSection.vue';
 
   const SubscriptionCategoryData = [
     {
@@ -97,13 +98,7 @@
   <!-- 이달의 청약 정보 -->
   <section class="container">
     <div class="mt-48">
-      <HomeSection>
-        <HomeSubscriptionSection />
-      </HomeSection>
-      <SubscriptionMap
-        class="h-136 rounded-2xl border-2 border-main-400"
-        address="서울특별시 서초구 방배동 818-14번지"
-      />
+      <MonthlySubscriptionSection />
     </div>
   </section>
 

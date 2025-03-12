@@ -1,10 +1,11 @@
 <script setup lang="ts">
-  import {ref, onMounted, computed, watch} from 'vue';
+  import {ref, onMounted, computed} from 'vue';
   import axios from 'axios';
   import BannerComponent from '@/components/BannerComponent.vue';
   import CommunityLinkBanner from '@/components/Subscription/CommunityLinkBanner.vue';
   import SubscriptionCard from '@/components/Subscription/NewsCardComponent.vue';
   import OrderRadioButton from '@/components/community/OrderRadioButton.vue';
+  import NoDataLottie from '@/components/NoDataLottie.vue';
 
   interface Props {
     long?: boolean;
@@ -15,21 +16,21 @@
 
   const searchText = ref<string>('');
   const searchType = ref<string>('title'); // 기본 값은 'title'
-  const sortType = ref<string>('최신순'); // 기본 값은 '최신순'
-
-  const cards = ref<SubscriptionCardData[]>([]);
+  const selectedOrder = ref<string>('recent'); // 정렬 기준 (기본 값: 최신순)
+  const currentPage = ref<number>(1); // 현재 페이지
+  const itemsPerPage = 8; // 한 페이지당 아이템 수
+  const cards = ref<SubscriptionCardData[]>([]); // 카드 데이터
 
   interface SubscriptionCardData {
     imageURL: string;
     title: string;
     date: string;
     id: string;
+    likes: number;
+    comments: number;
   }
 
-  // 정렬기준
-  const selectedOrder = ref('recent');
-
-  // ✅ API에서 카드 뉴스 데이터 가져오기
+  // API에서 카드 뉴스 데이터 가져오기
   const fetchNews = async () => {
     try {
       const response = await axios.get(
@@ -50,6 +51,8 @@
               month: 'long',
               day: 'numeric',
             }),
+            likes: post.likes || 0, // 좋아요 개수
+            comments: post.comments?.length || 0, // 댓글 개수
           };
         } catch (error) {
           console.error('JSON 파싱 오류:', error);
@@ -62,6 +65,8 @@
               month: 'long',
               day: 'numeric',
             }),
+            likes: 0, // 기본값
+            comments: 0, // 기본값
           };
         }
       });
@@ -70,13 +75,26 @@
     }
   };
 
-  // ✅ 컴포넌트가 마운트되면 API 호출
-  onMounted(fetchNews);
+  // 정렬된 카드 리스트
+  const sortedCards = computed(() => {
+    return cards.value.sort((a, b) => {
+      if (selectedOrder.value === 'popular') {
+        // 좋아요순 정렬
+        return b.likes - a.likes;
+      } else if (selectedOrder.value === 'text') {
+        // 댓글순 정렬
+        return b.comments - a.comments;
+      } else {
+        // 최신순 정렬 (기본값)
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }
+    });
+  });
 
-  // 검색된 카드 뉴스 필터링
+  // 검색된 카드 리스트 필터링
   const filteredCards = computed(() => {
-    return cards.value.filter((card) => {
-      const searchTerm = searchText.value.trim().toLowerCase();
+    const searchTerm = searchText.value.trim().toLowerCase();
+    return sortedCards.value.filter((card) => {
       if (searchType.value === 'title') {
         return card.title.toLowerCase().includes(searchTerm);
       }
@@ -84,11 +102,7 @@
     });
   });
 
-  // 페이지네이션 처리
-  const currentPage = ref<number>(1);
-  const itemsPerPage = 8;
-
-  // 현재 페이지에 해당하는 카드들만 반환
+  // 현재 페이지에 해당하는 카드들 반환
   const paginatedCards = computed(() => {
     const startIndex = (currentPage.value - 1) * itemsPerPage;
     return filteredCards.value.slice(startIndex, startIndex + itemsPerPage);
@@ -99,18 +113,12 @@
     return Math.ceil(filteredCards.value.length / itemsPerPage);
   });
 
-  // 페이지가 변경될 때 로그 추가
-  watch(currentPage, (newPage, oldPage) => {
-    console.log(`페이지가 ${oldPage}에서 ${newPage}로 변경되었습니다.`);
-  });
-
   const handleClick = () => {
     emit('search', {text: searchText.value, type: searchType.value});
   };
 
-  const setSortType = (type: string) => {
-    sortType.value = type;
-  };
+  // 컴포넌트가 마운트되면 API 호출
+  onMounted(fetchNews);
 </script>
 
 <template>

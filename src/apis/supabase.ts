@@ -363,8 +363,10 @@ export default class Supabase {
         tableName = 'scrap_comm_qna';
         break;
       case 'culture':
+        tableName = 'scrap_culture';
         break;
       case 'subscription':
+        tableName = 'scrap_subscription';
         break;
       case 'recipe':
         passFlag = true;
@@ -412,7 +414,7 @@ export default class Supabase {
       case 'subscription':
         tableName = 'scrap_subscription';
         break;
-case 'recipe':
+      case 'recipe':
         passFlag = true;
         break;
       default:
@@ -543,12 +545,11 @@ interface ScrapCommQnA {
   tags: string[];
 }
 interface ScrapCulture {
-  tags: string[];
   contentId: string;
   eventEndDate: string;
   eventStartDate: string;
   location: string;
 }
 interface scrapSubscription {
-  date: string[];
+  date: string;
 }

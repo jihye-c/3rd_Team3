@@ -245,7 +245,6 @@ onMounted(async () => {
     console.log('🔑 Kakao API Key:', import.meta.env.VITE_KAKAO_MAP_KEY); // ✅ API 키 출력 확인
     fetchFestivalDetails(); // ✅ 행사 정보 불러오기
   });
-
 </script>
 
 <template>
@@ -275,7 +274,16 @@ onMounted(async () => {
       <!-- 좌측 버튼들 -->
       <div class="border-mono-200 w-[52px] h-[104px] flex flex-col gap-[12px]">
         <!-- 스크랩, 공유 버튼 -->
-        <BookmarkButton :isBookmarked="isBookmarked" @toggle="toggleBookmark"/>
+        <BookmarkButton
+          :cultureData="{
+            title: title,
+            contentId: festivalId,
+            eventEndDate: eventIntro.event_start_date,
+            eventStartDate: eventIntro.event_end_date,
+            location: location,
+            image_src: festivalImages[0],
+          }"
+        />
         <ShareButton />
       </div>
 
@@ -288,7 +296,7 @@ onMounted(async () => {
           :loop="true"
           :speed="2000"
         >
-        <SwiperSlide v-for="(image, index) in festivalImages" :key="index" >
+          <SwiperSlide v-for="(image, index) in festivalImages" :key="index">
             <img
               :src="image"
               alt="Festival Image"
