@@ -95,6 +95,7 @@
           tag: selectedTag.value,
           keyword: searchKeyword.value,
           order: selectedOrder.value,
+          page: currentPage.value,
         },
       });
     } else {
@@ -106,6 +107,7 @@
           tag: selectedTag.value,
           keyword: searchKeyword.value,
           order: selectedOrder.value,
+          page: currentPage.value,
         },
       });
     }
@@ -216,7 +218,7 @@
 
       <!-- 리스트 -->
       <div class="flex flex-col gap-[28px] pt-[28px] pb-[100px] leading-[32px]">
-        <template v-if="paginatedPostList.length" v-for="item in paginatedPostList">
+        <template v-if="paginatedPostList.length">
           <CommunityPostList
             v-for="item in filteredPostList"
             :key="item._id"
